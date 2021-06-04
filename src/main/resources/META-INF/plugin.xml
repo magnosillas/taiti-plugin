@@ -1,0 +1,20 @@
+<idea-plugin>
+    <id>br.edu.ufape.taiti-plugin</id>
+    <name>TAITI</name>
+
+    <vendor email="gabrielalmeidavn@gmail.com" url="www.ufape.edu.br">UFAPE</vendor>
+
+    <description>An avoiding merge conflicts tool for Ruby projects</description>
+
+    <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+    </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
+</idea-plugin>
