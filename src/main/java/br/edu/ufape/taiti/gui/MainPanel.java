@@ -5,16 +5,24 @@ import javax.swing.*;
 public class MainPanel {
 
     private JPanel mainPanel;
-    private JLabel labelTest;
+    private JPanel rightPanel;
+    private JPanel centerPanel;
+    private JPanel leftPanel;
+    private JPanel tablePanel;
+    private JPanel inputPanel;
 
-    public MainPanel() {
-        mainPanel.setSize(400, 400);
-        labelTest.setSize(60, 20);
-    }
+    private JLabel labelGithubURL;
+    private JLabel labelPivotalURL;
+    private JLabel labelTaskID;
 
-    public JPanel getMainPanel() {
+    private JTextField githubURL;
+    private JTextField PivotalURL;
+    private JTextField TaskID;
+
+    private JTree tree;
+    private JScrollPane scrollPanel;
+
+    public JComponent getMainPanel() {
         return mainPanel;
     }
-
-
 }
