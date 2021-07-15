@@ -2,10 +2,10 @@ package br.edu.ufape.taiti.gui;
 
 import java.io.File;
 
-public class FileTreeNode {
+public class TaitiTreeFileNode {
     private File file;
 
-    public FileTreeNode(File file) {
+    public TaitiTreeFileNode(File file) {
         this.file = file;
     }
 

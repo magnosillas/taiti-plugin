@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class TestsTableModel extends AbstractTableModel {
 
     private final String[] columns;
-    private ArrayList<RowTest> rows;
+    private ArrayList<TestRow> rows;
 
     public TestsTableModel() {
         columns = new String[]{"", "Tests"};
@@ -25,14 +25,14 @@ public class TestsTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        RowTest rowTest = rows.get(rowIndex);
+        TestRow testRow = rows.get(rowIndex);
         Object value = null;
         switch (columnIndex) {
             case 0:
-                value = rowTest.getCheckbox();
+                value = testRow.getCheckbox();
                 break;
             case 1:
-                value = rowTest.getTest();
+                value = testRow.getTest();
                 break;
             default:
                 System.err.println("elemento inválido na tabela");
@@ -43,17 +43,17 @@ public class TestsTableModel extends AbstractTableModel {
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        RowTest rowTest = rows.get(rowIndex);
+        TestRow testRow = rows.get(rowIndex);
         switch (columnIndex) {
             case 0:
-                if (!rowTest.getCheckbox()) {
-                    rowTest.setCheckbox(true);
+                if (!testRow.getCheckbox()) {
+                    testRow.setCheckbox(true);
                 } else {
-                    rowTest.setCheckbox(false);
+                    testRow.setCheckbox(false);
                 }
                 break;
             case 1:
-                rowTest.setTest(aValue.toString());
+                testRow.setTest(aValue.toString());
                 break;
             default:
                 System.err.println("alteração inválida na tabela");
@@ -76,12 +76,12 @@ public class TestsTableModel extends AbstractTableModel {
         return columnIndex == 0;
     }
 
-    public void addRow(RowTest row) {
+    public void addRow(TestRow row) {
         rows.add(row);
         fireTableDataChanged();
     }
 
-    public void removeRow(RowTest row) {
+    public void removeRow(TestRow row) {
         rows.remove(row);
         fireTableDataChanged();
     }

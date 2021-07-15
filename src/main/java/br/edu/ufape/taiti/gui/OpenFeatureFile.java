@@ -3,12 +3,12 @@ package br.edu.ufape.taiti.gui;
 import java.io.File;
 import java.util.ArrayList;
 
-public class FeatureFile {
+public class OpenFeatureFile {
 
     private File file;
-    private ArrayList<RowFile> fileLines;
+    private ArrayList<FileLine> fileLines;
 
-    public FeatureFile(File file, ArrayList<RowFile> fileLines) {
+    public OpenFeatureFile(File file, ArrayList<FileLine> fileLines) {
         this.file = file;
         this.fileLines = fileLines;
     }
@@ -21,18 +21,18 @@ public class FeatureFile {
         this.file = file;
     }
 
-    public ArrayList<RowFile> getFileLines() {
+    public ArrayList<FileLine> getFileLines() {
         return fileLines;
     }
 
-    public void setFileLines(ArrayList<RowFile> fileLines) {
+    public void setFileLines(ArrayList<FileLine> fileLines) {
         this.fileLines = fileLines;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof FeatureFile) {
-            FeatureFile f = (FeatureFile) o;
+        if (o instanceof OpenFeatureFile) {
+            OpenFeatureFile f = (OpenFeatureFile) o;
 
             return this.file.getAbsolutePath().equals(f.getFile().getAbsolutePath());
         }

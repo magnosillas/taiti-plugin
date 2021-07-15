@@ -13,6 +13,7 @@ public class CheckBoxCellRenderer implements TableCellRenderer {
         renderer.setHorizontalAlignment(SwingConstants.CENTER);
     }
 
+    // essa implementação ainda não está boa, pois a checkbox ainda aparece em linhas que não deveria
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
                                                    boolean hasFocus, int row, int column) {
@@ -28,7 +29,6 @@ public class CheckBoxCellRenderer implements TableCellRenderer {
 
         } else {
             // testar da forma em que a checkbox fica em um jpanel
-            // verificar o estado do atributo checkbox nesses casos
             return new JLabel("");
         }
 

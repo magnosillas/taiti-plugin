@@ -1,10 +1,10 @@
 package br.edu.ufape.taiti.gui;
 
-public class RowTest {
+public class TestRow {
     private Boolean checkbox;
     private String test;
 
-    public RowTest(Boolean checkbox, String test) {
+    public TestRow(Boolean checkbox, String test) {
         this.checkbox = checkbox;
         this.test = test;
     }
@@ -27,10 +27,10 @@ public class RowTest {
 
     @Override
     public boolean equals(Object o) {
-        RowTest rowTest;
-        if (o instanceof RowTest) {
-            rowTest = (RowTest) o;
-            return this.test.equals(rowTest.getTest());
+        TestRow testRow;
+        if (o instanceof TestRow) {
+            testRow = (TestRow) o;
+            return this.test.equals(testRow.getTest());
         }
 
         return false;

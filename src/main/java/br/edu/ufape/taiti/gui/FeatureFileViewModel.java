@@ -4,14 +4,14 @@ import javax.swing.table.AbstractTableModel;
 import java.io.File;
 import java.util.ArrayList;
 
-public class FeatureFileTableModel extends AbstractTableModel {
+public class FeatureFileViewModel extends AbstractTableModel {
 
     private String[] columns;
-    private ArrayList<RowFile> rows;
+    private ArrayList<FileLine> rows;
     private ArrayList<String> scenarios;
     private TestsTableModel tableModel;
 
-    public FeatureFileTableModel(File file, ArrayList<RowFile> rows, ArrayList<String> scenarios, TestsTableModel tableModel) {
+    public FeatureFileViewModel(File file, ArrayList<FileLine> rows, ArrayList<String> scenarios, TestsTableModel tableModel) {
         columns = new String[]{"", file.getName()};
         this.rows = rows;
         this.scenarios = scenarios;
@@ -30,13 +30,13 @@ public class FeatureFileTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        RowFile rowFile = rows.get(rowIndex);
+        FileLine fileLine = rows.get(rowIndex);
         Object value = null;
 
         if (columnIndex == 0) {
-            value = rowFile.getCheckbox();
+            value = fileLine.getCheckbox();
         } else if (columnIndex == 1) {
-            value = rowFile.getFileLine();
+            value = fileLine.getLine();
         } else {
             System.err.println("elemento inválido na tabela");
         }
@@ -46,17 +46,17 @@ public class FeatureFileTableModel extends AbstractTableModel {
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        RowFile rowFile = rows.get(rowIndex);
-        String line = (String) getValueAt(rowIndex, 1);
+        FileLine fileLine = rows.get(rowIndex);
+        String line = fileLine.getLine();
         if (columnIndex == 0 && line.strip().startsWith("Scenario")) {
-            if (!rowFile.getCheckbox()) {
-                rowFile.setCheckbox(true);
+            if (!fileLine.getCheckbox()) {
+                fileLine.setCheckbox(true);
                 scenarios.add(line);
-                tableModel.addRow(new RowTest(false, line));
+                tableModel.addRow(new TestRow(false, line));
             } else {
-                rowFile.setCheckbox(false);
+                fileLine.setCheckbox(false);
                 scenarios.remove(line);
-                tableModel.removeRow(new RowTest(false, line));
+                tableModel.removeRow(new TestRow(false, line));
             }
         }
 
