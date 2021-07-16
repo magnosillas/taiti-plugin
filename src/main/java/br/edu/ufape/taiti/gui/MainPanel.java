@@ -93,6 +93,7 @@ public class MainPanel {
         featureFileView.setModel(featureFileViewModel);
         featureFileView.setTableWidth();
         featureFileView.getColumnModel().getColumn(0).setCellRenderer(new CheckBoxCellRenderer());
+        featureFileView.getColumnModel().getColumn(0).setCellEditor(new CheckBoxEditor(new JCheckBox()));
     }
 
     private void initCenterPanel() {
