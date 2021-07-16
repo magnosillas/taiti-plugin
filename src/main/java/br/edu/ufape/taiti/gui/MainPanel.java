@@ -4,6 +4,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.ui.table.JBTable;
 
 import javax.swing.*;
+import javax.swing.table.JTableHeader;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
@@ -94,13 +95,22 @@ public class MainPanel {
         featureFileView.setTableWidth();
         featureFileView.getColumnModel().getColumn(0).setCellRenderer(new CheckBoxCellRenderer());
         featureFileView.getColumnModel().getColumn(0).setCellEditor(new CheckBoxEditor(new JCheckBox()));
+        featureFileView.getColumnModel().getColumn(0).setHeaderRenderer(new TableHeaderRenderer(new JCheckBox()));
     }
 
     private void initCenterPanel() {
         featureFileView = new FeatureFileView();
         featureFileView.setShowGrid(false);
         featureFileView.getTableHeader().setResizingAllowed(false);
+        featureFileView.getTableHeader().setReorderingAllowed(false);
+
+//        JTableHeader tableHeader = featureFileView.getTableHeader();
+//
+//        tableHeader.setLayout(new BorderLayout());
+//        JCheckBox checkBox = (JCheckBox) tableHeader.add(new JCheckBox(), 0)
+
         featureFileView.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        featureFileView.setDragEnabled(false);
         centerPanel.add(new JScrollPane(featureFileView), BorderLayout.CENTER);
     }
 
@@ -109,6 +119,7 @@ public class MainPanel {
         tableModel = new TestsTableModel();
         table.setModel(tableModel);
         table.getTableHeader().setResizingAllowed(false);
+        table.getTableHeader().setReorderingAllowed(false);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         tablePanel.add(new JScrollPane(table), BorderLayout.CENTER); // scroll não está funcionando
 
