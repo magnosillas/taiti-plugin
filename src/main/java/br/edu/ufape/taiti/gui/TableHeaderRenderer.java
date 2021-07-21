@@ -3,6 +3,7 @@ package br.edu.ufape.taiti.gui;
 import javax.swing.*;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -11,8 +12,8 @@ public class TableHeaderRenderer implements TableCellRenderer {
 
     private JCheckBox checkbox;
 
-    public TableHeaderRenderer(JCheckBox checkbox) {
-        this.checkbox = checkbox;
+    public TableHeaderRenderer() {
+        this.checkbox = new JCheckBox();
         this.checkbox.setHorizontalAlignment(SwingConstants.CENTER);
     }
 
@@ -24,24 +25,37 @@ public class TableHeaderRenderer implements TableCellRenderer {
                 this.checkbox.setForeground(header.getForeground());
                 this.checkbox.setBackground(header.getBackground());
                 this.checkbox.setFont(header.getFont());
-                this.checkbox.setEnabled(true);
-                this.checkbox.setVisible(true);
 
-                // como marcar e desmarcar o checkbox do header?
+                header.add(this.checkbox);
                 header.addMouseListener(new MouseAdapter() {
+                    // nao funciona direito
                     @Override
-                    public void mouseClicked(MouseEvent e) {
-                        if (checkbox.isSelected()) {
-                            checkbox.setSelected(false);
-                        } else {
-                            checkbox.setSelected(true);
+                    public void mousePressed(MouseEvent e) {
+                        if (header.getResizingColumn() == null && e.getClickCount() == 1) {
+                            Point p = e.getPoint();
+
+                            int col = header.getTable().columnAtPoint(p);
+                            if (col != column || col == -1) return;
+
+                            int index = header.getColumnModel().getColumnIndexAtX(p.x);
+                            if (index == -1) return;
+
+                            checkbox.setSelected(!checkbox.isSelected());
+
+
+                            TableModel tableModel = header.getTable().getModel();
+                            for (int rowIndex = 0; rowIndex < tableModel.getRowCount(); rowIndex++) {
+                                tableModel.setValueAt("", rowIndex, 0);
+                            }
+
+                            header.repaint();
                         }
                     }
                 });
-
             }
         }
 
         return this.checkbox;
     }
+
 }
