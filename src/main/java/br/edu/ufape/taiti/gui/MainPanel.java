@@ -1,6 +1,9 @@
 package br.edu.ufape.taiti.gui;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.ui.AnActionButton;
+import com.intellij.ui.AnActionButtonRunnable;
+import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.table.JBTable;
 
 import javax.swing.*;
@@ -44,7 +47,7 @@ public class MainPanel {
     private FeatureFileView featureFileView;
     private FeatureFileViewModel featureFileViewModel;
 
-    private ArrayList<String> scenarios;
+    private ArrayList<ScenarioTestInformaiton> scenarios;
     private RepositoryOpenFeatureFile repositoryOpenFeatureFile;
 
     private Project project;
@@ -76,9 +79,11 @@ public class MainPanel {
             Scanner scanner;
             try {
                 scanner = new Scanner(new FileReader(filePath));
+                int countLine = 0; // começar com 0 ou 1?
                 while (scanner.hasNextLine()) {
                     String line = scanner.nextLine();
-                    fileLines.add(new FileLine(false, line));
+                    fileLines.add(new FileLine(false, line, countLine));
+                    countLine++;
                 }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -108,6 +113,21 @@ public class MainPanel {
 
     private void initTable() {
         table = new JBTable();
+        table.getEmptyText().setText("No scenarios line added.");
+
+        ToolbarDecorator toolbar = ToolbarDecorator.createDecorator(table);
+
+        toolbar = toolbar.setAddAction(new AnActionButtonRunnable() {
+            @Override
+            public void run(AnActionButton anActionButton) {
+
+                anActionButton.setDefaultIcon(false);
+            }
+        });
+
+        JPanel toolbarPanel = toolbar.createPanel();
+        tablePanel.add(toolbarPanel, BorderLayout.NORTH);
+
         tableModel = new TestsTableModel();
         table.setModel(tableModel);
         table.getTableHeader().setResizingAllowed(false);

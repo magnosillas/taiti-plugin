@@ -8,14 +8,16 @@ public class FeatureFileViewModel extends AbstractTableModel {
 
     private String[] columns;
     private ArrayList<FileLine> rows;
-    private ArrayList<String> scenarios;
+    private ArrayList<ScenarioTestInformaiton> scenarios;
     private TestsTableModel tableModel;
+    private File file;
 
-    public FeatureFileViewModel(File file, ArrayList<FileLine> rows, ArrayList<String> scenarios, TestsTableModel tableModel) {
-        columns = new String[]{"", file.getName()};
+    public FeatureFileViewModel(File file, ArrayList<FileLine> rows, ArrayList<ScenarioTestInformaiton> scenarios, TestsTableModel tableModel) {
+        this.file = file;
         this.rows = rows;
         this.scenarios = scenarios;
         this.tableModel = tableModel;
+        columns = new String[]{"", this.file.getName()};
     }
 
     @Override
@@ -51,11 +53,11 @@ public class FeatureFileViewModel extends AbstractTableModel {
         if (columnIndex == 0 && line.strip().startsWith("Scenario")) {
             if (!fileLine.getCheckbox()) {
                 fileLine.setCheckbox(true);
-                scenarios.add(line);
+                scenarios.add(new ScenarioTestInformaiton(this.file.getPath(), fileLine.getLineNumber()));
                 tableModel.addRow(new TestRow(false, line));
             } else {
                 fileLine.setCheckbox(false);
-                scenarios.remove(line);
+                scenarios.remove(new ScenarioTestInformaiton(this.file.getPath(), fileLine.getLineNumber()));
                 tableModel.removeRow(new TestRow(false, line));
             }
         }
