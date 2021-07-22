@@ -1,5 +1,6 @@
 package br.edu.ufape.taiti.actions;
 
+import br.edu.ufape.taiti.gui.ScenarioTestInformaiton;
 import br.edu.ufape.taiti.gui.TaitiDialog;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -15,6 +16,11 @@ public class TaitiToolAction extends AnAction {
         TaitiDialog taitiDialog = new TaitiDialog(project);
         taitiDialog.setSize(1200,800);
         taitiDialog.setResizable(false);
-        taitiDialog.show();
+        if (taitiDialog.showAndGet()) {
+            for (ScenarioTestInformaiton s : taitiDialog.getMainPanel().getScenarios()) {
+                System.out.println(s.getFilePath() + " - " + s.getLineNumber());
+            }
+        }
+
     }
 }

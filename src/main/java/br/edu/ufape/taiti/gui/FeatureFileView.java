@@ -26,7 +26,16 @@ public class FeatureFileView extends JBTable {
                 }
             }
 
-            tableColumn.setPreferredWidth(preferredWidth + 20);
+            if (column == 0) {
+                tableColumn.setPreferredWidth(preferredWidth + 20);
+            } else if (column == 1) {
+                if (preferredWidth > 530) {
+                    tableColumn.setPreferredWidth(preferredWidth + 20);
+                } else {
+                    tableColumn.setPreferredWidth(530);
+                }
+            }
+
         }
     }
 

@@ -1,8 +1,6 @@
 package br.edu.ufape.taiti.gui;
 
 import com.intellij.openapi.project.Project;
-import com.intellij.ui.AnActionButton;
-import com.intellij.ui.AnActionButtonRunnable;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.table.JBTable;
 
@@ -55,7 +53,6 @@ public class MainPanel {
     public MainPanel(Project project) {
         scenarios = new ArrayList<>();
         repositoryOpenFeatureFile = new RepositoryOpenFeatureFile();
-        this.project = project;
 
         configurePanels();
         configureTree();
@@ -68,8 +65,13 @@ public class MainPanel {
         return mainPanel;
     }
 
+    public ArrayList<ScenarioTestInformaiton> getScenarios() {
+        return scenarios;
+    }
+
     public void updateCenterPanel(File file) {
         String filePath = file.getAbsolutePath();
+        String fileName = file.getName();
         OpenFeatureFile openFeatureFile;
 
         if (repositoryOpenFeatureFile.exists(file)) {
@@ -80,6 +82,8 @@ public class MainPanel {
             try {
                 scanner = new Scanner(new FileReader(filePath));
                 int countLine = 0; // começar com 0 ou 1?
+                fileLines.add(new FileLine(false, fileName, -1));
+                fileLines.add(new FileLine(false, "", -1));
                 while (scanner.hasNextLine()) {
                     String line = scanner.nextLine();
                     fileLines.add(new FileLine(false, line, countLine));
@@ -96,9 +100,11 @@ public class MainPanel {
         featureFileViewModel = new FeatureFileViewModel(file, openFeatureFile.getFileLines(), scenarios, tableModel);
         featureFileView.setModel(featureFileViewModel);
         featureFileView.setTableWidth();
-        featureFileView.getColumnModel().getColumn(0).setCellRenderer(new CheckBoxCellRenderer());
-        featureFileView.getColumnModel().getColumn(0).setCellEditor(new CheckBoxEditor(new JCheckBox()));
-        featureFileView.getColumnModel().getColumn(0).setHeaderRenderer(new TableHeaderRenderer());
+
+        featureFileView.getColumnModel().getColumn(0).setCellRenderer(new CheckBoxCellRenderer(file));
+        featureFileView.getColumnModel().getColumn(0).setCellEditor(new CheckBoxEditor(new JCheckBox(), file));
+        featureFileView.getColumnModel().getColumn(1).setCellRenderer(new FileLineRenderer(file));
+        featureFileView.getTableHeader().setUI(null);
     }
 
     private void initCenterPanel() {
@@ -115,19 +121,6 @@ public class MainPanel {
         table = new JBTable();
         table.getEmptyText().setText("No scenarios line added.");
 
-        ToolbarDecorator toolbar = ToolbarDecorator.createDecorator(table);
-
-        toolbar = toolbar.setAddAction(new AnActionButtonRunnable() {
-            @Override
-            public void run(AnActionButton anActionButton) {
-
-                anActionButton.setDefaultIcon(false);
-            }
-        });
-
-        JPanel toolbarPanel = toolbar.createPanel();
-        tablePanel.add(toolbarPanel, BorderLayout.NORTH);
-
         tableModel = new TestsTableModel();
         table.setModel(tableModel);
         table.getTableHeader().setResizingAllowed(false);
@@ -143,6 +136,11 @@ public class MainPanel {
         // TODO: pegar caminho e nome do projeto dinamicamente
         String projectPath = "C:\\Users\\usuario\\Projects\\diaspora";
         String projectName = "diaspora";
+
+//        System.out.println(this.project.getName());
+//        System.out.println(this.project.getProjectFilePath());
+//        System.out.println(this.project.getPresentableUrl());
+//        System.out.println(this.project.getBasePath());
 
         DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(projectName);
         DefaultTreeModel treeModel = new DefaultTreeModel(rootNode);

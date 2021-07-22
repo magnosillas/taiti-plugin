@@ -49,8 +49,8 @@ public class FeatureFileViewModel extends AbstractTableModel {
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         FileLine fileLine = rows.get(rowIndex);
-        String line = fileLine.getLine();
-        if (columnIndex == 0 && line.strip().startsWith("Scenario")) {
+        String line = fileLine.getLine().strip();
+        if (columnIndex == 0 && line.startsWith("Scenario")) {
             if (!fileLine.getCheckbox()) {
                 fileLine.setCheckbox(true);
                 scenarios.add(new ScenarioTestInformaiton(this.file.getPath(), fileLine.getLineNumber()));
@@ -59,6 +59,23 @@ public class FeatureFileViewModel extends AbstractTableModel {
                 fileLine.setCheckbox(false);
                 scenarios.remove(new ScenarioTestInformaiton(this.file.getPath(), fileLine.getLineNumber()));
                 tableModel.removeRow(new TestRow(false, line));
+            }
+
+        } else if (columnIndex == 0 && rowIndex == 0 && line.equals(file.getName())) {
+            if (!fileLine.getCheckbox()) {
+                fileLine.setCheckbox(true);
+                for (int r = 2; r < getRowCount(); r++) {
+                    if (!rows.get(r).getCheckbox()) {
+                        setValueAt("", r, 0);
+                    }
+                }
+            } else {
+                fileLine.setCheckbox(false);
+                for (int r = 2; r < getRowCount(); r++) {
+                    if (rows.get(r).getCheckbox()) {
+                        setValueAt("", r, 0);
+                    }
+                }
             }
         }
 

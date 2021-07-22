@@ -7,20 +7,22 @@ import javax.swing.*;
 
 public class TaitiDialog extends DialogWrapper {
 
-    private final Project project;
+    private MainPanel mainPanel;
 
     public TaitiDialog(Project project) {
         super(true);
-        init();
-        setTitle("TAITI");
+        mainPanel = new MainPanel(project);
 
-        this.project = project;
+        setTitle("TAITI");
+        init();
     }
 
     @Override
     protected @Nullable JComponent createCenterPanel() {
-        MainPanel mainPanel = new MainPanel(project);
-
         return mainPanel.getMainPanel();
+    }
+
+    public MainPanel getMainPanel() {
+        return mainPanel;
     }
 }
