@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class TestsTableModel extends AbstractTableModel {
 
-    private final String[] columns;
+    private String[] columns;
     private ArrayList<TestRow> rows;
 
     public TestsTableModel() {
@@ -34,8 +34,6 @@ public class TestsTableModel extends AbstractTableModel {
             case 1:
                 value = testRow.getTest();
                 break;
-            default:
-                System.err.println("elemento inválido na tabela");
         }
 
         return value;
@@ -46,17 +44,11 @@ public class TestsTableModel extends AbstractTableModel {
         TestRow testRow = rows.get(rowIndex);
         switch (columnIndex) {
             case 0:
-                if (!testRow.getCheckbox()) {
-                    testRow.setCheckbox(true);
-                } else {
-                    testRow.setCheckbox(false);
-                }
+                testRow.setCheckbox(!testRow.getCheckbox());
                 break;
             case 1:
                 testRow.setTest(aValue.toString());
                 break;
-            default:
-                System.err.println("alteração inválida na tabela");
         }
         fireTableCellUpdated(rowIndex, columnIndex);
     }

@@ -1,7 +1,6 @@
 package br.edu.ufape.taiti.gui;
 
 import com.intellij.openapi.project.Project;
-import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.table.JBTable;
 
 import javax.swing.*;
@@ -109,6 +108,7 @@ public class MainPanel {
 
     private void initCenterPanel() {
         featureFileView = new FeatureFileView();
+        featureFileView.getEmptyText().setText("No file opened");
         featureFileView.setShowGrid(false);
         featureFileView.getTableHeader().setResizingAllowed(false);
         featureFileView.getTableHeader().setReorderingAllowed(false);
@@ -120,27 +120,23 @@ public class MainPanel {
     private void initTable() {
         table = new JBTable();
         table.getEmptyText().setText("No scenarios line added.");
-
-        tableModel = new TestsTableModel();
-        table.setModel(tableModel);
+        table.setShowGrid(false);
         table.getTableHeader().setResizingAllowed(false);
         table.getTableHeader().setReorderingAllowed(false);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        tablePanel.add(new JScrollPane(table), BorderLayout.CENTER); // scroll não está funcionando
+        table.setFillsViewportHeight(true);
+        tablePanel.add(new JScrollPane(table), BorderLayout.CENTER);
 
+        tableModel = new TestsTableModel();
+        table.setModel(tableModel);
         table.getColumnModel().getColumn(0).setPreferredWidth(30);
-        table.getColumnModel().getColumn(1).setPreferredWidth(270);
+        table.getColumnModel().getColumn(1).setPreferredWidth(250);
     }
 
     private void configureTree() {
         // TODO: pegar caminho e nome do projeto dinamicamente
         String projectPath = "C:\\Users\\usuario\\Projects\\diaspora";
         String projectName = "diaspora";
-
-//        System.out.println(this.project.getName());
-//        System.out.println(this.project.getProjectFilePath());
-//        System.out.println(this.project.getPresentableUrl());
-//        System.out.println(this.project.getBasePath());
 
         DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(projectName);
         DefaultTreeModel treeModel = new DefaultTreeModel(rootNode);
@@ -203,27 +199,28 @@ public class MainPanel {
         inputPanel = new JPanel();
         tablePanel = new JPanel();
 
+        mainPanel.setLayout(null);
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, treePanel, centerPanel);
         splitPane.setDividerLocation(300);
+        rightPanel.setLayout(new BorderLayout(0, 50));
 
-        mainPanel.setLayout(null);
-        rightPanel.setLayout(null);
 
         treePanel.setLayout(new BorderLayout());
-        tablePanel.setLayout(new BorderLayout());
         centerPanel.setLayout(new BorderLayout());
 
         inputPanel.setLayout(new GridLayout(3, 2, 5, 50));
-        inputPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        inputPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 0));
+        tablePanel.setLayout(new BorderLayout());
+        tablePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 0));
 
         splitPane.setBounds(0, 0, 900, 700);
         rightPanel.setBounds(900, 0, 300, 700);
-        inputPanel.setBounds(0, 0, 300, 200);
-        tablePanel.setBounds(0, 300, 300, 500);
+        //inputPanel.setBounds(0, 0, 300, 200);
+        //tablePanel.setBounds(0, 300, 300, 500);
 
         mainPanel.add(splitPane);
         mainPanel.add(rightPanel);
-        rightPanel.add(inputPanel);
-        rightPanel.add(tablePanel);
+        rightPanel.add(inputPanel, BorderLayout.NORTH);
+        rightPanel.add(tablePanel, BorderLayout.CENTER);
     }
 }

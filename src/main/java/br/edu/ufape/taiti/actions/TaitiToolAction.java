@@ -14,7 +14,7 @@ public class TaitiToolAction extends AnAction {
         Project project = event.getData(CommonDataKeys.PROJECT);
 
         TaitiDialog taitiDialog = new TaitiDialog(project);
-        taitiDialog.setSize(1200,800);
+        taitiDialog.setSize(1240,800);
         taitiDialog.setResizable(false);
         if (taitiDialog.showAndGet()) {
             for (ScenarioTestInformaiton s : taitiDialog.getMainPanel().getScenarios()) {
