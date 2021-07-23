@@ -108,7 +108,6 @@ public class MainPanel {
 
     private void initCenterPanel() {
         featureFileView = new FeatureFileView();
-        featureFileView.getEmptyText().setText("No file opened");
         featureFileView.setShowGrid(false);
         featureFileView.getTableHeader().setResizingAllowed(false);
         featureFileView.getTableHeader().setReorderingAllowed(false);
@@ -119,7 +118,6 @@ public class MainPanel {
 
     private void initTable() {
         table = new JBTable();
-        table.getEmptyText().setText("No scenarios line added.");
         table.setShowGrid(false);
         table.getTableHeader().setResizingAllowed(false);
         table.getTableHeader().setReorderingAllowed(false);
@@ -127,18 +125,48 @@ public class MainPanel {
         table.setFillsViewportHeight(true);
         tablePanel.add(new JScrollPane(table), BorderLayout.CENTER);
 
+        JButton removeScenarioBtn = new JButton("Remove");
+        removeScenarioBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                ArrayList<TestRow> testRowsChecked = new ArrayList<>();
+
+                // catch all rows checked
+                for (int r = 1; r < tableModel.getRowCount(); r++) {
+                    if ((boolean) tableModel.getValueAt(r, 0)) {
+                        String test = (String) tableModel.getValueAt(r, 1);
+                        TestRow testRow = tableModel.findTestRow(test);
+                        testRowsChecked.add(testRow);
+                    }
+                }
+                // remove all rows checked
+                for (TestRow t : testRowsChecked) {
+                    tableModel.removeRow(t);
+                    OpenFeatureFile openFeatureFile = repositoryOpenFeatureFile.getFeatureFile(t.getFile());
+                    int deselectedLine = openFeatureFile.deselectLine(t);
+                    featureFileViewModel.fireTableDataChanged();
+
+                    scenarios.remove(new ScenarioTestInformaiton(t.getFile().getAbsolutePath(), deselectedLine));
+                }
+
+
+            }
+        });
+
+        JPanel btnPanel = new JPanel();
+        btnPanel.add(removeScenarioBtn);
+        btnPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        tablePanel.add(btnPanel, BorderLayout.NORTH);
+
         tableModel = new TestsTableModel();
         table.setModel(tableModel);
 
-        tableModel.addRow(new TestRow(false, "Tests"));
+        tableModel.addRow(new TestRow(null, false, "Tests"));
         table.getColumnModel().getColumn(0).setPreferredWidth(30);
         table.getColumnModel().getColumn(1).setPreferredWidth(250);
         table.getColumnModel().getColumn(0).setCellRenderer(new TestsTableHeaderRenderer());
         table.getColumnModel().getColumn(1).setCellRenderer(new TestsTableHeaderRenderer());
         table.getTableHeader().setUI(null);
-
-//        table.getColumnModel().getColumn(0).setHeaderRenderer(new TestsTableHeaderRenderer(new JCheckBox()));
-//        table.getColumnModel().getColumn(1).setHeaderRenderer(new TestsTableHeaderRenderer(new JButton("Remove")));
     }
 
     private void configureTree() {

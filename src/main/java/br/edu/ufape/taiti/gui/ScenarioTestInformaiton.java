@@ -29,7 +29,7 @@ public class ScenarioTestInformaiton {
     public boolean equals(Object o) {
         if (o instanceof ScenarioTestInformaiton) {
             ScenarioTestInformaiton scenario = (ScenarioTestInformaiton) o;
-            return scenario.getFilePath().equals(this.filePath);
+            return scenario.getFilePath().equals(this.filePath) && scenario.getLineNumber() == this.lineNumber;
         }
 
         return false;

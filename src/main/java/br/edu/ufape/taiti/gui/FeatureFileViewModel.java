@@ -54,11 +54,11 @@ public class FeatureFileViewModel extends AbstractTableModel {
             if (!fileLine.getCheckbox()) {
                 fileLine.setCheckbox(true);
                 scenarios.add(new ScenarioTestInformaiton(this.file.getPath(), fileLine.getLineNumber()));
-                tableModel.addRow(new TestRow(false, line));
+                tableModel.addRow(new TestRow(file, false, line));
             } else {
                 fileLine.setCheckbox(false);
                 scenarios.remove(new ScenarioTestInformaiton(this.file.getPath(), fileLine.getLineNumber()));
-                tableModel.removeRow(new TestRow(false, line));
+                tableModel.removeRow(new TestRow(file, false, line));
             }
 
         } else if (columnIndex == 0 && rowIndex == 0 && line.equals(file.getName())) {

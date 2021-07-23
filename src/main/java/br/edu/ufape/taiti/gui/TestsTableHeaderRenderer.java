@@ -3,6 +3,7 @@ package br.edu.ufape.taiti.gui;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class TestsTableHeaderRenderer extends DefaultTableCellRenderer {
 
@@ -15,7 +16,7 @@ public class TestsTableHeaderRenderer extends DefaultTableCellRenderer {
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-        Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);;
+        JLabel c = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         if (row == 0 && column == 0) {
             Color bg = table.getTableHeader().getBackground();
             checkBox.setBackground(bg);
@@ -33,6 +34,9 @@ public class TestsTableHeaderRenderer extends DefaultTableCellRenderer {
         } else {
             Color bg = isSelected ? table.getSelectionBackground() : table.getBackground();
             c.setBackground(bg);
+            ArrayList<TestRow> testRows = ((TestsTableModel) table.getModel()).getRows();
+            TestRow t = testRows.get(row);
+            c.setToolTipText(t.getFile().getName());
         }
 
         if (column == 0) {

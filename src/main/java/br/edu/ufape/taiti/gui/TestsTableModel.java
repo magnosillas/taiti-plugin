@@ -95,4 +95,18 @@ public class TestsTableModel extends AbstractTableModel {
         rows.remove(row);
         fireTableDataChanged();
     }
+
+    public TestRow findTestRow(String test) {
+        for (TestRow t : rows) {
+            if (t.getTest().equals(test)) {
+                return t;
+            }
+        }
+
+        return null;
+    }
+
+    public ArrayList<TestRow> getRows() {
+        return rows;
+    }
 }

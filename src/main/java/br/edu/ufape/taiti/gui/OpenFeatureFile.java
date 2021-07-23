@@ -29,6 +29,18 @@ public class OpenFeatureFile {
         this.fileLines = fileLines;
     }
 
+    public int deselectLine(TestRow testRow) {
+        int deselectedLine = -1;
+        for (FileLine f : fileLines) {
+            if (f.getLine().strip().equals(testRow.getTest())) {
+                f.setCheckbox(!f.getCheckbox());
+                deselectedLine = f.getLineNumber();
+            }
+        }
+
+        return deselectedLine;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o instanceof OpenFeatureFile) {
