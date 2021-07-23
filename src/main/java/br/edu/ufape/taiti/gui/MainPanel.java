@@ -129,8 +129,16 @@ public class MainPanel {
 
         tableModel = new TestsTableModel();
         table.setModel(tableModel);
+
+        tableModel.addRow(new TestRow(false, "Tests"));
         table.getColumnModel().getColumn(0).setPreferredWidth(30);
         table.getColumnModel().getColumn(1).setPreferredWidth(250);
+        table.getColumnModel().getColumn(0).setCellRenderer(new TestsTableHeaderRenderer());
+        table.getColumnModel().getColumn(1).setCellRenderer(new TestsTableHeaderRenderer());
+        table.getTableHeader().setUI(null);
+
+//        table.getColumnModel().getColumn(0).setHeaderRenderer(new TestsTableHeaderRenderer(new JCheckBox()));
+//        table.getColumnModel().getColumn(1).setHeaderRenderer(new TestsTableHeaderRenderer(new JButton("Remove")));
     }
 
     private void configureTree() {

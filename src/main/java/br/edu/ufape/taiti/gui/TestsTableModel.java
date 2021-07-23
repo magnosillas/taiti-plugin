@@ -42,14 +42,32 @@ public class TestsTableModel extends AbstractTableModel {
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         TestRow testRow = rows.get(rowIndex);
-        switch (columnIndex) {
-            case 0:
-                testRow.setCheckbox(!testRow.getCheckbox());
-                break;
-            case 1:
-                testRow.setTest(aValue.toString());
-                break;
+
+        if (columnIndex == 0 && rowIndex == 0) {
+            if (!testRow.getCheckbox()) {
+                testRow.setCheckbox(true);
+                for (int r = 1; r < getRowCount(); r++) {
+                    if (!rows.get(r).getCheckbox()) {
+                        setValueAt(null, r, 0);
+                    }
+                }
+            } else {
+                testRow.setCheckbox(false);
+                for (int r = 1; r < getRowCount(); r++) {
+                    if (rows.get(r).getCheckbox()) {
+                        setValueAt(null, r, 0);
+                    }
+                }
+            }
+
+        } else if (columnIndex == 0) {
+            if (!testRow.getCheckbox()) {
+                testRow.setCheckbox(true);
+            } else {
+                testRow.setCheckbox(false);
+            }
         }
+
         fireTableCellUpdated(rowIndex, columnIndex);
     }
 
