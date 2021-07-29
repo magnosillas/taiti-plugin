@@ -106,7 +106,7 @@ public class TestsTableModel extends AbstractTableModel {
         return null;
     }
 
-    public ArrayList<TestRow> getRows() {
-        return rows;
+    public TestRow getRow(int row) {
+        return rows.get(row);
     }
 }

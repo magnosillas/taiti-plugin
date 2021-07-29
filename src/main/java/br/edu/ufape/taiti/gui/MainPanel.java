@@ -80,7 +80,7 @@ public class MainPanel {
             Scanner scanner;
             try {
                 scanner = new Scanner(new FileReader(filePath));
-                int countLine = 0; // começar com 0 ou 1?
+                int countLine = 1;
                 fileLines.add(new FileLine(false, fileName, -1));
                 fileLines.add(new FileLine(false, "", -1));
                 while (scanner.hasNextLine()) {
@@ -99,6 +99,7 @@ public class MainPanel {
         featureFileViewModel = new FeatureFileViewModel(file, openFeatureFile.getFileLines(), scenarios, tableModel);
         featureFileView.setModel(featureFileViewModel);
         featureFileView.setTableWidth();
+        featureFileView.setRowHeight(0, 30);
 
         featureFileView.getColumnModel().getColumn(0).setCellRenderer(new CheckBoxCellRenderer(file));
         featureFileView.getColumnModel().getColumn(0).setCellEditor(new CheckBoxEditor(new JCheckBox(), file));
@@ -142,30 +143,29 @@ public class MainPanel {
                 // remove all rows checked
                 for (TestRow t : testRowsChecked) {
                     tableModel.removeRow(t);
+                    tableModel.getRow(0).setCheckbox(false);
                     OpenFeatureFile openFeatureFile = repositoryOpenFeatureFile.getFeatureFile(t.getFile());
                     int deselectedLine = openFeatureFile.deselectLine(t);
                     featureFileViewModel.fireTableDataChanged();
 
                     scenarios.remove(new ScenarioTestInformaiton(t.getFile().getAbsolutePath(), deselectedLine));
                 }
-
-
             }
         });
 
-        JPanel btnPanel = new JPanel();
-        btnPanel.add(removeScenarioBtn);
-        btnPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        JPanel btnPanel = new JPanel(new BorderLayout());
+        btnPanel.add(removeScenarioBtn, BorderLayout.EAST);
         tablePanel.add(btnPanel, BorderLayout.NORTH);
 
         tableModel = new TestsTableModel();
         table.setModel(tableModel);
 
         tableModel.addRow(new TestRow(null, false, "Tests"));
+        table.setRowHeight(0, 30);
         table.getColumnModel().getColumn(0).setPreferredWidth(30);
         table.getColumnModel().getColumn(1).setPreferredWidth(250);
-        table.getColumnModel().getColumn(0).setCellRenderer(new TestsTableHeaderRenderer());
-        table.getColumnModel().getColumn(1).setCellRenderer(new TestsTableHeaderRenderer());
+        table.getColumnModel().getColumn(0).setCellRenderer(new TestsTableRenderer());
+        table.getColumnModel().getColumn(1).setCellRenderer(new TestsTableRenderer());
         table.getTableHeader().setUI(null);
     }
 
@@ -207,6 +207,7 @@ public class MainPanel {
         treePanel.add(new JScrollPane(tree), BorderLayout.CENTER);
     }
 
+    //TODO: aumentar tamanho dos textfields
     private void configureInputPanel() {
         labelGithubURL = new JLabel("GitHub Project URL:");
         textGithubURL = new JTextField();
@@ -227,6 +228,7 @@ public class MainPanel {
         this.inputPanel.add(textTaskID);
     }
 
+    //TODO: deixar mais responsivo
     private void configurePanels() {
         mainPanel = new JPanel();
         treePanel = new JPanel();
@@ -240,7 +242,6 @@ public class MainPanel {
         splitPane.setDividerLocation(300);
         rightPanel.setLayout(new BorderLayout(0, 50));
 
-
         treePanel.setLayout(new BorderLayout());
         centerPanel.setLayout(new BorderLayout());
 
@@ -251,8 +252,6 @@ public class MainPanel {
 
         splitPane.setBounds(0, 0, 900, 700);
         rightPanel.setBounds(900, 0, 300, 700);
-        //inputPanel.setBounds(0, 0, 300, 200);
-        //tablePanel.setBounds(0, 300, 300, 500);
 
         mainPanel.add(splitPane);
         mainPanel.add(rightPanel);

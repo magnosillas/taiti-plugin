@@ -32,7 +32,7 @@ public class OpenFeatureFile {
     public int deselectLine(TestRow testRow) {
         int deselectedLine = -1;
         for (FileLine f : fileLines) {
-            if (f.getLine().strip().equals(testRow.getTest())) {
+            if (f.getLineNumber() != -1 && f.getLine().strip().equals(testRow.getTest())) {
                 f.setCheckbox(!f.getCheckbox());
                 deselectedLine = f.getLineNumber();
             }

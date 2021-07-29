@@ -18,6 +18,7 @@ public class FileLineRenderer extends DefaultTableCellRenderer {
         Component c;
         String fileLine = (String) table.getModel().getValueAt(row, 1);
         if (fileLine.strip().equals(file.getName()) && row == 0) {
+            table.setRowHeight(0, 30);
             c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             c.setBackground(table.getTableHeader().getBackground());
         } else {
