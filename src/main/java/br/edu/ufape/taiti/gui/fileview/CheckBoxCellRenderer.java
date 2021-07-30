@@ -1,4 +1,4 @@
-package br.edu.ufape.taiti.gui;
+package br.edu.ufape.taiti.gui.fileview;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;

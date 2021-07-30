@@ -1,4 +1,4 @@
-package br.edu.ufape.taiti.gui;
+package br.edu.ufape.taiti.gui.tree;
 
 import java.io.File;
 

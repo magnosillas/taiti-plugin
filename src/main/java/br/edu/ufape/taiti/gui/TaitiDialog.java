@@ -1,17 +1,16 @@
 package br.edu.ufape.taiti.gui;
 
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 
 public class TaitiDialog extends DialogWrapper {
 
-    private MainPanel mainPanel;
+    private final MainPanel mainPanel;
 
-    public TaitiDialog(Project project) {
+    public TaitiDialog() {
         super(true);
-        mainPanel = new MainPanel(project);
+        mainPanel = new MainPanel();
 
         setTitle("TAITI");
         init();

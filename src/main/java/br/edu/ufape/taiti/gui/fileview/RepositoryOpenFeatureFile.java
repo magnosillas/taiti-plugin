@@ -1,4 +1,4 @@
-package br.edu.ufape.taiti.gui;
+package br.edu.ufape.taiti.gui.fileview;
 
 import java.io.File;
 import java.util.ArrayList;

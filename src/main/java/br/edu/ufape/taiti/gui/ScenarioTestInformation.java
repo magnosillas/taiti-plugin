@@ -1,10 +1,10 @@
 package br.edu.ufape.taiti.gui;
 
-public class ScenarioTestInformaiton {
+public class ScenarioTestInformation {
     private String filePath;
     private int lineNumber;
 
-    public ScenarioTestInformaiton(String filePath, int lineNumber) {
+    public ScenarioTestInformation(String filePath, int lineNumber) {
         this.filePath = filePath;
         this.lineNumber = lineNumber;
     }
@@ -17,18 +17,10 @@ public class ScenarioTestInformaiton {
         return lineNumber;
     }
 
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
-    }
-
-    public void setLineNumber(int lineNumber) {
-        this.lineNumber = lineNumber;
-    }
-
     @Override
     public boolean equals(Object o) {
-        if (o instanceof ScenarioTestInformaiton) {
-            ScenarioTestInformaiton scenario = (ScenarioTestInformaiton) o;
+        if (o instanceof ScenarioTestInformation) {
+            ScenarioTestInformation scenario = (ScenarioTestInformation) o;
             return scenario.getFilePath().equals(this.filePath) && scenario.getLineNumber() == this.lineNumber;
         }
 

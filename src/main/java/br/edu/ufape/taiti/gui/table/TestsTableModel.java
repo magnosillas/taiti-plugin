@@ -1,4 +1,4 @@
-package br.edu.ufape.taiti.gui;
+package br.edu.ufape.taiti.gui.table;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
@@ -46,6 +46,7 @@ public class TestsTableModel extends AbstractTableModel {
         if (columnIndex == 0 && rowIndex == 0) {
             if (!testRow.getCheckbox()) {
                 testRow.setCheckbox(true);
+                /*starts in second row (r = 1) because the first row is the header of the table*/
                 for (int r = 1; r < getRowCount(); r++) {
                     if (!rows.get(r).getCheckbox()) {
                         setValueAt(null, r, 0);

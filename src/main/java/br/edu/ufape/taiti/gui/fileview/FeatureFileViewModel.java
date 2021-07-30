@@ -1,4 +1,8 @@
-package br.edu.ufape.taiti.gui;
+package br.edu.ufape.taiti.gui.fileview;
+
+import br.edu.ufape.taiti.gui.ScenarioTestInformation;
+import br.edu.ufape.taiti.gui.table.TestRow;
+import br.edu.ufape.taiti.gui.table.TestsTableModel;
 
 import javax.swing.table.AbstractTableModel;
 import java.io.File;
@@ -8,11 +12,11 @@ public class FeatureFileViewModel extends AbstractTableModel {
 
     private String[] columns;
     private ArrayList<FileLine> rows;
-    private ArrayList<ScenarioTestInformaiton> scenarios;
+    private ArrayList<ScenarioTestInformation> scenarios;
     private TestsTableModel tableModel;
     private File file;
 
-    public FeatureFileViewModel(File file, ArrayList<FileLine> rows, ArrayList<ScenarioTestInformaiton> scenarios, TestsTableModel tableModel) {
+    public FeatureFileViewModel(File file, ArrayList<FileLine> rows, ArrayList<ScenarioTestInformation> scenarios, TestsTableModel tableModel) {
         this.file = file;
         this.rows = rows;
         this.scenarios = scenarios;
@@ -39,8 +43,6 @@ public class FeatureFileViewModel extends AbstractTableModel {
             value = fileLine.getCheckbox();
         } else if (columnIndex == 1) {
             value = fileLine.getLine();
-        } else {
-            System.err.println("elemento inválido na tabela");
         }
 
         return value;
@@ -53,17 +55,18 @@ public class FeatureFileViewModel extends AbstractTableModel {
         if (columnIndex == 0 && line.startsWith("Scenario")) {
             if (!fileLine.getCheckbox()) {
                 fileLine.setCheckbox(true);
-                scenarios.add(new ScenarioTestInformaiton(this.file.getPath(), fileLine.getLineNumber()));
+                scenarios.add(new ScenarioTestInformation(this.file.getPath(), fileLine.getLineNumber()));
                 tableModel.addRow(new TestRow(file, false, line));
             } else {
                 fileLine.setCheckbox(false);
-                scenarios.remove(new ScenarioTestInformaiton(this.file.getPath(), fileLine.getLineNumber()));
+                scenarios.remove(new ScenarioTestInformation(this.file.getPath(), fileLine.getLineNumber()));
                 tableModel.removeRow(new TestRow(file, false, line));
             }
 
         } else if (columnIndex == 0 && rowIndex == 0 && line.equals(file.getName())) {
             if (!fileLine.getCheckbox()) {
                 fileLine.setCheckbox(true);
+                /*starts in third row (r = 2) because the first and second row are the name of file and a blank line, respectively*/
                 for (int r = 2; r < getRowCount(); r++) {
                     if (!rows.get(r).getCheckbox()) {
                         setValueAt("", r, 0);

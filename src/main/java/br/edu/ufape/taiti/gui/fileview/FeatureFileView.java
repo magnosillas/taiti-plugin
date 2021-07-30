@@ -1,4 +1,4 @@
-package br.edu.ufape.taiti.gui;
+package br.edu.ufape.taiti.gui.fileview;
 
 import com.intellij.ui.table.JBTable;
 
@@ -26,6 +26,7 @@ public class FeatureFileView extends JBTable {
                 }
             }
 
+            //TODO: deixar tamanho da tabela dinâmica
             if (column == 0) {
                 tableColumn.setPreferredWidth(preferredWidth + 20);
             } else if (column == 1) {

@@ -1,9 +1,17 @@
 package br.edu.ufape.taiti.gui;
 
-import com.intellij.openapi.project.Project;
+import br.edu.ufape.taiti.gui.fileview.*;
+import br.edu.ufape.taiti.gui.tree.TaitiTree;
+import br.edu.ufape.taiti.gui.tree.TaitiTreeFileNode;
+import br.edu.ufape.taiti.gui.table.TestRow;
+import br.edu.ufape.taiti.gui.table.TestsTableModel;
+import br.edu.ufape.taiti.gui.table.TestsTableRenderer;
+import com.intellij.ui.JBColor;
 import com.intellij.ui.table.JBTable;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
@@ -15,6 +23,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import static br.edu.ufape.taiti.gui.Constants.FIRST_ROW_HEIGHT;
 
 public class MainPanel {
     // panels
@@ -44,12 +54,10 @@ public class MainPanel {
     private FeatureFileView featureFileView;
     private FeatureFileViewModel featureFileViewModel;
 
-    private ArrayList<ScenarioTestInformaiton> scenarios;
-    private RepositoryOpenFeatureFile repositoryOpenFeatureFile;
+    private final ArrayList<ScenarioTestInformation> scenarios;
+    private final RepositoryOpenFeatureFile repositoryOpenFeatureFile;
 
-    private Project project;
-
-    public MainPanel(Project project) {
+    public MainPanel() {
         scenarios = new ArrayList<>();
         repositoryOpenFeatureFile = new RepositoryOpenFeatureFile();
 
@@ -64,7 +72,7 @@ public class MainPanel {
         return mainPanel;
     }
 
-    public ArrayList<ScenarioTestInformaiton> getScenarios() {
+    public ArrayList<ScenarioTestInformation> getScenarios() {
         return scenarios;
     }
 
@@ -99,7 +107,7 @@ public class MainPanel {
         featureFileViewModel = new FeatureFileViewModel(file, openFeatureFile.getFileLines(), scenarios, tableModel);
         featureFileView.setModel(featureFileViewModel);
         featureFileView.setTableWidth();
-        featureFileView.setRowHeight(0, 30);
+        featureFileView.setRowHeight(0, FIRST_ROW_HEIGHT);
 
         featureFileView.getColumnModel().getColumn(0).setCellRenderer(new CheckBoxCellRenderer(file));
         featureFileView.getColumnModel().getColumn(0).setCellEditor(new CheckBoxEditor(new JCheckBox(), file));
@@ -145,10 +153,10 @@ public class MainPanel {
                     tableModel.removeRow(t);
                     tableModel.getRow(0).setCheckbox(false);
                     OpenFeatureFile openFeatureFile = repositoryOpenFeatureFile.getFeatureFile(t.getFile());
-                    int deselectedLine = openFeatureFile.deselectLine(t);
+                    int deselectedLine = openFeatureFile.deselectLine(t.getTest());
                     featureFileViewModel.fireTableDataChanged();
 
-                    scenarios.remove(new ScenarioTestInformaiton(t.getFile().getAbsolutePath(), deselectedLine));
+                    scenarios.remove(new ScenarioTestInformation(t.getFile().getAbsolutePath(), deselectedLine));
                 }
             }
         });
@@ -161,7 +169,8 @@ public class MainPanel {
         table.setModel(tableModel);
 
         tableModel.addRow(new TestRow(null, false, "Tests"));
-        table.setRowHeight(0, 30);
+        table.setRowHeight(0, FIRST_ROW_HEIGHT);
+        // TODO: deixar tamanho da tabela dinâmica
         table.getColumnModel().getColumn(0).setPreferredWidth(30);
         table.getColumnModel().getColumn(1).setPreferredWidth(250);
         table.getColumnModel().getColumn(0).setCellRenderer(new TestsTableRenderer());
@@ -226,6 +235,12 @@ public class MainPanel {
 
         this.inputPanel.add(labelTaskID);
         this.inputPanel.add(textTaskID);
+
+//        Border blackline = BorderFactory.createLineBorder(JBColor.border());
+//        TitledBorder border = BorderFactory.createTitledBorder(blackline, "Task Identification");
+//        border.setTitleJustification(TitledBorder.CENTER);
+//
+//        this.inputPanel.setBorder(border);
     }
 
     //TODO: deixar mais responsivo

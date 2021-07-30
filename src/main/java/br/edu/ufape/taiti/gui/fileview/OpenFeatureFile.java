@@ -1,4 +1,4 @@
-package br.edu.ufape.taiti.gui;
+package br.edu.ufape.taiti.gui.fileview;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -17,22 +17,14 @@ public class OpenFeatureFile {
         return file;
     }
 
-    public void setFile(File file) {
-        this.file = file;
-    }
-
     public ArrayList<FileLine> getFileLines() {
         return fileLines;
     }
 
-    public void setFileLines(ArrayList<FileLine> fileLines) {
-        this.fileLines = fileLines;
-    }
-
-    public int deselectLine(TestRow testRow) {
+    public int deselectLine(String line) {
         int deselectedLine = -1;
         for (FileLine f : fileLines) {
-            if (f.getLineNumber() != -1 && f.getLine().strip().equals(testRow.getTest())) {
+            if (f.getLine().strip().equals(line)) {
                 f.setCheckbox(!f.getCheckbox());
                 deselectedLine = f.getLineNumber();
             }

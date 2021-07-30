@@ -1,4 +1,4 @@
-package br.edu.ufape.taiti.gui;
+package br.edu.ufape.taiti.gui.tree;
 
 import com.intellij.ui.treeStructure.Tree;
 
