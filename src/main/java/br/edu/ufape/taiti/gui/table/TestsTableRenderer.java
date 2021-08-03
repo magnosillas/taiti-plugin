@@ -4,8 +4,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 
-import static br.edu.ufape.taiti.gui.Constants.FIRST_ROW_HEIGHT;
-
 public class TestsTableRenderer extends DefaultTableCellRenderer {
 
     private JCheckBox checkBox;
@@ -33,7 +31,7 @@ public class TestsTableRenderer extends DefaultTableCellRenderer {
 
         } else {
             if (row == 0) {
-                table.setRowHeight(0, FIRST_ROW_HEIGHT);
+                table.setRowHeight(0, 30);
                 c.setBackground(table.getTableHeader().getBackground());
             } else {
                 Color bg = isSelected ? table.getSelectionBackground() : table.getBackground();

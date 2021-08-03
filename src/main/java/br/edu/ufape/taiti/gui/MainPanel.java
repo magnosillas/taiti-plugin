@@ -8,10 +8,11 @@ import br.edu.ufape.taiti.gui.table.TestsTableModel;
 import br.edu.ufape.taiti.gui.table.TestsTableRenderer;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.table.JBTable;
+import com.intellij.uiDesigner.core.AbstractLayout;
+import com.intellij.util.ui.GridBag;
 
 import javax.swing.*;
 import javax.swing.border.Border;
-import javax.swing.border.TitledBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
@@ -23,8 +24,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Scanner;
-
-import static br.edu.ufape.taiti.gui.Constants.FIRST_ROW_HEIGHT;
 
 public class MainPanel {
     // panels
@@ -107,7 +106,7 @@ public class MainPanel {
         featureFileViewModel = new FeatureFileViewModel(file, openFeatureFile.getFileLines(), scenarios, tableModel);
         featureFileView.setModel(featureFileViewModel);
         featureFileView.setTableWidth();
-        featureFileView.setRowHeight(0, FIRST_ROW_HEIGHT);
+        featureFileView.setRowHeight(0, 30);
 
         featureFileView.getColumnModel().getColumn(0).setCellRenderer(new CheckBoxCellRenderer(file));
         featureFileView.getColumnModel().getColumn(0).setCellEditor(new CheckBoxEditor(new JCheckBox(), file));
@@ -122,6 +121,8 @@ public class MainPanel {
         featureFileView.getTableHeader().setReorderingAllowed(false);
         featureFileView.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         featureFileView.setDragEnabled(false);
+
+        centerPanel.setLayout(new BorderLayout());
         centerPanel.add(new JScrollPane(featureFileView), BorderLayout.CENTER);
     }
 
@@ -132,6 +133,9 @@ public class MainPanel {
         table.getTableHeader().setReorderingAllowed(false);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         table.setFillsViewportHeight(true);
+
+        tablePanel.setLayout(new BorderLayout());
+        tablePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 0));
         tablePanel.add(new JScrollPane(table), BorderLayout.CENTER);
 
         JButton removeScenarioBtn = new JButton("Remove");
@@ -169,10 +173,9 @@ public class MainPanel {
         table.setModel(tableModel);
 
         tableModel.addRow(new TestRow(null, false, "Tests"));
-        table.setRowHeight(0, FIRST_ROW_HEIGHT);
-        // TODO: deixar tamanho da tabela dinâmica
+        table.setRowHeight(0, 30);
         table.getColumnModel().getColumn(0).setPreferredWidth(30);
-        table.getColumnModel().getColumn(1).setPreferredWidth(250);
+        table.getColumnModel().getColumn(1).setPreferredWidth(350);
         table.getColumnModel().getColumn(0).setCellRenderer(new TestsTableRenderer());
         table.getColumnModel().getColumn(1).setCellRenderer(new TestsTableRenderer());
         table.getTableHeader().setUI(null);
@@ -206,18 +209,23 @@ public class MainPanel {
         });
 
         File featureDirectory = tree.findFeatureDirectory(projectPath);
-        // TODO: se não existir o diretório features fazer um tratamento de erro
         if (featureDirectory != null) {
             DefaultMutableTreeNode featureNode = new DefaultMutableTreeNode(featureDirectory.getName());
             rootNode.add(featureNode);
             tree.addNodesToTree(featureDirectory.getAbsolutePath(), featureNode);
+        } else {
+            tree.getEmptyText().setText("Could not find feature directory");
         }
 
+        treePanel.setLayout(new BorderLayout());
         treePanel.add(new JScrollPane(tree), BorderLayout.CENTER);
     }
 
-    //TODO: aumentar tamanho dos textfields
     private void configureInputPanel() {
+        JLabel title = new JLabel("Task Identification");
+        title.setHorizontalAlignment(JLabel.CENTER);
+        title.setFont(new Font(null, Font.PLAIN, 15));
+
         labelGithubURL = new JLabel("GitHub Project URL:");
         textGithubURL = new JTextField();
 
@@ -227,23 +235,35 @@ public class MainPanel {
         labelTaskID = new JLabel("Task ID:");
         textTaskID = new JTextField();
 
-        this.inputPanel.add(labelGithubURL);
-        this.inputPanel.add(textGithubURL);
+        JPanel panel = new JPanel(new GridBagLayout());
+        inputPanel.setLayout(new BorderLayout());
+        inputPanel.add(title, BorderLayout.NORTH);
+        inputPanel.add(panel, BorderLayout.CENTER);
 
-        this.inputPanel.add(labelPivotalURL);
-        this.inputPanel.add(textPivotalURL);
+        GridBag gb = new GridBag()
+                .setDefaultInsets(0, 0, AbstractLayout.DEFAULT_VGAP, AbstractLayout.DEFAULT_HGAP)
+                .setDefaultWeightX(1.0)
+                .setDefaultFill(GridBagConstraints.HORIZONTAL)
+                .setDefaultPaddingX(0, -25);
 
-        this.inputPanel.add(labelTaskID);
-        this.inputPanel.add(textTaskID);
+        panel.add(labelGithubURL, gb.nextLine().next().weightx(0.2));
+        panel.add(textGithubURL, gb.next().weightx(0.8));
 
-//        Border blackline = BorderFactory.createLineBorder(JBColor.border());
-//        TitledBorder border = BorderFactory.createTitledBorder(blackline, "Task Identification");
-//        border.setTitleJustification(TitledBorder.CENTER);
-//
-//        this.inputPanel.setBorder(border);
+        panel.add(labelPivotalURL, gb.nextLine().next().weightx(0.2));
+        panel.add(textPivotalURL, gb.next().weightx(0.8));
+
+        panel.add(labelTaskID, gb.nextLine().next().weightx(0.2));
+        panel.add(textTaskID, gb.next().weightx(0.6));
+
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
+
+        Border border = BorderFactory.createCompoundBorder
+                (BorderFactory.createMatteBorder(0, 0, 1, 0, JBColor.border()),
+                BorderFactory.createEmptyBorder(0, 10, 30, 0));
+
+        inputPanel.setBorder(border);
     }
 
-    //TODO: deixar mais responsivo
     private void configurePanels() {
         mainPanel = new JPanel();
         treePanel = new JPanel();
@@ -252,21 +272,27 @@ public class MainPanel {
         inputPanel = new JPanel();
         tablePanel = new JPanel();
 
-        mainPanel.setLayout(null);
+        mainPanel.setLayout(new FlowLayout());
+//        mainPanel.setLayout(new GridBagLayout());
+        mainPanel.setMinimumSize(new Dimension(1300, 720));
+
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, treePanel, centerPanel);
         splitPane.setDividerLocation(300);
+        splitPane.setDividerSize(4);
+        splitPane.setPreferredSize(new Dimension(900, 700));
+        splitPane.setMinimumSize(new Dimension(900, 700));
+
         rightPanel.setLayout(new BorderLayout(0, 50));
+        rightPanel.setPreferredSize(new Dimension(390, 700));
+        rightPanel.setMinimumSize(new Dimension(390, 700));
 
-        treePanel.setLayout(new BorderLayout());
-        centerPanel.setLayout(new BorderLayout());
-
-        inputPanel.setLayout(new GridLayout(3, 2, 5, 50));
-        inputPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 0));
-        tablePanel.setLayout(new BorderLayout());
-        tablePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 0));
-
-        splitPane.setBounds(0, 0, 900, 700);
-        rightPanel.setBounds(900, 0, 300, 700);
+//        GridBag gb = new GridBag()
+//                .setDefaultInsets(0, 0, 0, 0)
+//                .setDefaultWeightX(1.0)
+//                .setDefaultFill(GridBagConstraints.VERTICAL);
+//
+//        mainPanel.add(splitPane, gb.nextLine().next().weightx(0.7));
+//        mainPanel.add(rightPanel, gb.next().weightx(0.3));
 
         mainPanel.add(splitPane);
         mainPanel.add(rightPanel);

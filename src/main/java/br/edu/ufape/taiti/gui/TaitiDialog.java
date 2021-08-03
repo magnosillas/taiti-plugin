@@ -13,12 +13,18 @@ public class TaitiDialog extends DialogWrapper {
         mainPanel = new MainPanel();
 
         setTitle("TAITI");
+        setSize(1340,800);
         init();
     }
 
     @Override
     protected @Nullable JComponent createCenterPanel() {
         return mainPanel.getMainPanel();
+    }
+
+    @Override
+    protected void doOKAction() {
+        super.doOKAction();
     }
 
     public MainPanel getMainPanel() {

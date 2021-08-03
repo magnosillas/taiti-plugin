@@ -26,17 +26,11 @@ public class FeatureFileView extends JBTable {
                 }
             }
 
-            //TODO: deixar tamanho da tabela dinâmica
             if (column == 0) {
                 tableColumn.setPreferredWidth(preferredWidth + 20);
-            } else if (column == 1) {
-                if (preferredWidth > 530) {
-                    tableColumn.setPreferredWidth(preferredWidth + 20);
-                } else {
-                    tableColumn.setPreferredWidth(530);
-                }
+            } else {
+                tableColumn.setPreferredWidth(Math.max(530, preferredWidth + 20));
             }
-
         }
     }
 
