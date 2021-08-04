@@ -6,6 +6,7 @@ import br.edu.ufape.taiti.gui.tree.TaitiTreeFileNode;
 import br.edu.ufape.taiti.gui.table.TestRow;
 import br.edu.ufape.taiti.gui.table.TestsTableModel;
 import br.edu.ufape.taiti.gui.table.TestsTableRenderer;
+import com.intellij.openapi.project.Project;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.table.JBTable;
 import com.intellij.uiDesigner.core.AbstractLayout;
@@ -56,7 +57,10 @@ public class MainPanel {
     private final ArrayList<ScenarioTestInformation> scenarios;
     private final RepositoryOpenFeatureFile repositoryOpenFeatureFile;
 
-    public MainPanel() {
+    private final Project project;
+
+    public MainPanel(Project project) {
+        this.project = project;
         scenarios = new ArrayList<>();
         repositoryOpenFeatureFile = new RepositoryOpenFeatureFile();
 
@@ -182,9 +186,8 @@ public class MainPanel {
     }
 
     private void configureTree() {
-        // TODO: pegar caminho e nome do projeto dinamicamente
-        String projectPath = "C:\\Users\\usuario\\Projects\\diaspora";
-        String projectName = "diaspora";
+        String projectPath = project.getBasePath();
+        String projectName = project.getName();
 
         DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(projectName);
         DefaultTreeModel treeModel = new DefaultTreeModel(rootNode);
@@ -273,7 +276,6 @@ public class MainPanel {
         tablePanel = new JPanel();
 
         mainPanel.setLayout(new FlowLayout());
-//        mainPanel.setLayout(new GridBagLayout());
         mainPanel.setMinimumSize(new Dimension(1300, 720));
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, treePanel, centerPanel);
@@ -285,14 +287,6 @@ public class MainPanel {
         rightPanel.setLayout(new BorderLayout(0, 50));
         rightPanel.setPreferredSize(new Dimension(390, 700));
         rightPanel.setMinimumSize(new Dimension(390, 700));
-
-//        GridBag gb = new GridBag()
-//                .setDefaultInsets(0, 0, 0, 0)
-//                .setDefaultWeightX(1.0)
-//                .setDefaultFill(GridBagConstraints.VERTICAL);
-//
-//        mainPanel.add(splitPane, gb.nextLine().next().weightx(0.7));
-//        mainPanel.add(rightPanel, gb.next().weightx(0.3));
 
         mainPanel.add(splitPane);
         mainPanel.add(rightPanel);

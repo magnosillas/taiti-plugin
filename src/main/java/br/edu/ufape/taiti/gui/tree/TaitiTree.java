@@ -14,6 +14,7 @@ public class TaitiTree extends Tree {
         super(treeModel);
     }
 
+    // TODO: só funciona para diretório feature filho do diretório do projeto
     public File findFeatureDirectory(String path) {
         File root = new File(path);
         File[] listFiles = root.listFiles();
