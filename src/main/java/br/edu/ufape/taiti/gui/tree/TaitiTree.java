@@ -14,23 +14,28 @@ public class TaitiTree extends Tree {
         super(treeModel);
     }
 
-    // TODO: só funciona para diretório feature filho do diretório do projeto
     public File findFeatureDirectory(String path) {
         File root = new File(path);
         File[] listFiles = root.listFiles();
+        File featuresFolder = null;
 
-        if (listFiles == null) return null;
+        if (listFiles == null) {
+            return featuresFolder;
+        }
 
         for (File file : listFiles) {
-            if (file.isDirectory()) {
-                if (file.getName().equals(CUCUMBER_FILES_DIRECTORY)) {
-                    return file;
+            if(featuresFolder == null) {
+                if (file.isDirectory()) {
+                    if (file.getAbsolutePath().endsWith(File.separator + CUCUMBER_FILES_DIRECTORY)) {
+                        featuresFolder = file;
+                    } else {
+                        featuresFolder = findFeatureDirectory(file.getAbsolutePath());
+                    }
                 }
-                findFeatureDirectory(file.getAbsolutePath());
             }
         }
 
-        return null;
+        return featuresFolder;
     }
 
     public void addNodesToTree(String path, DefaultMutableTreeNode node) {

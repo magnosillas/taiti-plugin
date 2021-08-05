@@ -193,6 +193,7 @@ public class MainPanel {
         DefaultTreeModel treeModel = new DefaultTreeModel(rootNode);
 
         tree = new TaitiTree(treeModel);
+        treePanel.setLayout(new BorderLayout());
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         tree.addMouseListener(new MouseAdapter() {
             @Override
@@ -216,12 +217,13 @@ public class MainPanel {
             DefaultMutableTreeNode featureNode = new DefaultMutableTreeNode(featureDirectory.getName());
             rootNode.add(featureNode);
             tree.addNodesToTree(featureDirectory.getAbsolutePath(), featureNode);
+            treePanel.add(new JScrollPane(tree), BorderLayout.CENTER);
         } else {
-            tree.getEmptyText().setText("Could not find feature directory");
+            JLabel label = new JLabel("Could not find feature directory");
+            label.setHorizontalAlignment(SwingConstants.CENTER);
+            label.setForeground(JBColor.gray);
+            treePanel.add(label, BorderLayout.CENTER);
         }
-
-        treePanel.setLayout(new BorderLayout());
-        treePanel.add(new JScrollPane(tree), BorderLayout.CENTER);
     }
 
     private void configureInputPanel() {
