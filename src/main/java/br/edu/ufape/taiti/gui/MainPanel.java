@@ -7,6 +7,8 @@ import br.edu.ufape.taiti.gui.table.TestRow;
 import br.edu.ufape.taiti.gui.table.TestsTableModel;
 import br.edu.ufape.taiti.gui.table.TestsTableRenderer;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectUtil;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.table.JBTable;
 import com.intellij.uiDesigner.core.AbstractLayout;
@@ -186,8 +188,14 @@ public class MainPanel {
     }
 
     private void configureTree() {
-        String projectPath = project.getBasePath();
-        String projectName = project.getName();
+        String projectPath = "";
+        String projectName = "";
+
+        VirtualFile projectDir = ProjectUtil.guessProjectDir(project);
+        if (projectDir != null) {
+            projectPath = projectDir.getPath();
+            projectName = projectDir.getName();
+        }
 
         DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(projectName);
         DefaultTreeModel treeModel = new DefaultTreeModel(rootNode);
