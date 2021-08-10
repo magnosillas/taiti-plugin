@@ -2,3 +2,6 @@
 .gradle/
 build/
 /src/main/java/Main.java
+/spg_repos
+/libs
+configuration.properties

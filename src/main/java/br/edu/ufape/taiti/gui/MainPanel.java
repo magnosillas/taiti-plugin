@@ -6,6 +6,7 @@ import br.edu.ufape.taiti.gui.tree.TaitiTreeFileNode;
 import br.edu.ufape.taiti.gui.table.TestRow;
 import br.edu.ufape.taiti.gui.table.TestsTableModel;
 import br.edu.ufape.taiti.gui.table.TestsTableRenderer;
+import br.edu.ufape.taiti.tool.ScenarioTestInformation;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectUtil;
 import com.intellij.openapi.vfs.VirtualFile;

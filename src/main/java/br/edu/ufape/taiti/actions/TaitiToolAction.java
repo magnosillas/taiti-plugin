@@ -1,6 +1,6 @@
 package br.edu.ufape.taiti.actions;
 
-import br.edu.ufape.taiti.gui.ScenarioTestInformation;
+import br.edu.ufape.taiti.tool.ScenarioTestInformation;
 import br.edu.ufape.taiti.gui.TaitiDialog;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;

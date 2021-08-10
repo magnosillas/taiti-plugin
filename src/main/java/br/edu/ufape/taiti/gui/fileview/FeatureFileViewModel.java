@@ -1,6 +1,6 @@
 package br.edu.ufape.taiti.gui.fileview;
 
-import br.edu.ufape.taiti.gui.ScenarioTestInformation;
+import br.edu.ufape.taiti.tool.ScenarioTestInformation;
 import br.edu.ufape.taiti.gui.table.TestRow;
 import br.edu.ufape.taiti.gui.table.TestsTableModel;
 
