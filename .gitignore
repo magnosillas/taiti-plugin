@@ -5,3 +5,5 @@ build/
 /spg_repos
 /libs
 configuration.properties
+/error
+/output

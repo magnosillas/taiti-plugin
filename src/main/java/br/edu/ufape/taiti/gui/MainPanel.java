@@ -31,7 +31,7 @@ import java.util.Scanner;
 
 public class MainPanel {
     // panels
-    private JPanel mainPanel;
+    private JPanel rootPanel;
     private JPanel treePanel;
     private JPanel rightPanel;
     private JPanel centerPanel;
@@ -74,12 +74,24 @@ public class MainPanel {
         initCenterPanel();
     }
 
-    public JPanel getMainPanel() {
-        return mainPanel;
+    public JPanel getRootPanel() {
+        return rootPanel;
     }
 
     public ArrayList<ScenarioTestInformation> getScenarios() {
         return scenarios;
+    }
+
+    public JTextField getTextGithubURL() {
+        return textGithubURL;
+    }
+
+    public JTextField getTextPivotalURL() {
+        return textPivotalURL;
+    }
+
+    public JTextField getTextTaskID() {
+        return textTaskID;
     }
 
     public void updateCenterPanel(File file) {
@@ -221,6 +233,7 @@ public class MainPanel {
             }
         });
 
+        //TODO: mostrar os diretórios pai de features
         File featureDirectory = tree.findFeatureDirectory(projectPath);
         if (featureDirectory != null) {
             DefaultMutableTreeNode featureNode = new DefaultMutableTreeNode(featureDirectory.getName());
@@ -279,15 +292,15 @@ public class MainPanel {
     }
 
     private void configurePanels() {
-        mainPanel = new JPanel();
+        rootPanel = new JPanel();
         treePanel = new JPanel();
         centerPanel = new JPanel();
         rightPanel = new JPanel();
         inputPanel = new JPanel();
         tablePanel = new JPanel();
 
-        mainPanel.setLayout(new FlowLayout());
-        mainPanel.setMinimumSize(new Dimension(1300, 720));
+        rootPanel.setLayout(new FlowLayout());
+        rootPanel.setMinimumSize(new Dimension(1300, 720));
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, treePanel, centerPanel);
         splitPane.setDividerLocation(300);
@@ -299,8 +312,8 @@ public class MainPanel {
         rightPanel.setPreferredSize(new Dimension(390, 700));
         rightPanel.setMinimumSize(new Dimension(390, 700));
 
-        mainPanel.add(splitPane);
-        mainPanel.add(rightPanel);
+        rootPanel.add(splitPane);
+        rootPanel.add(rightPanel);
         rightPanel.add(inputPanel, BorderLayout.NORTH);
         rightPanel.add(tablePanel, BorderLayout.CENTER);
     }
