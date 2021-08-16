@@ -94,7 +94,11 @@ public class MainPanel {
         return textTaskID;
     }
 
-    public void updateCenterPanel(File file) {
+    public JBTable getTable() {
+        return table;
+    }
+
+    private void updateCenterPanel(File file) {
         String filePath = file.getAbsolutePath();
         String fileName = file.getName();
         OpenFeatureFile openFeatureFile;

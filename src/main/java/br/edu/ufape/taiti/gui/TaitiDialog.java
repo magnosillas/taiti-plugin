@@ -3,7 +3,7 @@ package br.edu.ufape.taiti.gui;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.ValidationInfo;
-import org.jetbrains.annotations.NotNull;
+import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.Nullable;
 import org.jsoup.internal.StringUtil;
 
@@ -18,13 +18,16 @@ public class TaitiDialog extends DialogWrapper {
     private final JTextField textGithubURL;
     private final JTextField textPivotalTrackerURL;
     private final JTextField textTaskID;
+    private final JBTable table;
 
     public TaitiDialog(Project project) {
         super(true);
+
         mainPanel = new MainPanel(project);
         textGithubURL = mainPanel.getTextGithubURL();
         textPivotalTrackerURL = mainPanel.getTextPivotalURL();
         textTaskID = mainPanel.getTextTaskID();
+        table = mainPanel.getTable();
 
         setTitle("TAITI");
         setSize(1340,800);
@@ -41,13 +44,21 @@ public class TaitiDialog extends DialogWrapper {
     }
 
     @Override
-    protected void doOKAction() {
-        super.doOKAction();
-    }
-
-    @Override
     protected @Nullable ValidationInfo doValidate() {
         ValidationInfo validationInfo;
+
+        if (StringUtil.isBlank(textGithubURL.getText())) {
+            validationInfo = new ValidationInfo("The GitHub URL can not be empty.", textGithubURL);
+            return validationInfo;
+        }
+        if (StringUtil.isBlank(textPivotalTrackerURL.getText())) {
+            validationInfo = new ValidationInfo("The PivotalTracker URL can not be empty", textPivotalTrackerURL);
+            return validationInfo;
+        }
+        if (StringUtil.isBlank(textTaskID.getText())) {
+            validationInfo = new ValidationInfo("The Task ID can not be empty", textTaskID);
+            return validationInfo;
+        }
 
         try {
             new URL(textGithubURL.getText()).toURI();
@@ -55,14 +66,12 @@ public class TaitiDialog extends DialogWrapper {
             validationInfo = new ValidationInfo("Insert an URL valid.", textGithubURL);
             return validationInfo;
         }
-
         try {
             new URL(textPivotalTrackerURL.getText()).toURI();
         } catch (MalformedURLException | URISyntaxException e) {
             validationInfo = new ValidationInfo("Insert an URL valid.", textPivotalTrackerURL);
             return validationInfo;
         }
-
         try {
             Integer.parseInt(textTaskID.getText());
         } catch (NumberFormatException e) {
@@ -70,22 +79,11 @@ public class TaitiDialog extends DialogWrapper {
             return validationInfo;
         }
 
-        if (StringUtil.isBlank(textGithubURL.getText())) {
-            validationInfo = new ValidationInfo("The GitHub URL can not be empty.", textGithubURL);
-            return validationInfo;
-        } else if (StringUtil.isBlank(textPivotalTrackerURL.getText())) {
-            validationInfo = new ValidationInfo("The PivotalTracker URL can not be empty", textPivotalTrackerURL);
-            return validationInfo;
-        } else if (StringUtil.isBlank(textTaskID.getText())) {
-            validationInfo = new ValidationInfo("The Task ID can not be empty", textTaskID);
+        if (table.getRowCount() == 1) {
+            validationInfo = new ValidationInfo("Select at least one scenario.", table);
             return validationInfo;
         }
 
         return null;
-    }
-
-    @Override
-    protected Action @NotNull [] createActions() {
-        return super.createActions();
     }
 }
