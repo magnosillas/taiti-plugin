@@ -17,7 +17,7 @@
 
     <actions>
         <!-- Add your actions here -->
-        <action id="br.edu.ufape.taiti.actions.TaitiToolAction" class="br.edu.ufape.taiti.actions.TaitiToolAction"
+        <action id="br.edu.ufape.taiti.actions.TaitiAction" class="br.edu.ufape.taiti.actions.TaitiAction"
                 text="TAITI" description="An avoiding merge conflicts tool">
             <add-to-group group-id="ToolsMenu" anchor="first"/>
         </action>

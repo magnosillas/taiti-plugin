@@ -11,22 +11,21 @@ public class TaitiTool {
 
     private String githubURL;
     private int taskID;
+    private ArrayList<ScenarioTestInformation> scenarios;
 
-    public TaitiTool(String githubURL, int taskID) {
+    public TaitiTool(String githubURL, int taskID, ArrayList<ScenarioTestInformation> scenarios) {
         this.githubURL = githubURL;
         this.taskID = taskID;
+        this.scenarios = scenarios;
     }
 
     public void run() {
-//        /* Configurando uma tarefa diretamente no código. Uma alternativa seria ler de um arquivo csv.*/
-//        String url = "https://github.com/diaspora/diaspora";
-//
-//        int id = 1;//identificador da tarefa, pode ser definido livremente
+        ArrayList<LinkedHashMap<String, Serializable>> tests = prepareTests();
 
-        LinkedHashMap<String, Serializable> map = new LinkedHashMap<>(2);
-        map.put("path", "features/desktop/help.feature");
-        map.put("lines", new ArrayList<Integer>(Arrays.asList(4)));
-        ArrayList<LinkedHashMap<String, Serializable>> tests = new ArrayList<>(Arrays.asList(map));
+//        for (LinkedHashMap<String, Serializable> map : tests) {
+//            System.out.println("path = " + map.get("path"));
+//            System.out.println("lines = " + map.get("lines"));
+//        }
 
         TodoTask task;
         TestI itest;
@@ -49,5 +48,38 @@ public class TaitiTool {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    //TODO: melhorar esse algoritmo
+    private ArrayList<LinkedHashMap<String, Serializable>> prepareTests() {
+        ArrayList<LinkedHashMap<String, Serializable>> tests = new ArrayList<>();
+
+        String path = scenarios.get(0).getFilePath();
+        ArrayList<Integer> lines = new ArrayList<>();
+
+        for (ScenarioTestInformation s : scenarios) {
+            if (!s.getFilePath().equals(path)) {
+                LinkedHashMap<String, Serializable> map = new LinkedHashMap<>(2);
+
+                map.put("path", getRelativePath(path));
+                map.put("lines", lines);
+                tests.add(map);
+
+                path = s.getFilePath();
+                lines = new ArrayList<>();
+            }
+            lines.add(s.getLineNumber());
+        }
+
+        LinkedHashMap<String, Serializable> map = new LinkedHashMap<>(2);
+        map.put("path", getRelativePath(path));
+        map.put("lines", lines);
+        tests.add(map);
+
+        return tests;
+    }
+
+    private String getRelativePath(String absolutePath) {
+        return absolutePath.substring(absolutePath.indexOf("features"));
     }
 }
