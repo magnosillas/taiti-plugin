@@ -237,11 +237,29 @@ public class MainPanel {
             }
         });
 
-        //TODO: mostrar os diretórios pai de features
         File featureDirectory = tree.findFeatureDirectory(projectPath);
         if (featureDirectory != null) {
+
+            // get every parent directory of features directory
+            File parent = featureDirectory.getParentFile();
+            ArrayList<DefaultMutableTreeNode> parentsNodes = new ArrayList<>();
+            while (!parent.getName().equals(projectName)) {
+                parentsNodes.add(new DefaultMutableTreeNode(parent.getName()));
+                parent = parent.getParentFile();
+            }
+
+            // add every parent directory of feature directory to the tree
+            tree.addParentsNodeToTree(parentsNodes, rootNode, parentsNodes.size() - 1);
+
+            // add the feature directory to the tree
             DefaultMutableTreeNode featureNode = new DefaultMutableTreeNode(featureDirectory.getName());
-            rootNode.add(featureNode);
+            if (parentsNodes.size() > 0) {
+                parentsNodes.get(0).add(featureNode);
+            } else {
+                rootNode.add(featureNode);
+            }
+
+            // populating the tree with the files into feature directory
             tree.addNodesToTree(featureDirectory.getAbsolutePath(), featureNode);
             treePanel.add(new JScrollPane(tree), BorderLayout.CENTER);
         } else {

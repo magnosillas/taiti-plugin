@@ -5,6 +5,7 @@ import com.intellij.ui.treeStructure.Tree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import java.io.File;
+import java.util.ArrayList;
 
 public class TaitiTree extends Tree {
 
@@ -36,6 +37,15 @@ public class TaitiTree extends Tree {
         }
 
         return featuresFolder;
+    }
+
+    public void addParentsNodeToTree(ArrayList<DefaultMutableTreeNode> parentsNodes, DefaultMutableTreeNode node, int index) {
+        if (index < 0) {
+            return;
+        }
+        DefaultMutableTreeNode parentNode = parentsNodes.get(index);
+        node.add(parentNode);
+        addParentsNodeToTree(parentsNodes, parentNode, index - 1);
     }
 
     public void addNodesToTree(String path, DefaultMutableTreeNode node) {
