@@ -47,6 +47,7 @@ public class TaitiDialog extends DialogWrapper {
     protected @Nullable ValidationInfo doValidate() {
         ValidationInfo validationInfo;
 
+        // check if the fields is empty
         if (StringUtil.isBlank(textGithubURL.getText())) {
             validationInfo = new ValidationInfo("The GitHub URL can not be empty.", textGithubURL);
             return validationInfo;
@@ -59,15 +60,28 @@ public class TaitiDialog extends DialogWrapper {
             validationInfo = new ValidationInfo("The Task ID can not be empty", textTaskID);
             return validationInfo;
         }
+        if (table.getRowCount() == 1) {
+            validationInfo = new ValidationInfo("Select at least one scenario.", table);
+            return validationInfo;
+        }
 
+        // check if the input data is valid
         try {
             new URL(textGithubURL.getText()).toURI();
+            String regex = "http[s]?://([w]{3})?\\.?github\\.com/.+/.+"; // fazer um OU (|) para o www
+            if (!textGithubURL.getText().matches(regex)) {
+                throw new MalformedURLException();
+            }
         } catch (MalformedURLException | URISyntaxException e) {
             validationInfo = new ValidationInfo("Insert an URL valid.", textGithubURL);
             return validationInfo;
         }
         try {
             new URL(textPivotalTrackerURL.getText()).toURI();
+            String regex = "http[s]?://([w]{3})?\\.?pivotaltracker\\.com/n/projects/\\d+";
+            if (!textPivotalTrackerURL.getText().matches(regex)) {
+                throw new MalformedURLException();
+            }
         } catch (MalformedURLException | URISyntaxException e) {
             validationInfo = new ValidationInfo("Insert an URL valid.", textPivotalTrackerURL);
             return validationInfo;
@@ -76,11 +90,6 @@ public class TaitiDialog extends DialogWrapper {
             Integer.parseInt(textTaskID.getText());
         } catch (NumberFormatException e) {
             validationInfo = new ValidationInfo("Insert only numbers.", textTaskID);
-            return validationInfo;
-        }
-
-        if (table.getRowCount() == 1) {
-            validationInfo = new ValidationInfo("Select at least one scenario.", table);
             return validationInfo;
         }
 
