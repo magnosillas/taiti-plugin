@@ -22,9 +22,9 @@ public class TaitiTool {
     public void run() {
         ArrayList<LinkedHashMap<String, Serializable>> tests = prepareTests();
 
-//        for (LinkedHashMap<String, Serializable> map : tests) {
-//            System.out.println("path = " + map.get("path"));
-//            System.out.println("lines = " + map.get("lines"));
+//        for (LinkedHashMap<String, Serializable> m : tests) {
+//            System.out.println(m.get("path"));
+//            System.out.println(m.get("lines"));
 //        }
 
         TodoTask task;
@@ -33,52 +33,52 @@ public class TaitiTool {
             task = new TodoTask(githubURL, taskID, tests);
             itest = task.computeTestBasedInterface();
 
-            /* Exibindo o conjunto de arquivos no console */
+            // --------- pode apagar isso?
             Set<String> files = itest.findAllFiles();
             System.out.printf("TestI(%d): %d%n", taskID, files.size());
             for (String file : files) {
                 System.out.println(file);
             }
 
-            /* Salvando o conjunto de arquivos em um arquivo csv */
             List<String[]> content = new ArrayList<>();
             content.add(new String[]{"Url", "ID", "TestI"});
             content.add(new String[]{githubURL, String.valueOf(taskID), files.toString()});
             CsvUtil.write("exemplo_resultado_testi.csv", content);
+            // ------------------------------
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    //TODO: melhorar esse algoritmo
     private ArrayList<LinkedHashMap<String, Serializable>> prepareTests() {
         ArrayList<LinkedHashMap<String, Serializable>> tests = new ArrayList<>();
 
-        String path = scenarios.get(0).getFilePath();
-        ArrayList<Integer> lines = new ArrayList<>();
-
-        for (ScenarioTestInformation s : scenarios) {
-            if (!s.getFilePath().equals(path)) {
-                LinkedHashMap<String, Serializable> map = new LinkedHashMap<>(2);
-
-                map.put("path", getRelativePath(path));
-                map.put("lines", lines);
-                tests.add(map);
-
-                path = s.getFilePath();
-                lines = new ArrayList<>();
-            }
-            lines.add(s.getLineNumber());
+        ArrayList<String> paths = new ArrayList<>();
+        for (ScenarioTestInformation  s : scenarios) {
+            paths.add(s.getFilePath());
         }
+        Set<String> set = new HashSet<>(paths);
+        paths.clear();
+        paths.addAll(set);
 
-        LinkedHashMap<String, Serializable> map = new LinkedHashMap<>(2);
-        map.put("path", getRelativePath(path));
-        map.put("lines", lines);
-        tests.add(map);
+        for (String path : paths) {
+            ArrayList<Integer> lines = new ArrayList<>();
+            for (ScenarioTestInformation s : scenarios) {
+                if (path.equals(s.getFilePath())) {
+                    lines.add(s.getLineNumber());
+                }
+            }
+            LinkedHashMap<String, Serializable> map = new LinkedHashMap<>(2);
+            map.put("path", getRelativePath(path));
+            map.put("lines", lines);
+
+            tests.add(map);
+        }
 
         return tests;
     }
 
+    // é pra pegar a partir da rais do projeto ou da pasta feature?
     private String getRelativePath(String absolutePath) {
         return absolutePath.substring(absolutePath.indexOf("features"));
     }
