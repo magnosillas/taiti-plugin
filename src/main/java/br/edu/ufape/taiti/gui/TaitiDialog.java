@@ -68,7 +68,7 @@ public class TaitiDialog extends DialogWrapper {
         // check if the input data is valid
         try {
             new URL(textGithubURL.getText()).toURI();
-            String regex = "http[s]?://([w]{3})?\\.?github\\.com/.+/.+"; // fazer um OU (|) para o www
+            String regex = "http[s]?://([w]{3}\\.)?github\\.com/.[^/]+/.[^/]+";
             if (!textGithubURL.getText().matches(regex)) {
                 throw new MalformedURLException();
             }
@@ -78,7 +78,7 @@ public class TaitiDialog extends DialogWrapper {
         }
         try {
             new URL(textPivotalTrackerURL.getText()).toURI();
-            String regex = "http[s]?://([w]{3})?\\.?pivotaltracker\\.com/n/projects/\\d+";
+            String regex = "http[s]?://([w]{3}\\.)?pivotaltracker\\.com/n/projects/\\d+";
             if (!textPivotalTrackerURL.getText().matches(regex)) {
                 throw new MalformedURLException();
             }
