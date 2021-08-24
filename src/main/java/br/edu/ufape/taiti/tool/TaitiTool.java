@@ -1,22 +1,28 @@
 package br.edu.ufape.taiti.tool;
 
 import br.ufpe.cin.tan.analysis.task.TodoTask;
-import br.ufpe.cin.tan.analysis.taskInterface.TestI;
+import br.ufpe.cin.tan.analysis.itask.ITest;
 import br.ufpe.cin.tan.util.CsvUtil;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectUtil;
+import com.intellij.openapi.vfs.VirtualFile;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.*;
 
 public class TaitiTool {
 
-    private String githubURL;
-    private int taskID;
-    private ArrayList<ScenarioTestInformation> scenarios;
+    private final String githubURL;
+    private final int taskID;
+    private final ArrayList<ScenarioTestInformation> scenarios;
+    private final Project project;
 
-    public TaitiTool(String githubURL, int taskID, ArrayList<ScenarioTestInformation> scenarios) {
+    public TaitiTool(String githubURL, int taskID, ArrayList<ScenarioTestInformation> scenarios, Project project) {
         this.githubURL = githubURL;
         this.taskID = taskID;
         this.scenarios = scenarios;
+        this.project = project;
     }
 
     public void run() {
@@ -28,7 +34,7 @@ public class TaitiTool {
 //        }
 
         TodoTask task;
-        TestI itest;
+        ITest itest;
         try {
             task = new TodoTask(githubURL, taskID, tests);
             itest = task.computeTestBasedInterface();
@@ -78,8 +84,14 @@ public class TaitiTool {
         return tests;
     }
 
-    // é pra pegar a partir da rais do projeto ou da pasta feature?
     private String getRelativePath(String absolutePath) {
-        return absolutePath.substring(absolutePath.indexOf("features"));
+        String projectName = "";
+
+        VirtualFile projectDir = ProjectUtil.guessProjectDir(project);
+        if (projectDir != null) {
+            projectName = projectDir.getName();
+        }
+
+        return absolutePath.substring(absolutePath.indexOf(projectName)).replace(projectName + File.separator, "");
     }
 }

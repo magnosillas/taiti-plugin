@@ -27,7 +27,7 @@ public class TaitiAction extends AnAction {
 
             ArrayList<ScenarioTestInformation> scenarios = mainPanel.getScenarios();
 
-            TaitiTool taiti = new TaitiTool(githubURL, taskID, scenarios);
+            TaitiTool taiti = new TaitiTool(githubURL, taskID, scenarios, project);
             taiti.run();
         }
     }
