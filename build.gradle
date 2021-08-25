@@ -15,8 +15,6 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
 
     implementation 'com.konghq:unirest-java:3.11.12'
-
-    compile fileTree(include: ['*.jar'], dir: 'libs')
 }
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/

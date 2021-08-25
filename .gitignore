@@ -2,10 +2,4 @@
 .gradle/
 build/
 /src/main/java/Main.java
-/spg_repos
-/libs
-configuration.properties
-/error
-/output
 /src/main/java/br/edu/ufape/taiti/service/Teste.java
-/exemplo_resultado_testi.csv
