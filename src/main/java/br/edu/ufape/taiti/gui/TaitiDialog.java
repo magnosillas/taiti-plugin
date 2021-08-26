@@ -68,22 +68,22 @@ public class TaitiDialog extends DialogWrapper {
         // check if the input data is valid
         try {
             new URL(textGithubURL.getText()).toURI();
-            String regex = "http[s]?://([w]{3}\\.)?github\\.com/.[^/]+/.[^/]+";
+            String regex = "https://([w]{3}\\.)?github\\.com/.[^/]+/.[^/]+";
             if (!textGithubURL.getText().matches(regex)) {
                 throw new MalformedURLException();
             }
         } catch (MalformedURLException | URISyntaxException e) {
-            validationInfo = new ValidationInfo("Insert an URL valid.", textGithubURL);
+            validationInfo = new ValidationInfo("Insert a valid URL.", textGithubURL);
             return validationInfo;
         }
         try {
             new URL(textPivotalTrackerURL.getText()).toURI();
-            String regex = "http[s]?://([w]{3}\\.)?pivotaltracker\\.com/n/projects/\\d+";
+            String regex = "https://[w]{3}\\.pivotaltracker\\.com/n/projects/\\d+";
             if (!textPivotalTrackerURL.getText().matches(regex)) {
                 throw new MalformedURLException();
             }
         } catch (MalformedURLException | URISyntaxException e) {
-            validationInfo = new ValidationInfo("Insert an URL valid.", textPivotalTrackerURL);
+            validationInfo = new ValidationInfo("Insert a valid URL.", textPivotalTrackerURL);
             return validationInfo;
         }
         try {
