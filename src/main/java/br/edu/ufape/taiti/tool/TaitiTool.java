@@ -1,14 +1,10 @@
 package br.edu.ufape.taiti.tool;
 
-import br.ufpe.cin.tan.analysis.task.TodoTask;
-import br.ufpe.cin.tan.analysis.itask.ITest;
-import br.ufpe.cin.tan.util.CsvUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 
-import java.io.File;
-import java.io.Serializable;
+import java.io.*;
 import java.util.*;
 
 public class TaitiTool {
@@ -25,38 +21,36 @@ public class TaitiTool {
         this.project = project;
     }
 
-    public void run() {
-        ArrayList<LinkedHashMap<String, Serializable>> tests = prepareTests();
+    // TODO: como criar um arquivo CSV sem salvar na máquina do usuário?
+    public File createScenariosFile() {
+        String[] header = {"path", "lines"};
+        ArrayList<String[]> rows = new ArrayList<>();
 
-//        for (LinkedHashMap<String, Serializable> m : tests) {
-//            System.out.println(m.get("path"));
-//            System.out.println(m.get("lines"));
-//        }
+        ArrayList<LinkedHashMap<String, Serializable>> scenariosPrepared = prepareScenarios();
 
-        TodoTask task;
-        ITest itest;
+        for (LinkedHashMap<String, Serializable> map : scenariosPrepared) {
+            rows.add(new String[]{String.valueOf(map.get("path")), String.valueOf(map.get("lines"))});
+        }
+
         try {
-            task = new TodoTask(githubURL, taskID, tests);
-            itest = task.computeTestBasedInterface();
+            FileWriter writer = new FileWriter("C:\\Users\\usuario\\Projects\\taiti-plugin\\test.csv");
+            writer.write(String.join(";", header));
+            writer.write("\n");
 
-            // --------- pode apagar isso?
-            Set<String> files = itest.findAllFiles();
-            System.out.printf("TestI(%d): %d%n", taskID, files.size());
-            for (String file : files) {
-                System.out.println(file);
+            for (String[] s : rows) {
+                writer.write(String.join(";", s));
+                writer.write("\n");
             }
 
-            List<String[]> content = new ArrayList<>();
-            content.add(new String[]{"Url", "ID", "TestI"});
-            content.add(new String[]{githubURL, String.valueOf(taskID), files.toString()});
-            CsvUtil.write("exemplo_resultado_testi.csv", content);
-            // ------------------------------
-        } catch (Exception e) {
+            writer.close();
+        } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return new File("C:\\Users\\usuario\\Projects\\taiti-plugin\\test.csv");
     }
 
-    private ArrayList<LinkedHashMap<String, Serializable>> prepareTests() {
+    private ArrayList<LinkedHashMap<String, Serializable>> prepareScenarios() {
         ArrayList<LinkedHashMap<String, Serializable>> tests = new ArrayList<>();
 
         ArrayList<String> paths = new ArrayList<>();
