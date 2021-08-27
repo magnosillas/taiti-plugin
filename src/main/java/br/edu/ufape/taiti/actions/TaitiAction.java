@@ -37,7 +37,9 @@ public class TaitiAction extends AnAction {
             try {
                 File file = taiti.createScenariosFile();
                 pivotalTracker.saveScenarios(file);
-                taiti.deleteScenariosFile();
+                if (taiti.deleteScenariosFile()) {
+                    System.out.println("arquivo excluído!");
+                }
             } catch (IOException e) {
                 e.printStackTrace(); // TODO: tratar as exceções
             } catch (HttpException e) {

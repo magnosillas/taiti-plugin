@@ -53,7 +53,7 @@ public class TaitiTool {
         return new File(projectPath + File.separator + FILE_NAME);
     }
 
-    public void deleteScenariosFile() {
+    public boolean deleteScenariosFile() {
         String projectPath = "";
         VirtualFile projectDir = ProjectUtil.guessProjectDir(project);
         if (projectDir != null) {
@@ -61,7 +61,7 @@ public class TaitiTool {
         }
 
         File file = new File(projectPath + File.separator + FILE_NAME);
-        file.deleteOnExit();
+        return file.delete();
     }
 
     private ArrayList<LinkedHashMap<String, Serializable>> prepareScenarios() {
