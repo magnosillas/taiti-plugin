@@ -2,5 +2,3 @@
 .gradle/
 build/
 /src/main/java/Main.java
-/src/main/java/br/edu/ufape/taiti/service/Teste.java
-test.csv
