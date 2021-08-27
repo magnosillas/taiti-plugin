@@ -1,5 +1,6 @@
 package br.edu.ufape.taiti.actions;
 
+import br.edu.ufape.taiti.exceptions.HttpException;
 import br.edu.ufape.taiti.gui.MainPanel;
 import br.edu.ufape.taiti.gui.TaitiDialog;
 import br.edu.ufape.taiti.service.PivotalTracker;
@@ -11,6 +12,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class TaitiAction extends AnAction {
@@ -30,11 +32,17 @@ public class TaitiAction extends AnAction {
             ArrayList<ScenarioTestInformation> scenarios = mainPanel.getScenarios();
 
             TaitiTool taiti = new TaitiTool(githubURL, Integer.parseInt(taskID), scenarios, project);
-            PivotalTracker pivotalTracker = new PivotalTracker("your_token", pivotalTrackerURL, taskID);
+            PivotalTracker pivotalTracker = new PivotalTracker("5008910733eea0cc56a425b0996fbbba", pivotalTrackerURL, taskID);
 
-            File file = taiti.createScenariosFile();
-            pivotalTracker.saveScenarios(file);
+            try {
+                File file = taiti.createScenariosFile();
+                pivotalTracker.saveScenarios(file);
+                taiti.deleteScenariosFile();
+            } catch (IOException e) {
+                e.printStackTrace(); // TODO: tratar as exceções
+            } catch (HttpException e) {
+                System.out.println(e.getStatusText() + " - " + e.getStatusNumber());
+            }
         }
     }
-
 }

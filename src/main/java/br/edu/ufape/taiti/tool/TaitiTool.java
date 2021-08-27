@@ -14,6 +14,8 @@ public class TaitiTool {
     private final ArrayList<ScenarioTestInformation> scenarios;
     private final Project project;
 
+    private static final String FILE_NAME = "scenarios.csv";
+
     public TaitiTool(String githubURL, int taskID, ArrayList<ScenarioTestInformation> scenarios, Project project) {
         this.githubURL = githubURL;
         this.taskID = taskID;
@@ -21,8 +23,7 @@ public class TaitiTool {
         this.project = project;
     }
 
-    // TODO: como criar um arquivo CSV sem salvar na máquina do usuário?
-    public File createScenariosFile() {
+    public File createScenariosFile() throws IOException {
         String[] header = {"path", "lines"};
         ArrayList<String[]> rows = new ArrayList<>();
 
@@ -32,22 +33,35 @@ public class TaitiTool {
             rows.add(new String[]{String.valueOf(map.get("path")), String.valueOf(map.get("lines"))});
         }
 
-        try {
-            FileWriter writer = new FileWriter("C:\\Users\\usuario\\Projects\\taiti-plugin\\test.csv");
-            writer.write(String.join(";", header));
-            writer.write("\n");
-
-            for (String[] s : rows) {
-                writer.write(String.join(";", s));
-                writer.write("\n");
-            }
-
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        String projectPath = "";
+        VirtualFile projectDir = ProjectUtil.guessProjectDir(project);
+        if (projectDir != null) {
+            projectPath = projectDir.getPath();
         }
 
-        return new File("C:\\Users\\usuario\\Projects\\taiti-plugin\\test.csv");
+        FileWriter writer = new FileWriter(projectPath + File.separator + FILE_NAME);
+        writer.write(String.join(";", header));
+        writer.write("\n");
+
+        for (String[] s : rows) {
+            writer.write(String.join(";", s));
+            writer.write("\n");
+        }
+
+        writer.close();
+
+        return new File(projectPath + File.separator + FILE_NAME);
+    }
+
+    public void deleteScenariosFile() {
+        String projectPath = "";
+        VirtualFile projectDir = ProjectUtil.guessProjectDir(project);
+        if (projectDir != null) {
+            projectPath = projectDir.getPath();
+        }
+
+        File file = new File(projectPath + File.separator + FILE_NAME);
+        file.deleteOnExit();
     }
 
     private ArrayList<LinkedHashMap<String, Serializable>> prepareScenarios() {
