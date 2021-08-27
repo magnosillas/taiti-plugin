@@ -1,5 +1,6 @@
 package br.edu.ufape.taiti.service;
 
+import br.edu.ufape.taiti.exceptions.HttpException;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
 import kong.unirest.Unirest;
@@ -26,9 +27,8 @@ public class PivotalTracker {
         this.projectID = getProjectIDFromProjectURL(pivotalProjectURL);
     }
 
-    // TODO: sempre verificar se a requisicao deu certo
     // TODO: descobrir como salvar os dados do usuario
-    public void saveScenarios(File scenarios) {
+    public void saveScenarios(File scenarios) throws HttpException {
         JSONArray comments = getComments();
         JSONObject taitiComment = getTaitiComment(comments);
         if (taitiComment != null) {
@@ -37,12 +37,16 @@ public class PivotalTracker {
         postCommentWithFile(scenarios);
     }
 
-    private JSONArray getComments() {
+    private JSONArray getComments() throws HttpException {
         String request = "/projects/" + projectID + "/stories/" + taskID + "/comments";
 
         HttpResponse<JsonNode> response = Unirest.get(PIVOTAL_URL + API_PATH + request)
                 .header(TOKEN_HEADER, token)
                 .asJson();
+
+        if (!response.isSuccess()) {
+            throw new HttpException(response.getStatusText(), response.getStatus());
+        }
 
         return response.getBody().getArray();
     }
@@ -66,16 +70,20 @@ public class PivotalTracker {
         return String.valueOf(jsonComment.get("id"));
     }
 
-    private void deleteComment(String commentID) {
+    private void deleteComment(String commentID) throws HttpException {
         String request = "/projects/" + projectID + "/stories/" + taskID + "/comments/" + commentID;
 
         HttpResponse<JsonNode> response = Unirest.delete(PIVOTAL_URL + API_PATH + request)
                 .header(TOKEN_HEADER, token)
                 .header("Content-Type", "application/json")
                 .asJson();
+
+        if (!response.isSuccess()) {
+            throw new HttpException(response.getStatusText(), response.getStatus());
+        }
     }
 
-    private void postCommentWithFile(File file) {
+    private void postCommentWithFile(File file) throws HttpException {
         // add file
         String requestFile = "/projects/" + projectID + "/uploads";
 
@@ -83,6 +91,10 @@ public class PivotalTracker {
                 .header(TOKEN_HEADER, token)
                 .field("file", file)
                 .asJson();
+
+        if (!responseFile.isSuccess()) {
+            throw new HttpException(responseFile.getStatusText(), responseFile.getStatus());
+        }
 
         // add comment
         String requestComment = "/projects/" + projectID + "/stories/" + taskID + "/comments?fields=%3Adefault%2Cfile_attachment_ids";
@@ -96,6 +108,10 @@ public class PivotalTracker {
                 .header("Content-Type", "application/json")
                 .body(json)
                 .asJson();
+
+        if (!responseComment.isSuccess()) {
+            throw new HttpException(responseComment.getStatusText(), responseComment.getStatus());
+        }
     }
 
     private String getProjectIDFromProjectURL(String pivotalProjectURL) {
