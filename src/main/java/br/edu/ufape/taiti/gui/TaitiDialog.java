@@ -73,7 +73,7 @@ public class TaitiDialog extends DialogWrapper {
                 throw new MalformedURLException();
             }
         } catch (MalformedURLException | URISyntaxException e) {
-            validationInfo = new ValidationInfo("Insert a valid URL.", textGithubURL);
+            validationInfo = new ValidationInfo("Enter a valid URL.", textGithubURL);
             return validationInfo;
         }
         try {
@@ -83,7 +83,7 @@ public class TaitiDialog extends DialogWrapper {
                 throw new MalformedURLException();
             }
         } catch (MalformedURLException | URISyntaxException e) {
-            validationInfo = new ValidationInfo("Insert a valid URL.", textPivotalTrackerURL);
+            validationInfo = new ValidationInfo("Enter a valid URL.", textPivotalTrackerURL);
             return validationInfo;
         }
         try {

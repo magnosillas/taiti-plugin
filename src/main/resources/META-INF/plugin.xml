@@ -13,6 +13,10 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
+        <projectConfigurable parentId="tools" instance="br.edu.ufape.taiti.settings.TaitiSettingsConfigurable"
+                                 id="br.edu.ufape.taiti.settings.TaitiSettingsConfigurable" displayName="TAITI"
+                                 nonDefaultProject="true"/>
+        <projectService serviceImplementation="br.edu.ufape.taiti.settings.TaitiSettingsState"/>
     </extensions>
 
     <actions>

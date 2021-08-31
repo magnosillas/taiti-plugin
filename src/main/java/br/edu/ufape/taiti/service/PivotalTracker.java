@@ -27,7 +27,6 @@ public class PivotalTracker {
         this.projectID = getProjectIDFromProjectURL(pivotalProjectURL);
     }
 
-    // TODO: descobrir como salvar os dados do usuario
     public void saveScenarios(File scenarios) throws HttpException {
         JSONArray comments = getComments();
         JSONObject taitiComment = getTaitiComment(comments);
