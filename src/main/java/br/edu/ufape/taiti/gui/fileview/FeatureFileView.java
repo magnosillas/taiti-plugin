@@ -8,7 +8,8 @@ import java.awt.*;
 
 public class FeatureFileView extends JBTable {
 
-    public void setTableWidth() {
+    public void setTableWidth(int parentComponentWidth) {
+        int firstColumnWidth = 0;
         for (int column = 0; column < this.getColumnCount(); column++) {
             TableColumn tableColumn = this.getColumnModel().getColumn(column);
             int preferredWidth = tableColumn.getMinWidth();
@@ -27,9 +28,10 @@ public class FeatureFileView extends JBTable {
             }
 
             if (column == 0) {
-                tableColumn.setPreferredWidth(preferredWidth + 20);
+                firstColumnWidth = preferredWidth + 20;
+                tableColumn.setPreferredWidth(firstColumnWidth);
             } else {
-                tableColumn.setPreferredWidth(Math.max(530, preferredWidth + 20));
+                tableColumn.setPreferredWidth(Math.max(parentComponentWidth - firstColumnWidth - 15, preferredWidth + 20));
             }
         }
     }

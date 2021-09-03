@@ -12,17 +12,13 @@ import com.intellij.openapi.project.ProjectUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.table.JBTable;
-import com.intellij.uiDesigner.core.AbstractLayout;
-import com.intellij.util.ui.GridBag;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -30,30 +26,23 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class MainPanel {
-    // panels
     private JPanel rootPanel;
-    private JPanel treePanel;
-    private JPanel rightPanel;
     private JPanel centerPanel;
+    private JPanel northPanel;
+    private JPanel southPanel;
+    private JPanel treePanel;
     private JPanel inputPanel;
-    private JPanel tablePanel;
 
-    private JSplitPane splitPane;
+    private JSplitPane mainSplit;
+    private JSplitPane leftSplit;
 
-    // components
     private TaitiTree tree;
 
-    private JLabel labelGithubURL;
-    private JLabel labelPivotalURL;
     private JLabel labelTaskID;
-
-    private JTextField textGithubURL;
-    private JTextField textPivotalURL;
     private JTextField textTaskID;
 
     private JBTable table;
     private TestsTableModel tableModel;
-
     private FeatureFileView featureFileView;
     private FeatureFileViewModel featureFileViewModel;
 
@@ -69,7 +58,6 @@ public class MainPanel {
 
         configurePanels();
         configureTree();
-        configureInputPanel();
         initTable();
         initCenterPanel();
     }
@@ -80,14 +68,6 @@ public class MainPanel {
 
     public ArrayList<ScenarioTestInformation> getScenarios() {
         return scenarios;
-    }
-
-    public JTextField getTextGithubURL() {
-        return textGithubURL;
-    }
-
-    public JTextField getTextPivotalURL() {
-        return textPivotalURL;
     }
 
     public JTextField getTextTaskID() {
@@ -128,7 +108,7 @@ public class MainPanel {
 
         featureFileViewModel = new FeatureFileViewModel(file, openFeatureFile.getFileLines(), scenarios, tableModel);
         featureFileView.setModel(featureFileViewModel);
-        featureFileView.setTableWidth();
+        featureFileView.setTableWidth(centerPanel.getWidth());
         featureFileView.setRowHeight(0, 30);
 
         featureFileView.getColumnModel().getColumn(0).setCellRenderer(new CheckBoxCellRenderer(file));
@@ -145,7 +125,6 @@ public class MainPanel {
         featureFileView.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         featureFileView.setDragEnabled(false);
 
-        centerPanel.setLayout(new BorderLayout());
         centerPanel.add(new JScrollPane(featureFileView), BorderLayout.CENTER);
     }
 
@@ -157,9 +136,7 @@ public class MainPanel {
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         table.setFillsViewportHeight(true);
 
-        tablePanel.setLayout(new BorderLayout());
-        tablePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 0));
-        tablePanel.add(new JScrollPane(table), BorderLayout.CENTER);
+        southPanel.add(new JScrollPane(table), BorderLayout.CENTER);
 
         JButton removeScenarioBtn = new JButton("Remove");
         removeScenarioBtn.addMouseListener(new MouseAdapter() {
@@ -190,7 +167,7 @@ public class MainPanel {
 
         JPanel btnPanel = new JPanel(new BorderLayout());
         btnPanel.add(removeScenarioBtn, BorderLayout.EAST);
-        tablePanel.add(btnPanel, BorderLayout.NORTH);
+        southPanel.add(btnPanel, BorderLayout.NORTH);
 
         tableModel = new TestsTableModel();
         table.setModel(tableModel);
@@ -198,7 +175,7 @@ public class MainPanel {
         tableModel.addRow(new TestRow(null, false, "Tests"));
         table.setRowHeight(0, 30);
         table.getColumnModel().getColumn(0).setPreferredWidth(30);
-        table.getColumnModel().getColumn(1).setPreferredWidth(350);
+        table.getColumnModel().getColumn(1).setPreferredWidth(270);
         table.getColumnModel().getColumn(0).setCellRenderer(new TestsTableRenderer());
         table.getColumnModel().getColumn(1).setCellRenderer(new TestsTableRenderer());
         table.getTableHeader().setUI(null);
@@ -218,7 +195,6 @@ public class MainPanel {
         DefaultTreeModel treeModel = new DefaultTreeModel(rootNode);
 
         tree = new TaitiTree(treeModel);
-        treePanel.setLayout(new BorderLayout());
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         tree.addMouseListener(new MouseAdapter() {
             @Override
@@ -270,73 +246,41 @@ public class MainPanel {
         }
     }
 
-    private void configureInputPanel() {
-        JLabel title = new JLabel("Task Identification");
-        title.setHorizontalAlignment(JLabel.CENTER);
-        title.setFont(new Font(null, Font.PLAIN, 15));
-
-        labelGithubURL = new JLabel("GitHub Project URL:");
-        textGithubURL = new JTextField();
-
-        labelPivotalURL = new JLabel("PivotalTracker Project URL:");
-        textPivotalURL = new JTextField();
-
-        labelTaskID = new JLabel("Task ID:");
-        textTaskID = new JTextField();
-
-        JPanel panel = new JPanel(new GridBagLayout());
-        inputPanel.setLayout(new BorderLayout());
-        inputPanel.add(title, BorderLayout.NORTH);
-        inputPanel.add(panel, BorderLayout.CENTER);
-
-        GridBag gb = new GridBag()
-                .setDefaultInsets(0, 0, AbstractLayout.DEFAULT_VGAP, AbstractLayout.DEFAULT_HGAP)
-                .setDefaultWeightX(1.0)
-                .setDefaultFill(GridBagConstraints.HORIZONTAL)
-                .setDefaultPaddingX(0, -25);
-
-        panel.add(labelGithubURL, gb.nextLine().next().weightx(0.2));
-        panel.add(textGithubURL, gb.next().weightx(0.8));
-
-        panel.add(labelPivotalURL, gb.nextLine().next().weightx(0.2));
-        panel.add(textPivotalURL, gb.next().weightx(0.8));
-
-        panel.add(labelTaskID, gb.nextLine().next().weightx(0.2));
-        panel.add(textTaskID, gb.next().weightx(0.6));
-
-        panel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
-
-        Border border = BorderFactory.createCompoundBorder
-                (BorderFactory.createMatteBorder(0, 0, 1, 0, JBColor.border()),
-                BorderFactory.createEmptyBorder(0, 10, 30, 0));
-
-        inputPanel.setBorder(border);
-    }
-
     private void configurePanels() {
-        rootPanel = new JPanel();
-        treePanel = new JPanel();
-        centerPanel = new JPanel();
-        rightPanel = new JPanel();
-        inputPanel = new JPanel();
-        tablePanel = new JPanel();
+        rootPanel.setBorder(null);
+        centerPanel.setLayout(null);
+        mainSplit.setBorder(null);
+        leftSplit.setBorder(null);
+        northPanel.setBorder(null);
+        southPanel.setBorder(null);
+        inputPanel.setBorder(null);
+        treePanel.setBorder(null);
 
-        rootPanel.setLayout(new FlowLayout());
-        rootPanel.setMinimumSize(new Dimension(1300, 720));
+        rootPanel.setBorder(BorderFactory.createLineBorder(JBColor.border()));
+        centerPanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, JBColor.border()));
+        inputPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        southPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, JBColor.border()));
+        leftSplit.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, JBColor.border()));
 
-        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, treePanel, centerPanel);
-        splitPane.setDividerLocation(300);
-        splitPane.setDividerSize(4);
-        splitPane.setPreferredSize(new Dimension(900, 700));
-        splitPane.setMinimumSize(new Dimension(900, 700));
+        mainSplit.setDividerLocation(300);
+        mainSplit.setDividerSize(2);
+        leftSplit.setDividerLocation(400);
+        leftSplit.setDividerSize(2);
 
-        rightPanel.setLayout(new BorderLayout(0, 50));
-        rightPanel.setPreferredSize(new Dimension(390, 700));
-        rightPanel.setMinimumSize(new Dimension(390, 700));
-
-        rootPanel.add(splitPane);
-        rootPanel.add(rightPanel);
-        rightPanel.add(inputPanel, BorderLayout.NORTH);
-        rightPanel.add(tablePanel, BorderLayout.CENTER);
+        centerPanel.setLayout(new BorderLayout());
+        centerPanel.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                featureFileView.setTableWidth(e.getComponent().getWidth());
+            }
+        });
+        treePanel.setLayout(new BorderLayout());
+        southPanel.setLayout(new BorderLayout());
+        southPanel.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                table.getColumnModel().getColumn(1).setPreferredWidth(e.getComponent().getWidth() - 35);
+            }
+        });
     }
 }
