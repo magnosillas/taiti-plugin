@@ -99,11 +99,13 @@ public class MainPanel {
                     countLine++;
                 }
             } catch (FileNotFoundException e) {
-                e.printStackTrace();
+                fileLines.add(new FileLine(false, "Error loading file.", -1));
             }
 
             openFeatureFile = new OpenFeatureFile(file, fileLines);
-            repositoryOpenFeatureFile.addFeatureFile(openFeatureFile);
+            if (openFeatureFile.getFileLines().size() >= 2) {
+                repositoryOpenFeatureFile.addFeatureFile(openFeatureFile);
+            }
         }
 
         featureFileViewModel = new FeatureFileViewModel(file, openFeatureFile.getFileLines(), scenarios, tableModel);
@@ -153,9 +155,9 @@ public class MainPanel {
                     }
                 }
                 // remove all rows checked
+                tableModel.getRow(0).setCheckbox(false);
                 for (TestRow t : testRowsChecked) {
                     tableModel.removeRow(t);
-                    tableModel.getRow(0).setCheckbox(false);
                     OpenFeatureFile openFeatureFile = repositoryOpenFeatureFile.getFeatureFile(t.getFile());
                     int deselectedLine = openFeatureFile.deselectLine(t.getTest());
                     featureFileViewModel.fireTableDataChanged();
