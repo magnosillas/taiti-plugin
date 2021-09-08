@@ -4,12 +4,15 @@
 
     <vendor email="gabrielalmeidavn@gmail.com" url="www.ufape.edu.br">UFAPE</vendor>
 
-    <description>An avoiding merge conflicts tool for Ruby projects</description>
+    <description>An avoiding merge conflicts tool for Ruby on Rails projects</description>
+    <change-notes>First release</change-notes>
+
+    <idea-version since-build="212"/>
 
     <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
          on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
-    <depends>com.intellij.tasks</depends>
+    <depends>com.intellij.modules.ruby</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->

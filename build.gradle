@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'br.edu.ufape'
-version '1.0-SNAPSHOT'
+version '0.1'
 
 repositories {
     mavenCentral()
@@ -14,19 +14,19 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
 
-    implementation 'com.konghq:unirest-java:3.11.12'
+    implementation 'com.konghq:unirest-java:3.11.13'
 }
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version '2021.2'
-    plugins = ['com.intellij.tasks']
+    version = '212.5080.55'
+    type = 'IU'
+    plugins = ['org.jetbrains.plugins.ruby:212.5080.8']
+    updateSinceUntilBuild = false
 }
 
-patchPluginXml {
-    changeNotes = """
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>"""
+runIde {
+    ideDir = file('C:\\Program Files\\JetBrains\\RubyMine 2021.2.1')
 }
 
 test {
