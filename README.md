@@ -1,5 +1,4 @@
 # taiti-plugin
-========================
 
 O TAITI é uma ferramenta que funciona no contexto de BDD e tenta evitar os conflitos de merge através da priorização de tarefas baseada em teste, atualmente ela é um plugin para a IDE RubyMine e IntelliJ Ultimate da JetBrains.
 
