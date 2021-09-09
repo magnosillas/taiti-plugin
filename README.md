@@ -4,7 +4,7 @@ O TAITI é uma ferramenta que funciona no contexto de BDD e tenta evitar os conf
 
 ## Como instalar TAITI
 
-Atualamente o plugin TAITI não está finalizado, por isso ele não está publicado no marketplace de plugins da JetBrains.
+Atualmente o plugin TAITI não está finalizado, por isso ele não está publicado no marketplace de plugins da JetBrains.
 Mas para fins de experimentação do plugin, para usá-lo é preciso:
 
 * Instalar o [RubyMine](https://www.jetbrains.com/pt-br/ruby/) ou o [IntelliJ Ultimate](https://www.jetbrains.com/pt-br/idea/)
@@ -23,12 +23,12 @@ o plugin irá salvá-los em um arquivo CSV e mandá-lo para o PivotalTracker.
 
 ## Como usar o plugin
 
-Primeiramento é necessário ter uma conta no [PivotalTracker](https://www.pivotaltracker.com/) e que o repositório remoto do seu projeto esteja no [GitHub](https://github.com/).
+Primeiramente é necessário ter uma conta no [PivotalTracker](https://www.pivotaltracker.com/) e que o repositório remoto do seu projeto esteja no [GitHub](https://github.com/).
 Para configurar o plugin é necessário acessar File > Settings/Preferences > Tools > TAITI, onde será mostrado esta tela:
 
 <img width="600px" alt="Settings" src="/doc/settings.png"/> 
 
-Basta preencher esses três campos com as respectivas informações. (Para conseguir o token do PivotalTracker basta acessar seu [perfil](https://www.pivotaltracker.com/profile) e copiar o API Token)
+Basta preencher esses três campos com as respectivas informações. (Para conseguir o token do PivotalTracker basta acessar o seu [perfil](https://www.pivotaltracker.com/profile) e copiar o API Token)
 
 
 Após configurar o plugin, você pode acessá-lo na barra de menu em Tools > TAITI, onde será mostrado a tela principal do plugin:
