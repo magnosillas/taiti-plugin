@@ -33,6 +33,7 @@ public class TestsTableRenderer extends DefaultTableCellRenderer {
             if (row == 0) {
                 table.setRowHeight(0, 30);
                 c.setBackground(table.getTableHeader().getBackground());
+                c.setToolTipText("");
             } else {
                 Color bg = isSelected ? table.getSelectionBackground() : table.getBackground();
                 c.setBackground(bg);

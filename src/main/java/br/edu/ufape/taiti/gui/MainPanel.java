@@ -126,6 +126,7 @@ public class MainPanel {
         featureFileView.getTableHeader().setReorderingAllowed(false);
         featureFileView.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         featureFileView.setDragEnabled(false);
+        featureFileView.setRowSelectionAllowed(false);
 
         centerPanel.add(new JScrollPane(featureFileView), BorderLayout.CENTER);
     }
@@ -137,6 +138,7 @@ public class MainPanel {
         table.getTableHeader().setReorderingAllowed(false);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         table.setFillsViewportHeight(true);
+        table.setRowSelectionAllowed(false);
 
         southPanel.add(new JScrollPane(table), BorderLayout.CENTER);
 
