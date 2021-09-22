@@ -21,9 +21,9 @@ public class TaitiSettingsComponent {
         pivotalToken = new JBPasswordField();
 
         mainPanel = FormBuilder.createFormBuilder()
-                .addLabeledComponent(new JBLabel("Enter GitHub URL: "), githubURLText, 1, false)
-                .addLabeledComponent(new JBLabel("Enter PivotalTracker URL: "), pivotalURLText, 1, false)
-                .addLabeledComponent(new JBLabel("Enter PivotalTracker token: "), pivotalToken, 1, false)
+                .addLabeledComponent(new JBLabel("GitHub URL: "), githubURLText, 1, false)
+                .addLabeledComponent(new JBLabel("PivotalTracker URL: "), pivotalURLText, 1, false)
+                .addLabeledComponent(new JBLabel("PivotalTracker token: "), pivotalToken, 1, false)
                 .addComponentFillVertically(new JPanel(), 0)
                 .getPanel();
     }
