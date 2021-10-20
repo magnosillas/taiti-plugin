@@ -1,6 +1,9 @@
 package br.edu.ufape.taiti.service;
 
 import br.edu.ufape.taiti.exceptions.HttpException;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectUtil;
+import com.intellij.openapi.vfs.VirtualFile;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
 import kong.unirest.Unirest;
@@ -8,6 +11,7 @@ import kong.unirest.json.JSONArray;
 import kong.unirest.json.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PivotalTracker {
@@ -18,45 +22,47 @@ public class PivotalTracker {
     private static final String TAITI_MSG = "[TAITI] Scenarios";
 
     private final String token;
-    private final String taskID;
     private final String projectID;
+    private final Project project;
 
-    public PivotalTracker(String token, String pivotalProjectURL, String taskID) {
+    public PivotalTracker(String token, String pivotalProjectURL, Project project) {
         this.token = token;
-        this.taskID = taskID;
         this.projectID = getProjectIDFromProjectURL(pivotalProjectURL);
+        this.project = project;
     }
 
-    public void saveScenarios(File scenarios) throws HttpException {
-        JSONArray comments = getComments(this.taskID);
+    public void saveScenarios(File scenarios, String taskID) throws HttpException {
+        JSONArray comments = getComments(taskID);
         JSONObject taitiComment = getTaitiComment(comments);
         if (taitiComment != null) {
-            deleteComment(getID(taitiComment));
+            deleteComment(getID(taitiComment), taskID);
         }
-        postCommentWithFile(scenarios);
+        postCommentWithFile(scenarios, taskID);
     }
 
-    public void teste() throws HttpException {
-        downloadFiles(getTaitiFiles());
-    }
+    public ArrayList<File> downloadFiles() throws HttpException {
+        File tempTaitiDirectory = new File(getProjectPath() + File.separator + "temp_taiti");
 
-    private void downloadFiles(JSONArray taitiFiles) {
-        //new File("C:\\Users\\usuario\\Projects\\taiti-plugin\\temp_taiti").mkdirs();
+        if (!(tempTaitiDirectory.exists() && tempTaitiDirectory.isDirectory())) {
+            tempTaitiDirectory.mkdir();
+        }
 
-        for (Object obj : taitiFiles) {
+        ArrayList<File> files = new ArrayList<>();
+
+        for (Object obj : getTaitiFiles()) {
             if (obj instanceof JSONObject) {
                 JSONObject taitiFile = (JSONObject) obj;
 
-                System.out.println(PIVOTAL_URL + taitiFile.get("download_url"));
-
                 File result = Unirest.get(PIVOTAL_URL + taitiFile.get("download_url"))
                         .header(TOKEN_HEADER, token)
-                        .asFile("C:\\Users\\usuario\\Projects\\taiti-plugin\\temp_taiti\\file-" + taitiFile.get("id") + ".csv")
+                        .asFile(getProjectPath() + File.separator + "temp_taiti" + File.separator + "file-" + taitiFile.get("id") + ".csv")
                         .getBody();
 
-                System.out.println(result);
+                files.add(result);
             }
         }
+
+        return files;
     }
 
     private JSONArray getTaitiFiles() throws HttpException {
@@ -143,7 +149,7 @@ public class PivotalTracker {
         return stories;
     }
 
-    private void postCommentWithFile(File file) throws HttpException {
+    private void postCommentWithFile(File file, String taskID) throws HttpException {
         // add file
         String requestFile = "/projects/" + projectID + "/uploads";
 
@@ -174,7 +180,7 @@ public class PivotalTracker {
         }
     }
 
-    private void deleteComment(String commentID) throws HttpException {
+    private void deleteComment(String commentID,  String taskID) throws HttpException {
         String request = "/projects/" + projectID + "/stories/" + taskID + "/comments/" + commentID;
 
         HttpResponse<JsonNode> response = Unirest.delete(PIVOTAL_URL + API_PATH + request)
@@ -222,5 +228,16 @@ public class PivotalTracker {
 
     private String getProjectIDFromProjectURL(String pivotalProjectURL) {
         return pivotalProjectURL.replace(PIVOTAL_URL + PROJECT_PATH, "");
+    }
+
+    private String getProjectPath() {
+        String projectPath = "";
+
+        VirtualFile projectDir = ProjectUtil.guessProjectDir(project);
+        if (projectDir != null) {
+            projectPath = projectDir.getPath();
+        }
+
+        return projectPath;
     }
 }
