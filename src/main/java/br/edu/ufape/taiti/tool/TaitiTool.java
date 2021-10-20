@@ -23,11 +23,23 @@ public class TaitiTool {
         this.project = project;
     }
 
+    public void createTestI(ArrayList<File> files) {
+        for (File f : files) {
+            ArrayList<LinkedHashMap<String, Serializable>> tests = prepareScenariosFromFile(readTaitiFile(f));
+
+            // TODO: rodar TAITI
+            for (LinkedHashMap<String, Serializable> map : tests) {
+                System.out.println(map.get("path"));
+                System.out.println(map.get("lines"));
+            }
+        }
+    }
+
     public File createScenariosFile() throws IOException {
         String[] header = {"path", "lines"};
         ArrayList<String[]> rows = new ArrayList<>();
 
-        ArrayList<LinkedHashMap<String, Serializable>> scenariosPrepared = prepareScenarios();
+        ArrayList<LinkedHashMap<String, Serializable>> scenariosPrepared = prepareScenariosFromUI();
 
         for (LinkedHashMap<String, Serializable> map : scenariosPrepared) {
             rows.add(new String[]{String.valueOf(map.get("path")), String.valueOf(map.get("lines"))});
@@ -64,7 +76,55 @@ public class TaitiTool {
         return file.delete();
     }
 
-    private ArrayList<LinkedHashMap<String, Serializable>> prepareScenarios() {
+    private ArrayList<String[]> readTaitiFile(File file) {
+        BufferedReader br;
+        String csvDivisor = ";";
+        ArrayList<String[]> contentFile = new ArrayList<>();
+
+        try {
+            br = new BufferedReader(new FileReader(file.getPath()));
+            String l = br.readLine();
+            while (l != null) {
+                String[] line = l.split(csvDivisor);
+                if (!(line[0].equals("path") && line[1].equals("lines"))) {
+                    contentFile.add(line);
+                }
+                l = br.readLine();
+            }
+            br.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return contentFile;
+    }
+
+    private ArrayList<LinkedHashMap<String, Serializable>> prepareScenariosFromFile(ArrayList<String[]> contentFile) {
+        ArrayList<LinkedHashMap<String, Serializable>> tests = new ArrayList<>();
+
+        for (String[] lines : contentFile) {
+            String path = lines[0];
+
+            String[] numbers = lines[1].replace("[", "")
+                         .replace("]", "")
+                         .split(",");
+            ArrayList<Integer> numberLines = new ArrayList<>();
+            for (String number : numbers) {
+                numberLines.add(Integer.parseInt(number.strip()));
+            }
+
+            LinkedHashMap<String, Serializable> map = new LinkedHashMap<>(2);
+            map.put("path", path);
+            map.put("lines", numberLines);
+
+            tests.add(map);
+        }
+
+        return tests;
+    }
+
+    private ArrayList<LinkedHashMap<String, Serializable>> prepareScenariosFromUI() {
         ArrayList<LinkedHashMap<String, Serializable>> tests = new ArrayList<>();
 
         ArrayList<String> paths = new ArrayList<>();
