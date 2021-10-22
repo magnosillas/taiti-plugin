@@ -123,8 +123,11 @@ public class PivotalTracker {
         for (Object obj : response.getBody().getArray()) {
             if (obj instanceof JSONObject) {
                 JSONObject story = (JSONObject) obj;
-                if (!story.isNull("estimate")) {
-                    stories.put(obj);
+                if (!story.isNull("estimate") && !story.isNull("owner_ids")) {
+                    JSONArray ownerID = (JSONArray) story.get("owner_ids");
+                    if (ownerID.length() > 0) {
+                        stories.put(obj);
+                    }
                 }
             }
         }
@@ -140,8 +143,11 @@ public class PivotalTracker {
         for (Object obj : response.getBody().getArray()) {
             if (obj instanceof JSONObject) {
                 JSONObject story = (JSONObject) obj;
-                if (!story.isNull("estimate")) {
-                    stories.put(obj);
+                if (!story.isNull("estimate") && !story.isNull("owner_ids")) {
+                    JSONArray ownerID = (JSONArray) story.get("owner_ids");
+                    if (ownerID.length() > 0) {
+                        stories.put(obj);
+                    }
                 }
             }
         }
