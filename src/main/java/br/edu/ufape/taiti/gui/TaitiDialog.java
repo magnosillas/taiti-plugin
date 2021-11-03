@@ -3,7 +3,6 @@ package br.edu.ufape.taiti.gui;
 import br.edu.ufape.taiti.exceptions.HttpException;
 import br.edu.ufape.taiti.service.PivotalTracker;
 import br.edu.ufape.taiti.settings.TaitiSettingsState;
-import br.edu.ufape.taiti.tool.ScenarioTestInformation;
 import br.edu.ufape.taiti.tool.TaitiTool;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -38,6 +37,8 @@ public class TaitiDialog extends DialogWrapper {
         this.table = mainPanel.getTable();
         this.project = project;
 
+        prepareServices();
+
         setTitle("TAITI");
         setSize(1000,810);
         init();
@@ -47,10 +48,7 @@ public class TaitiDialog extends DialogWrapper {
         TaitiSettingsState settings = TaitiSettingsState.getInstance(project);
         settings.retrieveStoredCredentials(project);
 
-        String taskID = textTaskID.getText().replace("#", "");
-        ArrayList<ScenarioTestInformation> scenarios = mainPanel.getScenarios();
-
-        taiti = new TaitiTool(settings.getGithubURL(), Integer.parseInt(taskID), scenarios, project);
+        taiti = new TaitiTool(settings.getGithubURL(), project);
         pivotalTracker = new PivotalTracker(settings.getToken(), settings.getPivotalURL(), project);
     }
 
@@ -97,12 +95,10 @@ public class TaitiDialog extends DialogWrapper {
     protected void doOKAction() {
         super.doOKAction();
 
-        prepareServices();
-
         String taskID = textTaskID.getText().replace("#", "");
 
         try {
-            File file = taiti.createScenariosFile();
+            File file = taiti.createScenariosFile(mainPanel.getScenarios());
             pivotalTracker.saveScenarios(file, taskID);
             taiti.deleteScenariosFile();
         } catch (IOException e) {
@@ -121,17 +117,13 @@ public class TaitiDialog extends DialogWrapper {
 
         @Override
         protected void doAction(ActionEvent e) {
-            if (doValidate() == null) {
-                getOKAction().setEnabled(isOkEnabled());
-                doOKAction();
+            try {
+                ArrayList<File> files = pivotalTracker.downloadFiles();
+                taiti.createTestI(files);
+                doCancelAction();
 
-                try {
-                    ArrayList<File> files = pivotalTracker.downloadFiles();
-                    taiti.createTestI(files);
-
-                } catch (HttpException exception) {
-                    System.out.println(exception.getStatusText() + " - " + exception.getStatusNumber());
-                }
+            } catch (HttpException exception) {
+                System.out.println(exception.getStatusText() + " - " + exception.getStatusNumber());
             }
         }
 

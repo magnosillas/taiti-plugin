@@ -40,6 +40,7 @@ public class PivotalTracker {
         postCommentWithFile(scenarios, taskID);
     }
 
+    // TODO: usar funções assíncronas
     public ArrayList<File> downloadFiles() throws HttpException {
         File tempTaitiDirectory = new File(getProjectPath() + File.separator + "temp_taiti");
 
@@ -55,7 +56,7 @@ public class PivotalTracker {
 
                 File result = Unirest.get(PIVOTAL_URL + taitiFile.get("download_url"))
                         .header(TOKEN_HEADER, token)
-                        .asFile(getProjectPath() + File.separator + "temp_taiti" + File.separator + "file-" + taitiFile.get("id") + ".csv")
+                        .asFile(getProjectPath() + File.separator + "temp_taiti" + File.separator + "file-" + taitiFile.get("story_id") + ".csv")
                         .getBody();
 
                 files.add(result);
@@ -83,8 +84,10 @@ public class PivotalTracker {
                             // esse getID do fileInfo pega o ID do comentário a qual o arquivo está associado
                             if (getID(fileInfo).equals(getID(taitiComment))) {
                                 JSONArray fileAttachments = (JSONArray) fileInfo.get("file_attachments");
+                                JSONObject taitiFile = fileAttachments.getJSONObject(0);
+                                taitiFile.put("story_id", plannedStory.get("id"));
 
-                                taitiFiles.put(fileAttachments.getJSONObject(0));
+                                taitiFiles.put(taitiFile);
                             }
                         }
                     }

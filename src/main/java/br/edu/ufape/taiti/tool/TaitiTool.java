@@ -1,5 +1,8 @@
 package br.edu.ufape.taiti.tool;
 
+import br.ufpe.cin.tan.analysis.itask.ITest;
+import br.ufpe.cin.tan.analysis.task.TodoTask;
+import br.ufpe.cin.tan.util.CsvUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -10,36 +13,69 @@ import java.util.*;
 public class TaitiTool {
 
     private final String githubURL;
-    private final int taskID;
-    private final ArrayList<ScenarioTestInformation> scenarios;
     private final Project project;
 
     private static final String FILE_NAME = "scenarios.csv";
 
-    public TaitiTool(String githubURL, int taskID, ArrayList<ScenarioTestInformation> scenarios, Project project) {
+    public TaitiTool(String githubURL, Project project) {
         this.githubURL = githubURL;
-        this.taskID = taskID;
-        this.scenarios = scenarios;
         this.project = project;
     }
 
-    public void createTestI(ArrayList<File> files) {
-        for (File f : files) {
+    public void createTestI(ArrayList<File> scenarioFiles) {
+
+//        for (File f : scenarioFiles) {
+//            ArrayList<LinkedHashMap<String, Serializable>> tests = prepareScenariosFromFile(readTaitiFile(f));
+//
+//            System.out.println(f.getName());
+//            for (LinkedHashMap<String, Serializable> map : tests) {
+//                System.out.println(map.get("path"));
+//                System.out.println(map.get("lines"));
+//            }
+//            System.out.println();
+//        }
+
+        //Configurando as dependências
+        String language = "ruby";
+        String gemsPath = "C:"+ File.separator+"Ruby30-x64"+File.separator+"lib"+File.separator+"ruby"+
+                File.separator+"gems" + File.separator+"3.0.0"+File.separator+"gems";
+        String frameworkPath = "C:"+File.separator+"jruby-9.2.19.0";
+
+        for (File f : scenarioFiles) {
             ArrayList<LinkedHashMap<String, Serializable>> tests = prepareScenariosFromFile(readTaitiFile(f));
 
-            // TODO: rodar TAITI
-            for (LinkedHashMap<String, Serializable> map : tests) {
-                System.out.println(map.get("path"));
-                System.out.println(map.get("lines"));
+            TodoTask task;
+            ITest itest;
+            try {
+                // o nome do arquivo é no estilo file-123456.csv, onde o 123456 é o id da tarefa
+                int taskID = Integer.parseInt(f.getName().replaceAll("[\\D]", ""));
+
+                task = new TodoTask(language, gemsPath, frameworkPath, githubURL, taskID, tests);
+                itest = task.computeTestBasedInterface();
+
+                /* Exibindo o conjunto de arquivos no console */
+                Set<String> files = itest.findAllFiles();
+                System.out.printf("TestI(%d): %d%n", taskID, files.size());
+                for (String file : files) {
+                    System.out.println(file);
+                }
+
+                /* Salvando o conjunto de arquivos num arquivo csv */
+                List<String[]> content = new ArrayList<>();
+                content.add(new String[]{"Url", "ID", "TestI"});
+                content.add(new String[]{githubURL, String.valueOf(taskID), files.toString()});
+                CsvUtil.write("exemplo_resultado_testi_" + taskID + ".csv", content);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
 
-    public File createScenariosFile() throws IOException {
+    public File createScenariosFile(ArrayList<ScenarioTestInformation> scenarios) throws IOException {
         String[] header = {"path", "lines"};
         ArrayList<String[]> rows = new ArrayList<>();
 
-        ArrayList<LinkedHashMap<String, Serializable>> scenariosPrepared = prepareScenariosFromUI();
+        ArrayList<LinkedHashMap<String, Serializable>> scenariosPrepared = prepareScenariosFromUI(scenarios);
 
         for (LinkedHashMap<String, Serializable> map : scenariosPrepared) {
             rows.add(new String[]{String.valueOf(map.get("path")), String.valueOf(map.get("lines"))});
@@ -65,6 +101,7 @@ public class TaitiTool {
         return new File(projectPath + File.separator + FILE_NAME);
     }
 
+    // TODO: deletar diretório temp_taiti
     public boolean deleteScenariosFile() {
         String projectPath = "";
         VirtualFile projectDir = ProjectUtil.guessProjectDir(project);
@@ -124,7 +161,7 @@ public class TaitiTool {
         return tests;
     }
 
-    private ArrayList<LinkedHashMap<String, Serializable>> prepareScenariosFromUI() {
+    private ArrayList<LinkedHashMap<String, Serializable>> prepareScenariosFromUI(ArrayList<ScenarioTestInformation> scenarios) {
         ArrayList<LinkedHashMap<String, Serializable>> tests = new ArrayList<>();
 
         ArrayList<String> paths = new ArrayList<>();

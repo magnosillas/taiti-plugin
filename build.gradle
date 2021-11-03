@@ -15,18 +15,20 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
 
     implementation 'com.konghq:unirest-java:3.11.13'
+
+    compile fileTree(include: ['*.jar'], dir: 'libs')
 }
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
     version = '212.5080.55'
     type = 'IU'
-    plugins = ['org.jetbrains.plugins.ruby:212.5080.8']
+//    plugins = ['org.jetbrains.plugins.ruby:212.5080.8']
     updateSinceUntilBuild = false
 }
 
 runIde {
-    ideDir = file('C:\\Program Files\\JetBrains\\RubyMine 2021.2.3')
+//    ideDir = file('C:\\Program Files\\JetBrains\\RubyMine 2021.2.3')
 }
 
 test {
