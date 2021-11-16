@@ -1,11 +1,11 @@
-package br.edu.ufape.taiti.gui;
+package br.edu.ufape.taiti.gui.configuretask;
 
-import br.edu.ufape.taiti.gui.fileview.*;
-import br.edu.ufape.taiti.gui.tree.TaitiTree;
-import br.edu.ufape.taiti.gui.tree.TaitiTreeFileNode;
-import br.edu.ufape.taiti.gui.table.TestRow;
-import br.edu.ufape.taiti.gui.table.TestsTableModel;
-import br.edu.ufape.taiti.gui.table.TestsTableRenderer;
+import br.edu.ufape.taiti.gui.configuretask.fileview.*;
+import br.edu.ufape.taiti.gui.configuretask.tree.TaitiTree;
+import br.edu.ufape.taiti.gui.configuretask.tree.TaitiTreeFileNode;
+import br.edu.ufape.taiti.gui.configuretask.table.TestRow;
+import br.edu.ufape.taiti.gui.configuretask.table.TestsTableModel;
+import br.edu.ufape.taiti.gui.configuretask.table.TestsTableRenderer;
 import br.edu.ufape.taiti.tool.ScenarioTestInformation;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectUtil;
@@ -25,7 +25,7 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class MainPanel {
+public class TaskConfigurePanel {
     private JPanel rootPanel;
     private JPanel centerPanel;
     private JPanel northPanel;
@@ -51,7 +51,7 @@ public class MainPanel {
 
     private final Project project;
 
-    public MainPanel(Project project) {
+    public TaskConfigurePanel(Project project) {
         this.project = project;
         scenarios = new ArrayList<>();
         repositoryOpenFeatureFile = new RepositoryOpenFeatureFile();

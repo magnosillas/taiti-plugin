@@ -1,4 +1,4 @@
-package br.edu.ufape.taiti.gui.tree;
+package br.edu.ufape.taiti.gui.configuretask.tree;
 
 import java.io.File;
 

@@ -1,8 +1,8 @@
-package br.edu.ufape.taiti.gui.fileview;
+package br.edu.ufape.taiti.gui.configuretask.fileview;
 
 import br.edu.ufape.taiti.tool.ScenarioTestInformation;
-import br.edu.ufape.taiti.gui.table.TestRow;
-import br.edu.ufape.taiti.gui.table.TestsTableModel;
+import br.edu.ufape.taiti.gui.configuretask.table.TestRow;
+import br.edu.ufape.taiti.gui.configuretask.table.TestsTableModel;
 
 import javax.swing.table.AbstractTableModel;
 import java.io.File;

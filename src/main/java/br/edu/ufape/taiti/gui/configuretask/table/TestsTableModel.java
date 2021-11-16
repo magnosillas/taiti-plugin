@@ -1,4 +1,4 @@
-package br.edu.ufape.taiti.gui.table;
+package br.edu.ufape.taiti.gui.configuretask.table;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;

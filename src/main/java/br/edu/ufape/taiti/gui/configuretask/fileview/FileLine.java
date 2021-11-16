@@ -1,4 +1,4 @@
-package br.edu.ufape.taiti.gui.fileview;
+package br.edu.ufape.taiti.gui.configuretask.fileview;
 
 public class FileLine {
 
