@@ -12,34 +12,24 @@ import java.util.*;
 
 public class TaitiTool {
 
-    private final String githubURL;
     private final Project project;
 
     private static final String FILE_NAME = "scenarios.csv";
 
-    public TaitiTool(String githubURL, Project project) {
-        this.githubURL = githubURL;
+    public TaitiTool(Project project) {
         this.project = project;
     }
 
     public void createTestI(ArrayList<File> scenarioFiles) {
-
-//        for (File f : scenarioFiles) {
-//            ArrayList<LinkedHashMap<String, Serializable>> tests = prepareScenariosFromFile(readTaitiFile(f));
-//
-//            System.out.println(f.getName());
-//            for (LinkedHashMap<String, Serializable> map : tests) {
-//                System.out.println(map.get("path"));
-//                System.out.println(map.get("lines"));
-//            }
-//            System.out.println();
-//        }
-
         //Configurando as dependências
         String language = "ruby";
         String gemsPath = "C:"+ File.separator+"Ruby30-x64"+File.separator+"lib"+File.separator+"ruby"+
                 File.separator+"gems" + File.separator+"3.0.0"+File.separator+"gems";
         String frameworkPath = "C:"+File.separator+"jruby-9.2.19.0";
+
+        for (File f : scenarioFiles) {
+            System.out.println("TaskID: " + f.getName().replaceAll("[\\D]", ""));
+        }
 
         for (File f : scenarioFiles) {
             ArrayList<LinkedHashMap<String, Serializable>> tests = prepareScenariosFromFile(readTaitiFile(f));
@@ -49,8 +39,9 @@ public class TaitiTool {
             try {
                 // o nome do arquivo é no estilo file-123456.csv, onde o 123456 é o id da tarefa
                 int taskID = Integer.parseInt(f.getName().replaceAll("[\\D]", ""));
+                String projectPath = getProjectPath();
 
-                task = new TodoTask(language, gemsPath, frameworkPath, githubURL, taskID, tests);
+                task = new TodoTask(language, gemsPath, frameworkPath, projectPath, taskID, tests);
                 itest = task.computeTestBasedInterface();
 
                 /* Exibindo o conjunto de arquivos no console */
@@ -62,13 +53,15 @@ public class TaitiTool {
 
                 /* Salvando o conjunto de arquivos num arquivo csv */
                 List<String[]> content = new ArrayList<>();
-                content.add(new String[]{"Url", "ID", "TestI"});
-                content.add(new String[]{githubURL, String.valueOf(taskID), files.toString()});
+                content.add(new String[]{"Path", "ID", "TestI"});
+                content.add(new String[]{projectPath, String.valueOf(taskID), files.toString()});
                 CsvUtil.write("exemplo_resultado_testi_" + taskID + ".csv", content);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+
+        deleteTaitiDirectory();
     }
 
     public File createScenariosFile(ArrayList<ScenarioTestInformation> scenarios) throws IOException {
@@ -101,7 +94,16 @@ public class TaitiTool {
         return new File(projectPath + File.separator + FILE_NAME);
     }
 
-    // TODO: deletar diretório temp_taiti
+    private void deleteTaitiDirectory() {
+        File tempTaitiDirectory = new File(getProjectPath() + File.separator + "temp_taiti");
+        if (tempTaitiDirectory.exists() && tempTaitiDirectory.isDirectory()) {
+            for (File f : Objects.requireNonNull(tempTaitiDirectory.listFiles())) {
+                f.delete();
+            }
+            tempTaitiDirectory.delete();
+        }
+    }
+
     public boolean deleteScenariosFile() {
         String projectPath = "";
         VirtualFile projectDir = ProjectUtil.guessProjectDir(project);
@@ -198,5 +200,16 @@ public class TaitiTool {
         }
 
         return absolutePath.substring(absolutePath.indexOf(projectName)).replace(projectName + File.separator, "");
+    }
+
+    private String getProjectPath() {
+        String projectPath = "";
+
+        VirtualFile projectDir = ProjectUtil.guessProjectDir(project);
+        if (projectDir != null) {
+            projectPath = projectDir.getPath();
+        }
+
+        return projectPath;
     }
 }
