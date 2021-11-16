@@ -48,7 +48,7 @@ public class TaitiDialog extends DialogWrapper {
         TaitiSettingsState settings = TaitiSettingsState.getInstance(project);
         settings.retrieveStoredCredentials(project);
 
-        taiti = new TaitiTool(settings.getGithubURL(), project);
+        taiti = new TaitiTool(project);
         pivotalTracker = new PivotalTracker(settings.getToken(), settings.getPivotalURL(), project);
     }
 

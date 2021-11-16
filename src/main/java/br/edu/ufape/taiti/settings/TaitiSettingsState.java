@@ -9,13 +9,8 @@ import com.intellij.openapi.project.ProjectUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 
 public class TaitiSettingsState {
-    protected String githubURL = "";
     protected String pivotalURL = "";
     protected String token = "";
-
-    public String getGithubURL() {
-        return githubURL;
-    }
 
     public String getPivotalURL() {
         return pivotalURL;
@@ -30,18 +25,11 @@ public class TaitiSettingsState {
     }
 
     public void retrieveStoredCredentials(Project project) {
-        String keyGithubURL = "githubURL" + getProjectName(project);
         String keyPivotalURL = "pivotalURL" + getProjectName(project);
         String keyPivotalToken = "pivotalToken" + getProjectName(project);
 
-        CredentialAttributes credentialAttributes = createCredentialAttributes(keyGithubURL);
+        CredentialAttributes credentialAttributes = createCredentialAttributes(keyPivotalURL);
         Credentials credentials = PasswordSafe.getInstance().get(credentialAttributes);
-        if (credentials != null) {
-            this.githubURL = credentials.getPasswordAsString();
-        }
-
-        credentialAttributes = createCredentialAttributes(keyPivotalURL);
-        credentials = PasswordSafe.getInstance().get(credentialAttributes);
         if (credentials != null) {
             this.pivotalURL = credentials.getPasswordAsString();
         }
@@ -54,16 +42,11 @@ public class TaitiSettingsState {
     }
 
     public void storeCredentials(Project project) {
-        String keyGithubURL = "githubURL" + getProjectName(project);
         String keyPivotalURL = "pivotalURL" + getProjectName(project);
         String keyPivotalToken = "pivotalToken" + getProjectName(project);
 
-        CredentialAttributes credentialAttributes = createCredentialAttributes(keyGithubURL);
-        Credentials credentials = new Credentials(keyGithubURL, this.githubURL);
-        PasswordSafe.getInstance().set(credentialAttributes, credentials);
-
-        credentialAttributes = createCredentialAttributes(keyPivotalURL);
-        credentials = new Credentials(keyPivotalURL, this.pivotalURL);
+        CredentialAttributes credentialAttributes = createCredentialAttributes(keyPivotalURL);
+        Credentials credentials = new Credentials(keyPivotalURL, this.pivotalURL);
         PasswordSafe.getInstance().set(credentialAttributes, credentials);
 
         credentialAttributes = createCredentialAttributes(keyPivotalToken);

@@ -42,8 +42,7 @@ public class TaitiSettingsConfigurable implements Configurable {
     @Override
     public boolean isModified() {
         TaitiSettingsState settings = TaitiSettingsState.getInstance(project);
-        boolean modified = !component.getGithubURLText().equals(settings.githubURL);
-        modified |= !component.getPivotalURLText().equals(settings.pivotalURL);
+        boolean modified = !component.getPivotalURLText().equals(settings.pivotalURL);
         modified |= !component.getPivotalToken().equals(settings.token);
         return modified;
     }
@@ -52,7 +51,6 @@ public class TaitiSettingsConfigurable implements Configurable {
     public void apply() throws ConfigurationException {
         TaitiSettingsState settings = TaitiSettingsState.getInstance(project);
         validate();
-        settings.githubURL = component.getGithubURLText();
         settings.pivotalURL = component.getPivotalURLText();
         settings.token = component.getPivotalToken();
         settings.storeCredentials(project);
@@ -62,7 +60,6 @@ public class TaitiSettingsConfigurable implements Configurable {
     public void reset() {
         TaitiSettingsState settings = TaitiSettingsState.getInstance(project);
         settings.retrieveStoredCredentials(project);
-        component.setGithubURLText(settings.githubURL);
         component.setPivotalURLText(settings.pivotalURL);
         component.setPivotalToken(settings.token);
     }
@@ -74,9 +71,6 @@ public class TaitiSettingsConfigurable implements Configurable {
 
     private void validate() throws ConfigurationException {
         // check if the fields is empty
-        if (StringUtil.isBlank(component.getGithubURLText())) {
-            throw new ConfigurationException("The GitHub URL field is empty", "Cannot Save Settings");
-        }
         if (StringUtil.isBlank(component.getPivotalURLText())) {
             throw new ConfigurationException("The PivotalTracker URL field is empty", "Cannot Save Settings");
         }
@@ -85,17 +79,6 @@ public class TaitiSettingsConfigurable implements Configurable {
         }
 
         // check if the input data is valid
-        try {
-            new URL(component.getGithubURLText()).toURI();
-            String regex = "https://([w]{3}\\.)?github\\.com/.[^/]+/.[^/]+";
-            if (!component.getGithubURLText().matches(regex)) {
-                throw new MalformedURLException();
-            }
-        } catch (MalformedURLException | URISyntaxException e) {
-            throw new ConfigurationException(
-                    "The GitHub URL is malformed, example of URL: https://github.com/{user}/{repository}",
-                    "Cannot Save Settings");
-        }
         try {
             new URL(component.getPivotalURLText()).toURI();
             String regex = "https://[w]{3}\\.pivotaltracker\\.com/n/projects/\\d+";

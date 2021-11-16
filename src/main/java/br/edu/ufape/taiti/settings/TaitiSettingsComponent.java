@@ -11,17 +11,14 @@ import javax.swing.*;
 public class TaitiSettingsComponent {
 
     private final JPanel mainPanel;
-    private final JBTextField githubURLText;
     private final JBTextField pivotalURLText;
     private final JBPasswordField pivotalToken;
 
     public TaitiSettingsComponent() {
-        githubURLText = new JBTextField();
         pivotalURLText = new JBTextField();
         pivotalToken = new JBPasswordField();
 
         mainPanel = FormBuilder.createFormBuilder()
-                .addLabeledComponent(new JBLabel("GitHub URL: "), githubURLText, 1, false)
                 .addLabeledComponent(new JBLabel("PivotalTracker URL: "), pivotalURLText, 1, false)
                 .addLabeledComponent(new JBLabel("PivotalTracker token: "), pivotalToken, 1, false)
                 .addComponentFillVertically(new JPanel(), 0)
@@ -29,20 +26,11 @@ public class TaitiSettingsComponent {
     }
 
     public JComponent getPreferredFocusedComponent() {
-        return githubURLText;
+        return pivotalURLText;
     }
 
     public JPanel getPanel() {
         return mainPanel;
-    }
-
-    @NotNull
-    public String getGithubURLText() {
-        return githubURLText.getText();
-    }
-
-    public void setGithubURLText(@NotNull String text) {
-        githubURLText.setText(text);
     }
 
     @NotNull
