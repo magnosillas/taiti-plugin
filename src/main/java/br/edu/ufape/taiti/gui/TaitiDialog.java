@@ -1,6 +1,7 @@
 package br.edu.ufape.taiti.gui;
 
 import br.edu.ufape.taiti.exceptions.HttpException;
+import br.edu.ufape.taiti.gui.configuretask.TaskConfigurePanel;
 import br.edu.ufape.taiti.service.PivotalTracker;
 import br.edu.ufape.taiti.settings.TaitiSettingsState;
 import br.edu.ufape.taiti.tool.TaitiTool;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 public class TaitiDialog extends DialogWrapper {
 
     private final MainPanel mainPanel;
+    private final TaskConfigurePanel taskConfigurePanel;
     private final JTextField textTaskID;
     private final JBTable table;
 
@@ -33,14 +35,15 @@ public class TaitiDialog extends DialogWrapper {
         super(true);
 
         this.mainPanel = new MainPanel(project);
-        this.textTaskID = mainPanel.getTextTaskID();
-        this.table = mainPanel.getTable();
+        this.taskConfigurePanel = this.mainPanel.getTaskConfigurePanel();
+        this.textTaskID = taskConfigurePanel.getTextTaskID();
+        this.table = taskConfigurePanel.getTable();
         this.project = project;
 
         prepareServices();
 
-        setTitle("TAITI");
-        setSize(1000,810);
+        setTitle("TAITIr - Test Analyzer for Inferring Task Interface and Conflict Risk");
+        setSize(1300,810);
         init();
     }
 
@@ -55,11 +58,6 @@ public class TaitiDialog extends DialogWrapper {
     @Override
     protected @Nullable JComponent createCenterPanel() {
         return mainPanel.getRootPanel();
-    }
-
-    @Override
-    public @Nullable JComponent getPreferredFocusedComponent() {
-        return textTaskID;
     }
 
     @Override
@@ -98,7 +96,7 @@ public class TaitiDialog extends DialogWrapper {
         String taskID = textTaskID.getText().replace("#", "");
 
         try {
-            File file = taiti.createScenariosFile(mainPanel.getScenarios());
+            File file = taiti.createScenariosFile(taskConfigurePanel.getScenarios());
             pivotalTracker.saveScenarios(file, taskID);
             taiti.deleteScenariosFile();
         } catch (IOException e) {
