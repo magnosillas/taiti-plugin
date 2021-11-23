@@ -1,17 +1,14 @@
 package br.edu.ufape.taiti.gui.configuretask;
 
 import br.edu.ufape.taiti.gui.configuretask.fileview.*;
+import br.edu.ufape.taiti.gui.configuretask.table.TablePanel;
 import br.edu.ufape.taiti.gui.configuretask.tree.TaitiTree;
 import br.edu.ufape.taiti.gui.configuretask.tree.TaitiTreeFileNode;
-import br.edu.ufape.taiti.gui.configuretask.table.TestRow;
-import br.edu.ufape.taiti.gui.configuretask.table.TestsTableModel;
-import br.edu.ufape.taiti.gui.configuretask.table.TestsTableRenderer;
 import br.edu.ufape.taiti.tool.ScenarioTestInformation;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.JBColor;
-import com.intellij.ui.table.JBTable;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -28,37 +25,35 @@ import java.util.Scanner;
 public class TaskConfigurePanel {
     private JPanel rootPanel;
     private JPanel centerPanel;
-    private JPanel northPanel;
-    private JPanel southPanel;
+    private JPanel leftPanel;
     private JPanel treePanel;
     private JPanel inputPanel;
 
     private JSplitPane mainSplit;
-    private JSplitPane leftSplit;
 
     private TaitiTree tree;
 
     private JLabel labelTaskID;
     private JTextField textTaskID;
 
-    private JBTable table;
-    private TestsTableModel tableModel;
     private FeatureFileView featureFileView;
     private FeatureFileViewModel featureFileViewModel;
+
+    private final TablePanel tablePanelDialog;
 
     private final ArrayList<ScenarioTestInformation> scenarios;
     private final RepositoryOpenFeatureFile repositoryOpenFeatureFile;
 
     private final Project project;
 
-    public TaskConfigurePanel(Project project) {
+    public TaskConfigurePanel(Project project, TablePanel tablePanelDialog) {
         this.project = project;
         scenarios = new ArrayList<>();
         repositoryOpenFeatureFile = new RepositoryOpenFeatureFile();
+        this.tablePanelDialog = tablePanelDialog;
 
         configurePanels();
         configureTree();
-        initTable();
         initCenterPanel();
     }
 
@@ -72,10 +67,6 @@ public class TaskConfigurePanel {
 
     public JTextField getTextTaskID() {
         return textTaskID;
-    }
-
-    public JBTable getTable() {
-        return table;
     }
 
     private void updateCenterPanel(File file) {
@@ -108,7 +99,7 @@ public class TaskConfigurePanel {
             }
         }
 
-        featureFileViewModel = new FeatureFileViewModel(file, openFeatureFile.getFileLines(), scenarios, tableModel);
+        featureFileViewModel = new FeatureFileViewModel(file, openFeatureFile.getFileLines(), scenarios, tablePanelDialog.getTableModel());
         featureFileView.setModel(featureFileViewModel);
         featureFileView.setTableWidth(centerPanel.getWidth());
         featureFileView.setRowHeight(0, 30);
@@ -129,60 +120,6 @@ public class TaskConfigurePanel {
         featureFileView.setRowSelectionAllowed(false);
 
         centerPanel.add(new JScrollPane(featureFileView), BorderLayout.CENTER);
-    }
-
-    private void initTable() {
-        table = new JBTable();
-        table.setShowGrid(false);
-        table.getTableHeader().setResizingAllowed(false);
-        table.getTableHeader().setReorderingAllowed(false);
-        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        table.setFillsViewportHeight(true);
-        table.setRowSelectionAllowed(false);
-
-        southPanel.add(new JScrollPane(table), BorderLayout.CENTER);
-
-        JButton removeScenarioBtn = new JButton("Remove");
-        removeScenarioBtn.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                ArrayList<TestRow> testRowsChecked = new ArrayList<>();
-
-                // catch all rows checked
-                for (int r = 1; r < tableModel.getRowCount(); r++) {
-                    if ((boolean) tableModel.getValueAt(r, 0)) {
-                        String test = (String) tableModel.getValueAt(r, 1);
-                        TestRow testRow = tableModel.findTestRow(test);
-                        testRowsChecked.add(testRow);
-                    }
-                }
-                // remove all rows checked
-                tableModel.getRow(0).setCheckbox(false);
-                for (TestRow t : testRowsChecked) {
-                    tableModel.removeRow(t);
-                    OpenFeatureFile openFeatureFile = repositoryOpenFeatureFile.getFeatureFile(t.getFile());
-                    int deselectedLine = openFeatureFile.deselectLine(t.getTest());
-                    featureFileViewModel.fireTableDataChanged();
-
-                    scenarios.remove(new ScenarioTestInformation(t.getFile().getAbsolutePath(), deselectedLine));
-                }
-            }
-        });
-
-        JPanel btnPanel = new JPanel(new BorderLayout());
-        btnPanel.add(removeScenarioBtn, BorderLayout.EAST);
-        southPanel.add(btnPanel, BorderLayout.NORTH);
-
-        tableModel = new TestsTableModel();
-        table.setModel(tableModel);
-
-        tableModel.addRow(new TestRow(null, false, "Tests"));
-        table.setRowHeight(0, 30);
-        table.getColumnModel().getColumn(0).setPreferredWidth(30);
-        table.getColumnModel().getColumn(1).setPreferredWidth(270);
-        table.getColumnModel().getColumn(0).setCellRenderer(new TestsTableRenderer());
-        table.getColumnModel().getColumn(1).setCellRenderer(new TestsTableRenderer());
-        table.getTableHeader().setUI(null);
     }
 
     private void configureTree() {
@@ -254,22 +191,16 @@ public class TaskConfigurePanel {
         rootPanel.setBorder(null);
         centerPanel.setLayout(null);
         mainSplit.setBorder(null);
-        leftSplit.setBorder(null);
-        northPanel.setBorder(null);
-        southPanel.setBorder(null);
+        leftPanel.setBorder(null);
         inputPanel.setBorder(null);
         treePanel.setBorder(null);
 
         rootPanel.setBorder(BorderFactory.createLineBorder(JBColor.border()));
         centerPanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, JBColor.border()));
         inputPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        southPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, JBColor.border()));
-        leftSplit.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, JBColor.border()));
 
         mainSplit.setDividerLocation(300);
         mainSplit.setDividerSize(2);
-        leftSplit.setDividerLocation(400);
-        leftSplit.setDividerSize(2);
 
         centerPanel.setLayout(new BorderLayout());
         centerPanel.addComponentListener(new ComponentAdapter() {
@@ -279,12 +210,5 @@ public class TaskConfigurePanel {
             }
         });
         treePanel.setLayout(new BorderLayout());
-        southPanel.setLayout(new BorderLayout());
-        southPanel.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                table.getColumnModel().getColumn(1).setPreferredWidth(e.getComponent().getWidth() - 35);
-            }
-        });
     }
 }

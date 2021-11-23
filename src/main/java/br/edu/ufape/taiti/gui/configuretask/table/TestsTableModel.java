@@ -9,7 +9,7 @@ public class TestsTableModel extends AbstractTableModel {
     private ArrayList<TestRow> rows;
 
     public TestsTableModel() {
-        columns = new String[]{"", "Tests"};
+        columns = new String[]{"Tests"};
         rows = new ArrayList<>();
     }
 
@@ -27,49 +27,11 @@ public class TestsTableModel extends AbstractTableModel {
     public Object getValueAt(int rowIndex, int columnIndex) {
         TestRow testRow = rows.get(rowIndex);
         Object value = null;
-        switch (columnIndex) {
-            case 0:
-                value = testRow.getCheckbox();
-                break;
-            case 1:
-                value = testRow.getTest();
-                break;
+        if (columnIndex == 0) {
+            value = testRow.getTest();
         }
 
         return value;
-    }
-
-    @Override
-    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        TestRow testRow = rows.get(rowIndex);
-
-        if (columnIndex == 0 && rowIndex == 0) {
-            if (!testRow.getCheckbox()) {
-                testRow.setCheckbox(true);
-                /*starts in second row (r = 1) because the first row is the header of the table*/
-                for (int r = 1; r < getRowCount(); r++) {
-                    if (!rows.get(r).getCheckbox()) {
-                        setValueAt(null, r, 0);
-                    }
-                }
-            } else {
-                testRow.setCheckbox(false);
-                for (int r = 1; r < getRowCount(); r++) {
-                    if (rows.get(r).getCheckbox()) {
-                        setValueAt(null, r, 0);
-                    }
-                }
-            }
-
-        } else if (columnIndex == 0) {
-            if (!testRow.getCheckbox()) {
-                testRow.setCheckbox(true);
-            } else {
-                testRow.setCheckbox(false);
-            }
-        }
-
-        fireTableCellUpdated(rowIndex, columnIndex);
     }
 
     @Override
@@ -84,7 +46,7 @@ public class TestsTableModel extends AbstractTableModel {
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return columnIndex == 0;
+        return false;
     }
 
     public void addRow(TestRow row) {

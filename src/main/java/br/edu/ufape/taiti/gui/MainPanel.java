@@ -1,6 +1,7 @@
 package br.edu.ufape.taiti.gui;
 
 import br.edu.ufape.taiti.gui.configuretask.TaskConfigurePanel;
+import br.edu.ufape.taiti.gui.configuretask.table.TablePanel;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBList;
@@ -17,10 +18,12 @@ public class MainPanel {
     private JPanel listPanel;
     private JBList<String> optionsList;
 
+    private final TablePanel tablePanelDialog;
     private final TaskConfigurePanel taskConfigurePanel;
 
     public MainPanel(Project project) {
-        taskConfigurePanel = new TaskConfigurePanel(project);
+        tablePanelDialog = new TablePanel();
+        taskConfigurePanel = new TaskConfigurePanel(project, tablePanelDialog);
 
         configurePanels();
         configureList();
@@ -33,6 +36,10 @@ public class MainPanel {
 
     public TaskConfigurePanel getTaskConfigurePanel() {
         return taskConfigurePanel;
+    }
+
+    public TablePanel getTablePanelDialog() {
+        return tablePanelDialog;
     }
 
     private void setContentPanel(JPanel panel) {

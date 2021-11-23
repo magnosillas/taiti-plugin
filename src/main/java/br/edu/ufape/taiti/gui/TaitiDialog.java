@@ -2,6 +2,8 @@ package br.edu.ufape.taiti.gui;
 
 import br.edu.ufape.taiti.exceptions.HttpException;
 import br.edu.ufape.taiti.gui.configuretask.TaskConfigurePanel;
+import br.edu.ufape.taiti.gui.configuretask.table.TableDialog;
+import br.edu.ufape.taiti.gui.configuretask.table.TablePanel;
 import br.edu.ufape.taiti.service.PivotalTracker;
 import br.edu.ufape.taiti.settings.TaitiSettingsState;
 import br.edu.ufape.taiti.tool.TaitiTool;
@@ -17,12 +19,12 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class TaitiDialog extends DialogWrapper {
 
     private final MainPanel mainPanel;
     private final TaskConfigurePanel taskConfigurePanel;
+    private final TablePanel tablePanelDialog;
     private final JTextField textTaskID;
     private final JBTable table;
 
@@ -36,8 +38,10 @@ public class TaitiDialog extends DialogWrapper {
 
         this.mainPanel = new MainPanel(project);
         this.taskConfigurePanel = this.mainPanel.getTaskConfigurePanel();
+        this.tablePanelDialog = this.mainPanel.getTablePanelDialog();
+
         this.textTaskID = taskConfigurePanel.getTextTaskID();
-        this.table = taskConfigurePanel.getTable();
+        this.table = tablePanelDialog.getTable();
         this.project = project;
 
         prepareServices();
@@ -107,26 +111,18 @@ public class TaitiDialog extends DialogWrapper {
         }
     }
 
+
     protected class RunConflictAnalysisAction extends DialogWrapperAction {
         protected RunConflictAnalysisAction() {
-            super("Run Conflict Analysis");
-            putValue(Action.NAME, "Run Conflict Analysis");
+            super("Save");
+            putValue(Action.NAME, "Save");
         }
 
+        //TODO: qual a melhor maneira de colocar os botões?
         @Override
         protected void doAction(ActionEvent e) {
-            try {
-                ArrayList<File> files = pivotalTracker.downloadFiles();
-                taiti.createTestI(files);
-                doCancelAction();
-
-            } catch (HttpException exception) {
-                System.out.println(exception.getStatusText() + " - " + exception.getStatusNumber());
-            }
-        }
-
-        boolean isOkEnabled() {
-            return true;
+            TableDialog tableDialog = new TableDialog(tablePanelDialog);
+            tableDialog.show();
         }
     }
 }
