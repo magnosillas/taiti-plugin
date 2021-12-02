@@ -9,6 +9,8 @@ import com.intellij.util.ui.JBFont;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class MainPanel {
     private JPanel rootPanel;
@@ -18,16 +20,18 @@ public class MainPanel {
     private JPanel listPanel;
     private JBList<String> optionsList;
 
-    private final TablePanel tablePanelDialog;
-    private final TaskConfigurePanel taskConfigurePanel;
+    private TablePanel tablePanelDialog;
+    private TaskConfigurePanel taskConfigurePanel;
+
+    private final Project project;
 
     public MainPanel(Project project) {
+        this.project = project;
         tablePanelDialog = new TablePanel();
         taskConfigurePanel = new TaskConfigurePanel(project, tablePanelDialog);
 
         configurePanels();
         configureList();
-        setContentPanel(taskConfigurePanel.getRootPanel());
     }
 
     public JPanel getRootPanel() {
@@ -42,10 +46,17 @@ public class MainPanel {
         return tablePanelDialog;
     }
 
-    private void setContentPanel(JPanel panel) {
-        this.contentPanel.setLayout(new BorderLayout());
+    public void updateContent() {
+        tablePanelDialog = new TablePanel();
+        taskConfigurePanel = new TaskConfigurePanel(project, tablePanelDialog);
 
-        this.contentPanel.add(panel, BorderLayout.CENTER);
+        setContentPanel(taskConfigurePanel.getRootPanel());
+    }
+
+    private void setContentPanel(JPanel panel) {
+        contentPanel.removeAll();
+        contentPanel.add(panel, BorderLayout.CENTER);
+        contentPanel.validate();
     }
 
     private void configureList() {
@@ -62,6 +73,19 @@ public class MainPanel {
 
             return label;
         });
+        optionsList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 1) {
+                    int index = optionsList.locationToIndex(e.getPoint());
+                    if (index == 0) {
+                        setContentPanel(taskConfigurePanel.getRootPanel()); // criar nova tela ou continuar de onde parou
+                    } else if (index == 1) {
+                        setContentPanel(new JPanel());
+                    }
+                }
+            }
+        });
 
         listPanel.add(optionsList, BorderLayout.CENTER);
     }
@@ -71,6 +95,7 @@ public class MainPanel {
         mainSplit.setDividerSize(2);
         mainSplit.setContinuousLayout(true);
 
+        contentPanel.setLayout(new BorderLayout());
         listPanel.setLayout(new BorderLayout());
     }
 }

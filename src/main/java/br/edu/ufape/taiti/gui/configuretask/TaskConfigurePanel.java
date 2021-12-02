@@ -52,6 +52,7 @@ public class TaskConfigurePanel {
         repositoryOpenFeatureFile = new RepositoryOpenFeatureFile();
         this.tablePanelDialog = tablePanelDialog;
 
+        this.tablePanelDialog.initToolbar(repositoryOpenFeatureFile, scenarios);
         configurePanels();
         configureTree();
         initCenterPanel();

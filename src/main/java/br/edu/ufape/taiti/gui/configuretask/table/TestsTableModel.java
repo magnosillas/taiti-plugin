@@ -28,7 +28,7 @@ public class TestsTableModel extends AbstractTableModel {
         TestRow testRow = rows.get(rowIndex);
         Object value = null;
         if (columnIndex == 0) {
-            value = testRow.getTest();
+            value = testRow;
         }
 
         return value;
@@ -57,19 +57,5 @@ public class TestsTableModel extends AbstractTableModel {
     public void removeRow(TestRow row) {
         rows.remove(row);
         fireTableDataChanged();
-    }
-
-    public TestRow findTestRow(String test) {
-        for (TestRow t : rows) {
-            if (t.getTest().equals(test)) {
-                return t;
-            }
-        }
-
-        return null;
-    }
-
-    public TestRow getRow(int row) {
-        return rows.get(row);
     }
 }

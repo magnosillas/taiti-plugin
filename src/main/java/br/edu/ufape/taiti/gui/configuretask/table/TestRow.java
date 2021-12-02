@@ -19,10 +19,6 @@ public class TestRow {
         return test;
     }
 
-    public void setFile(File file) {
-        this.file = file;
-    }
-
     @Override
     public boolean equals(Object o) {
         TestRow testRow;
@@ -32,5 +28,10 @@ public class TestRow {
         }
 
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return getTest();
     }
 }

@@ -1,6 +1,11 @@
 package br.edu.ufape.taiti.gui.configuretask.table;
 
-import com.intellij.ui.components.JBScrollPane;
+import br.edu.ufape.taiti.gui.configuretask.fileview.OpenFeatureFile;
+import br.edu.ufape.taiti.gui.configuretask.fileview.RepositoryOpenFeatureFile;
+import br.edu.ufape.taiti.tool.ScenarioTestInformation;
+import com.intellij.ui.AnActionButton;
+import com.intellij.ui.AnActionButtonRunnable;
+import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.table.JBTable;
 
 import javax.swing.*;
@@ -8,6 +13,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.ArrayList;
 
 public class TablePanel {
 
@@ -47,9 +53,36 @@ public class TablePanel {
         panel.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                table.getColumnModel().getColumn(0).setPreferredWidth(e.getComponent().getWidth() - 5);
+                table.getColumnModel().getColumn(0).setPreferredWidth(e.getComponent().getWidth() - 15);
             }
         });
+    }
+
+    public void initToolbar(RepositoryOpenFeatureFile repositoryOpenFeatureFile, ArrayList<ScenarioTestInformation> scenarios) {
+        ToolbarDecorator toolbar = ToolbarDecorator.createDecorator(table);
+        toolbar = toolbar.disableAddAction();
+        toolbar = toolbar.setRemoveAction(new AnActionButtonRunnable() {
+            @Override
+            public void run(AnActionButton anActionButton) {
+                int[] selectedRows = table.getSelectedRows();
+                ArrayList<TestRow> selectedTestRows = new ArrayList<>();
+
+                for (int row : selectedRows) {
+                    selectedTestRows.add((TestRow) table.getValueAt(row, 0));
+                }
+                for (TestRow testRow : selectedTestRows) {
+                    OpenFeatureFile openFeatureFile = repositoryOpenFeatureFile.getFeatureFile(testRow.getFile());
+                    int deselectedLine = openFeatureFile.deselectLine(testRow.getTest());
+                    scenarios.remove(new ScenarioTestInformation(testRow.getFile().getAbsolutePath(), deselectedLine));
+
+                    tableModel.removeRow(testRow);
+                    tableModel.fireTableDataChanged();
+                }
+            }
+        });
+        JPanel toolbarPanel = toolbar.createPanel();
+
+        panel.add(toolbarPanel, BorderLayout.CENTER);
     }
 
     private void initTable() {
@@ -61,39 +94,6 @@ public class TablePanel {
         table.setFillsViewportHeight(true);
         table.setRowSelectionAllowed(true);
 
-        JBScrollPane scrollPane = new JBScrollPane(table);
-        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
-        JPanel tablePanel = new JPanel(new BorderLayout());
-        tablePanel.add(scrollPane, BorderLayout.CENTER);
-        panel.add(scrollPane, BorderLayout.CENTER);
-
-//        removeScenarioBtn.addMouseListener(new MouseAdapter() {
-//            @Override
-//            public void mouseClicked(MouseEvent e) {
-//                ArrayList<TestRow> testRowsChecked = new ArrayList<>();
-//
-//                // catch all rows checked
-//                for (int r = 1; r < tableModel.getRowCount(); r++) {
-//                    if ((boolean) tableModel.getValueAt(r, 0)) {
-//                        String test = (String) tableModel.getValueAt(r, 1);
-//                        TestRow testRow = tableModel.findTestRow(test);
-//                        testRowsChecked.add(testRow);
-//                    }
-//                }
-//                // remove all rows checked
-//                tableModel.getRow(0).setCheckbox(false);
-//                for (TestRow t : testRowsChecked) {
-//                    tableModel.removeRow(t);
-//                    OpenFeatureFile openFeatureFile = repositoryOpenFeatureFile.getFeatureFile(t.getFile());
-//                    int deselectedLine = openFeatureFile.deselectLine(t.getTest());
-//                    featureFileViewModel.fireTableDataChanged();
-//
-//                    scenarios.remove(new ScenarioTestInformation(t.getFile().getAbsolutePath(), deselectedLine));
-//                }
-//            }
-//        });
-
         tableModel = new TestsTableModel();
         table.setModel(tableModel);
         table.getColumnModel().getColumn(0).setPreferredWidth(345);
@@ -101,7 +101,7 @@ public class TablePanel {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                 JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                TestRow t = ((TestsTableModel) table.getModel()).getRow(row);
+                TestRow t = (TestRow) table.getModel().getValueAt(row, 0);
                 label.setToolTipText(t.getFile().getName());
 
                 return label;
