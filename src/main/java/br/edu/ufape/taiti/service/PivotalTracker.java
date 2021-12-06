@@ -40,7 +40,6 @@ public class PivotalTracker {
         postCommentWithFile(scenarios, taskID);
     }
 
-    // TODO: usar funções assíncronas
     public ArrayList<File> downloadFiles() throws HttpException {
         File tempTaitiDirectory = new File(getProjectPath() + File.separator + "temp_taiti");
 

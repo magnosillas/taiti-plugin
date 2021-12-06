@@ -2,6 +2,9 @@ package br.edu.ufape.taiti.gui;
 
 import br.edu.ufape.taiti.gui.configuretask.TaskConfigurePanel;
 import br.edu.ufape.taiti.gui.configuretask.table.TablePanel;
+import br.edu.ufape.taiti.gui.riskanalysis.RiskAnalysisPanel;
+import br.edu.ufape.taiti.service.PivotalTracker;
+import br.edu.ufape.taiti.tool.TaitiTool;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBList;
@@ -22,13 +25,21 @@ public class MainPanel {
 
     private TablePanel tablePanelDialog;
     private TaskConfigurePanel taskConfigurePanel;
+    private RiskAnalysisPanel riskAnalysisPanel;
 
     private final Project project;
 
-    public MainPanel(Project project) {
+    private final TaitiTool taiti;
+    private final PivotalTracker pivotalTracker;
+
+    public MainPanel(Project project, TaitiTool taiti, PivotalTracker pivotalTracker) {
         this.project = project;
+        this.taiti = taiti;
+        this.pivotalTracker = pivotalTracker;
+
         tablePanelDialog = new TablePanel();
-        taskConfigurePanel = new TaskConfigurePanel(project, tablePanelDialog);
+        taskConfigurePanel = new TaskConfigurePanel(project, tablePanelDialog, taiti, pivotalTracker, this);
+        riskAnalysisPanel = new RiskAnalysisPanel();
 
         configurePanels();
         configureList();
@@ -38,17 +49,9 @@ public class MainPanel {
         return rootPanel;
     }
 
-    public TaskConfigurePanel getTaskConfigurePanel() {
-        return taskConfigurePanel;
-    }
-
-    public TablePanel getTablePanelDialog() {
-        return tablePanelDialog;
-    }
-
     public void updateContent() {
         tablePanelDialog = new TablePanel();
-        taskConfigurePanel = new TaskConfigurePanel(project, tablePanelDialog);
+        taskConfigurePanel = new TaskConfigurePanel(project, tablePanelDialog, taiti, pivotalTracker, this);
 
         setContentPanel(taskConfigurePanel.getRootPanel());
     }
@@ -59,8 +62,10 @@ public class MainPanel {
         contentPanel.validate();
     }
 
+    // TODO: trocar lista para o stripe
     private void configureList() {
         String[] options = {"Configure task", "Run conflict risk analysis"};
+
         optionsList = new JBList<>(options);
 
         optionsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -79,9 +84,9 @@ public class MainPanel {
                 if (e.getClickCount() == 1) {
                     int index = optionsList.locationToIndex(e.getPoint());
                     if (index == 0) {
-                        setContentPanel(taskConfigurePanel.getRootPanel()); // criar nova tela ou continuar de onde parou
+                        setContentPanel(taskConfigurePanel.getRootPanel());
                     } else if (index == 1) {
-                        setContentPanel(new JPanel());
+                        setContentPanel(riskAnalysisPanel.getRootPanel());
                     }
                 }
             }

@@ -1,14 +1,21 @@
 package br.edu.ufape.taiti.gui.configuretask;
 
+import br.edu.ufape.taiti.gui.MainPanel;
 import br.edu.ufape.taiti.gui.configuretask.fileview.*;
+import br.edu.ufape.taiti.gui.configuretask.table.TableDialog;
 import br.edu.ufape.taiti.gui.configuretask.table.TablePanel;
 import br.edu.ufape.taiti.gui.configuretask.tree.TaitiTree;
 import br.edu.ufape.taiti.gui.configuretask.tree.TaitiTreeFileNode;
+import br.edu.ufape.taiti.service.PivotalTracker;
 import br.edu.ufape.taiti.tool.ScenarioTestInformation;
+import br.edu.ufape.taiti.tool.TaitiTool;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectUtil;
+import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.JBColor;
+import org.jetbrains.annotations.Nullable;
+import org.jsoup.internal.StringUtil;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -35,6 +42,8 @@ public class TaskConfigurePanel {
 
     private JLabel labelTaskID;
     private JTextField textTaskID;
+    private JButton saveButton;
+    private JPanel buttonsPanel;
 
     private FeatureFileView featureFileView;
     private FeatureFileViewModel featureFileViewModel;
@@ -46,8 +55,13 @@ public class TaskConfigurePanel {
 
     private final Project project;
 
-    public TaskConfigurePanel(Project project, TablePanel tablePanelDialog) {
+    private final TaitiTool taiti;
+    private final PivotalTracker pivotalTracker;
+
+    public TaskConfigurePanel(Project project, TablePanel tablePanelDialog, TaitiTool taiti, PivotalTracker pivotalTracker, MainPanel mainPanel) {
         this.project = project;
+        this.taiti = taiti;
+        this.pivotalTracker = pivotalTracker;
         scenarios = new ArrayList<>();
         repositoryOpenFeatureFile = new RepositoryOpenFeatureFile();
         this.tablePanelDialog = tablePanelDialog;
@@ -55,6 +69,7 @@ public class TaskConfigurePanel {
         this.tablePanelDialog.initToolbar(repositoryOpenFeatureFile, scenarios);
         configurePanels();
         configureTree();
+        setActionButton(mainPanel);
         initCenterPanel();
     }
 
@@ -121,6 +136,17 @@ public class TaskConfigurePanel {
         featureFileView.setRowSelectionAllowed(false);
 
         centerPanel.add(new JScrollPane(featureFileView), BorderLayout.CENTER);
+    }
+
+    private void setActionButton(MainPanel mainPanel) {
+        saveButton.addActionListener((e -> {
+            String taskID = getTextTaskID().getText().replace("#", "");
+            TableDialog tableDialog = new TableDialog(this, tablePanelDialog, taiti, pivotalTracker, getScenarios(), taskID);
+
+            if (tableDialog.showAndGet()) {
+                mainPanel.updateContent();
+            }
+        }));
     }
 
     private void configureTree() {
