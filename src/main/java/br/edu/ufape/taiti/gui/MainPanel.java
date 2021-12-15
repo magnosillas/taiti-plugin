@@ -1,6 +1,7 @@
 package br.edu.ufape.taiti.gui;
 
 import br.edu.ufape.taiti.gui.configuretask.TaskConfigurePanel;
+import br.edu.ufape.taiti.gui.configuretask.table.TableDialog;
 import br.edu.ufape.taiti.gui.configuretask.table.TablePanel;
 import br.edu.ufape.taiti.gui.riskanalysis.RiskAnalysisPanel;
 import br.edu.ufape.taiti.service.PivotalTracker;
@@ -21,6 +22,8 @@ public class MainPanel {
     private JPanel contentPanel;
     private JPanel leftPanel;
     private JPanel listPanel;
+    private JPanel buttonsPanel;
+    private JPanel btnP;
     private JBList<String> optionsList;
 
     private TablePanel tablePanelDialog;
@@ -32,26 +35,30 @@ public class MainPanel {
     private final TaitiTool taiti;
     private final PivotalTracker pivotalTracker;
 
+    private JButton saveButton;
+    private JButton runButton;
+
     public MainPanel(Project project, TaitiTool taiti, PivotalTracker pivotalTracker) {
         this.project = project;
         this.taiti = taiti;
         this.pivotalTracker = pivotalTracker;
 
-        tablePanelDialog = new TablePanel();
-        taskConfigurePanel = new TaskConfigurePanel(project, tablePanelDialog, taiti, pivotalTracker, this);
-        riskAnalysisPanel = new RiskAnalysisPanel();
-
         configurePanels();
         configureList();
+        configureActions();
+
+        tablePanelDialog = new TablePanel();
+        taskConfigurePanel = new TaskConfigurePanel(project, tablePanelDialog, taiti, pivotalTracker);
+        riskAnalysisPanel = new RiskAnalysisPanel(pivotalTracker, btnP, runButton);
     }
 
     public JPanel getRootPanel() {
         return rootPanel;
     }
 
-    public void updateContent() {
+    public void updateFirstPanelContent() {
         tablePanelDialog = new TablePanel();
-        taskConfigurePanel = new TaskConfigurePanel(project, tablePanelDialog, taiti, pivotalTracker, this);
+        taskConfigurePanel = new TaskConfigurePanel(project, tablePanelDialog, taiti, pivotalTracker);
 
         setContentPanel(taskConfigurePanel.getRootPanel());
     }
@@ -62,7 +69,33 @@ public class MainPanel {
         contentPanel.validate();
     }
 
-    // TODO: trocar lista para o stripe
+    private void configureActions() {
+        saveButton = new JButton("Save");
+        saveButton.addActionListener(e -> {
+            String taskID = taskConfigurePanel.getTextTaskID().getText().replace("#", "");
+            TableDialog tableDialog = new TableDialog(taskConfigurePanel, tablePanelDialog, taiti, pivotalTracker, taskConfigurePanel.getScenarios(), taskID);
+
+            if (tableDialog.showAndGet()) {
+                updateFirstPanelContent();
+            }
+        });
+
+        runButton = new JButton("Run");
+        runButton.addActionListener(e -> {
+            Integer intersectionSize = (Integer) riskAnalysisPanel.getRunPanel().getIntersectionSizeComboBox().getSelectedItem();
+            boolean filtering = riskAnalysisPanel.getRunPanel().getFilteringCheckbox().isSelected();
+
+            btnP.removeAll();
+            btnP.validate();
+
+            riskAnalysisPanel.changePanel();
+            riskAnalysisPanel.getRunPanel().isShowing = false;
+            System.out.println("Intersection size: " + intersectionSize + " - Filtering: " + filtering);
+            //TODO: rodar taiti e dps rodar análise de conflito
+            riskAnalysisPanel.updateResultPanel();
+        });
+    }
+
     private void configureList() {
         String[] options = {"Configure task", "Run conflict risk analysis"};
 
@@ -80,12 +113,23 @@ public class MainPanel {
         });
         optionsList.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 1) {
-                    int index = optionsList.locationToIndex(e.getPoint());
+            public void mouseClicked(MouseEvent mouseEvent) {
+                if (mouseEvent.getClickCount() == 1) {
+                    int index = optionsList.locationToIndex(mouseEvent.getPoint());
                     if (index == 0) {
+                        btnP.removeAll();
+                        btnP.add(saveButton, BorderLayout.CENTER);
+                        btnP.validate();
                         setContentPanel(taskConfigurePanel.getRootPanel());
                     } else if (index == 1) {
+                        if (!riskAnalysisPanel.getRunPanel().isShowing) {
+                            btnP.removeAll();
+                            btnP.validate();
+                        } else {
+                            btnP.removeAll();
+                            btnP.add(runButton, BorderLayout.CENTER);
+                            btnP.validate();
+                        }
                         setContentPanel(riskAnalysisPanel.getRootPanel());
                     }
                 }
@@ -102,5 +146,6 @@ public class MainPanel {
 
         contentPanel.setLayout(new BorderLayout());
         listPanel.setLayout(new BorderLayout());
+        btnP.setLayout(new BorderLayout());
     }
 }

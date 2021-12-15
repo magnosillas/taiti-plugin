@@ -43,7 +43,6 @@ public class TaskConfigurePanel {
     private JLabel labelTaskID;
     private JTextField textTaskID;
     private JButton saveButton;
-    private JPanel buttonsPanel;
 
     private FeatureFileView featureFileView;
     private FeatureFileViewModel featureFileViewModel;
@@ -58,7 +57,7 @@ public class TaskConfigurePanel {
     private final TaitiTool taiti;
     private final PivotalTracker pivotalTracker;
 
-    public TaskConfigurePanel(Project project, TablePanel tablePanelDialog, TaitiTool taiti, PivotalTracker pivotalTracker, MainPanel mainPanel) {
+    public TaskConfigurePanel(Project project, TablePanel tablePanelDialog, TaitiTool taiti, PivotalTracker pivotalTracker) {
         this.project = project;
         this.taiti = taiti;
         this.pivotalTracker = pivotalTracker;
@@ -69,7 +68,6 @@ public class TaskConfigurePanel {
         this.tablePanelDialog.initToolbar(repositoryOpenFeatureFile, scenarios);
         configurePanels();
         configureTree();
-        setActionButton(mainPanel);
         initCenterPanel();
     }
 
@@ -136,17 +134,6 @@ public class TaskConfigurePanel {
         featureFileView.setRowSelectionAllowed(false);
 
         centerPanel.add(new JScrollPane(featureFileView), BorderLayout.CENTER);
-    }
-
-    private void setActionButton(MainPanel mainPanel) {
-        saveButton.addActionListener((e -> {
-            String taskID = getTextTaskID().getText().replace("#", "");
-            TableDialog tableDialog = new TableDialog(this, tablePanelDialog, taiti, pivotalTracker, getScenarios(), taskID);
-
-            if (tableDialog.showAndGet()) {
-                mainPanel.updateContent();
-            }
-        }));
     }
 
     private void configureTree() {
