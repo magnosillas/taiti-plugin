@@ -1,6 +1,6 @@
 package br.edu.ufape.taiti.gui.riskanalysis.run;
 
-import br.edu.ufape.taiti.gui.riskanalysis.RiskAnalysisPanel;
+import br.edu.ufape.taiti.exceptions.HttpException;
 import br.edu.ufape.taiti.service.PivotalTracker;
 import com.intellij.ui.JBColor;
 import com.intellij.util.ui.JBFont;
@@ -23,11 +23,11 @@ public class RunPanel {
     public boolean isShowing;
 
     public RunPanel(PivotalTracker pivotalTracker) {
+        this.pivotalTracker = pivotalTracker;
+
         configurePanels();
         configureMessageLabel();
         initConfigurePanel();
-
-        this.pivotalTracker = pivotalTracker;
     }
 
     public JPanel getRootPanel() {
@@ -43,14 +43,18 @@ public class RunPanel {
     }
 
     private void configureMessageLabel() {
-        // pegar essas informações via api do pivotal
-        int totalTask = 10;
-        int taskWithScenarios = 6;
-        String message = "<html><body>There are " + totalTask + " task running  in PivotalTracker," +
-                " but only " + taskWithScenarios + " have scenarios selected, <br>" +
-                "do you want do run  conflict analysis?</body></html>";
+        try {
+            int totalTask = pivotalTracker.getPlannedStories().length();
+            int taskWithScenarios = pivotalTracker.getTaitiFiles().length();
+            String message = "<html><body>There are " + totalTask + " task running in PivotalTracker," +
+                    " but only " + taskWithScenarios + " have scenarios selected, <br>" +
+                    "do you want do run  conflict analysis?</body></html>";
 
-        messageLabel.setText(message);
+            messageLabel.setText(message);
+
+        } catch (HttpException e) {
+            e.printStackTrace();
+        }
     }
 
     private void initConfigurePanel() {

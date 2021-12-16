@@ -4,9 +4,7 @@ import br.edu.ufape.taiti.exceptions.HttpException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import kong.unirest.HttpResponse;
-import kong.unirest.JsonNode;
-import kong.unirest.Unirest;
+import kong.unirest.*;
 import kong.unirest.json.JSONArray;
 import kong.unirest.json.JSONObject;
 
@@ -65,7 +63,7 @@ public class PivotalTracker {
         return files;
     }
 
-    private JSONArray getTaitiFiles() throws HttpException {
+    public JSONArray getTaitiFiles() throws HttpException {
         JSONArray plannedStories = getPlannedStories();
         JSONArray taitiFiles = new JSONArray();
 
@@ -111,7 +109,7 @@ public class PivotalTracker {
         return response.getBody().getArray();
     }
 
-    private JSONArray getPlannedStories() throws HttpException {
+    public JSONArray getPlannedStories() throws HttpException {
         JSONArray stories = new JSONArray();
 
         String request = "/projects/" + projectID + "/stories?with_state=started";

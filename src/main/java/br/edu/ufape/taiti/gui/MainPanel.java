@@ -1,5 +1,6 @@
 package br.edu.ufape.taiti.gui;
 
+import br.edu.ufape.taiti.exceptions.HttpException;
 import br.edu.ufape.taiti.gui.configuretask.TaskConfigurePanel;
 import br.edu.ufape.taiti.gui.configuretask.table.TableDialog;
 import br.edu.ufape.taiti.gui.configuretask.table.TablePanel;
@@ -15,6 +16,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.util.ArrayList;
 
 public class MainPanel {
     private JPanel rootPanel;
@@ -90,8 +93,15 @@ public class MainPanel {
 
             riskAnalysisPanel.changePanel();
             riskAnalysisPanel.getRunPanel().isShowing = false;
-            System.out.println("Intersection size: " + intersectionSize + " - Filtering: " + filtering);
-            //TODO: rodar taiti e dps rodar análise de conflito
+            try {
+                ArrayList<File> files = pivotalTracker.downloadFiles();
+                 taiti.createTestI(files);
+                // TODO: rodar análise de conflito
+
+            } catch (HttpException ex) {
+                ex.printStackTrace();
+            }
+
             riskAnalysisPanel.updateResultPanel();
         });
     }
