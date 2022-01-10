@@ -3,6 +3,9 @@ package br.edu.ufape.taiti.gui.configuretask.fileview;
 import java.io.File;
 import java.util.ArrayList;
 
+/**
+ * Esta classe representa um repositório de arquivos features já abertos.
+ */
 public class RepositoryOpenFeatureFile {
 
     private ArrayList<OpenFeatureFile> openFeatureFiles;

@@ -2,6 +2,9 @@ package br.edu.ufape.taiti.gui.riskanalysis.result;
 
 import javax.swing.*;
 
+/**
+ * Classe responsável por mostrar o resultado da análise de conflito. (Interface ainda não está feita)
+ */
 public class ResultPanel {
     private JPanel rootPanel;
     private JLabel messageLabel;

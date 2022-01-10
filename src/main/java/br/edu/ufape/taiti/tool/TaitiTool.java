@@ -6,10 +6,14 @@ import br.ufpe.cin.tan.util.CsvUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.util.*;
 
+/**
+ * Esta classe implementa tudo relacionado a ferramenta TAITI.
+ */
 public class TaitiTool {
 
     private final Project project;
@@ -20,7 +24,8 @@ public class TaitiTool {
         this.project = project;
     }
 
-    public void createTestI(ArrayList<File> scenarioFiles) {
+    // Esse método ainda possui erros ao executar TAITI.
+    public void createTestI(@NotNull ArrayList<File> scenarioFiles) {
         //Configurando as dependências
         String language = "ruby";
         String gemsPath = "C:"+ File.separator+"Ruby30-x64"+File.separator+"lib"+File.separator+"ruby"+

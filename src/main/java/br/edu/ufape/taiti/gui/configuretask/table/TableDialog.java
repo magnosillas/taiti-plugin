@@ -24,6 +24,9 @@ public class TableDialog extends DialogWrapper {
     private final ArrayList<ScenarioTestInformation> scenarios;
     private final String taskID;
 
+    /**
+     * Classe responsável por mostrar a janela da tabela onde é mostrado todos os scenarios selecionados.
+     */
     public TableDialog(TaskConfigurePanel taskConfigurePanel, TablePanel tablePanel, TaitiTool taiti, PivotalTracker pivotalTracker, ArrayList<ScenarioTestInformation> scenarios, String taskID) {
         super(true);
 
@@ -67,6 +70,9 @@ public class TableDialog extends DialogWrapper {
         return null;
     }
 
+    /**
+     * Esse método é chamado quando o usuário clica em OK na tabela dos scenarios selecionados.
+     */
     @Override
     protected void doOKAction() {
         super.doOKAction();

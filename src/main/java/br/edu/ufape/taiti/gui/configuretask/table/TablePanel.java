@@ -15,6 +15,9 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 
+/**
+ * Classe responsável por mostrar a tabela com todos os scenarios selecionados.
+ */
 public class TablePanel {
 
     private JPanel panel;

@@ -29,6 +29,9 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Classe responsável por configurar a interface gráfica do salvamento dos scenarios.
+ */
 public class TaskConfigurePanel {
     private JPanel rootPanel;
     private JPanel centerPanel;
@@ -96,6 +99,8 @@ public class TaskConfigurePanel {
             try {
                 scanner = new Scanner(new FileReader(filePath));
                 int countLine = 1;
+                // O componente onde é mostrado os arquivos é uma tabela sem cabeçalho, assim,
+                // as duas primeiras linhas da tabela é o nome do arquivo e uma linha em branco.
                 fileLines.add(new FileLine(false, fileName, -1));
                 fileLines.add(new FileLine(false, "", -1));
                 while (scanner.hasNextLine()) {

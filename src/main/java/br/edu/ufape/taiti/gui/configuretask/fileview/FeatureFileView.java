@@ -6,8 +6,14 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.*;
 
+/**
+ * Esta classe representa uma tabela onde é mostrado o conteúdo do arquivo.
+ */
 public class FeatureFileView extends JBTable {
 
+    /**
+     * Este método é responsável por mudar a largura da tabela de acordo com o conteúdo do arquivo.
+     */
     public void setTableWidth(int parentComponentWidth) {
         int firstColumnWidth = 0;
         for (int column = 0; column < this.getColumnCount(); column++) {

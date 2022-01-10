@@ -19,6 +19,12 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
 
+/**
+ * Esta é a classe principal responsável pela interface gráfica. O layout da interface é configurado no arquivo MainPanel.form.
+ * O plugin tem duas etapas, a primeira parte é selecionar as tarefas e salvá-las no Pivotal Tracker, as classe que implementam
+ * a interface gráfica responsável por isso são a TablePanel e TaskConfigurePanel, e a segunda parte é rodar a análise de conflito
+ * e a interface gráfica responsável por essa parte é feita pela classe RiskAnalysisPanel.
+ */
 public class MainPanel {
     private JPanel rootPanel;
     private JSplitPane mainSplit;
@@ -26,7 +32,7 @@ public class MainPanel {
     private JPanel leftPanel;
     private JPanel listPanel;
     private JPanel buttonsPanel;
-    private JPanel btnP;
+    private JPanel btnP; // esse objeto representa o painel onde é colocado os botões das ações.
     private JBList<String> optionsList;
 
     private TablePanel tablePanelDialog;
@@ -72,10 +78,14 @@ public class MainPanel {
         contentPanel.validate();
     }
 
+    /**
+     * Aqui é configurado as ações dos botões da interface.
+     */
     private void configureActions() {
         saveButton = new JButton("Save");
         saveButton.addActionListener(e -> {
             String taskID = taskConfigurePanel.getTextTaskID().getText().replace("#", "");
+            // Ao clicar em salvar é mostrado a tabela de scenarios selecionados.
             TableDialog tableDialog = new TableDialog(taskConfigurePanel, tablePanelDialog, taiti, pivotalTracker, taskConfigurePanel.getScenarios(), taskID);
 
             if (tableDialog.showAndGet()) {
@@ -95,6 +105,7 @@ public class MainPanel {
             riskAnalysisPanel.getRunPanel().isShowing = false;
             try {
                 ArrayList<File> files = pivotalTracker.downloadFiles();
+                // o método createTestI é responsável por roda TAITI, mas ainda está dando erro na execução do TAITI.
                  taiti.createTestI(files);
                 // TODO: rodar análise de conflito
 

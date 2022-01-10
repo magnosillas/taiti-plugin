@@ -7,6 +7,9 @@ import javax.swing.tree.DefaultTreeModel;
 import java.io.File;
 import java.util.ArrayList;
 
+/**
+ * Classe responsável pela representação da árvore de arquivos.
+ */
 public class TaitiTree extends Tree {
 
     private final String CUCUMBER_FILES_DIRECTORY = "features";
@@ -15,6 +18,9 @@ public class TaitiTree extends Tree {
         super(treeModel);
     }
 
+    /**
+     * Este método encontra o diretório "features", onde é uma pasta recomendada para guardar os arquivos do cucumber.
+     */
     public File findFeatureDirectory(String path) {
         File root = new File(path);
         File[] listFiles = root.listFiles();
@@ -39,6 +45,9 @@ public class TaitiTree extends Tree {
         return featuresFolder;
     }
 
+    /**
+     * Este método adiciona todos os diretórios pais do diretório feature a árvore.
+     */
     public void addParentsNodeToTree(ArrayList<DefaultMutableTreeNode> parentsNodes, DefaultMutableTreeNode node, int index) {
         if (index < 0) {
             return;
@@ -48,6 +57,9 @@ public class TaitiTree extends Tree {
         addParentsNodeToTree(parentsNodes, parentNode, index - 1);
     }
 
+    /**
+     * Este método adiciona todos os diretórios e arquivos dentro do diretório feature a árvore.
+     */
     public void addNodesToTree(String path, DefaultMutableTreeNode node) {
         File root = new File(path);
         File[] listFiles = root.listFiles();

@@ -7,6 +7,9 @@ import com.intellij.util.ui.JBFont;
 
 import javax.swing.*;
 
+/**
+ * Responsável por mostrar a interface gráfica para configuração da análise de conflito.
+ */
 public class RunPanel {
     private JPanel rootPanel;
     private JPanel messagePanel;

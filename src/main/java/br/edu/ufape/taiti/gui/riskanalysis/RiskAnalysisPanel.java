@@ -11,6 +11,11 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+/**
+ * Esta classe é responsável por criar a interface gráfica relacionada a análise de risco de conflito, essa etapa
+ * em duas partes, a parte de rodar a análise, na qual a interface gráfica é criada por RunPanel, e a parte onde mostra os resultados,
+ * na qual a interface gráfica é criada por ResultPanel.
+ */
 public class RiskAnalysisPanel {
     private JPanel rootPanel;
     private JPanel optionsPanel;

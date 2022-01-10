@@ -1,5 +1,8 @@
 package br.edu.ufape.taiti.tool;
 
+/**
+ * Esta classe representa um scenario selecionado.
+ */
 public class ScenarioTestInformation {
     private String filePath;
     private int lineNumber;

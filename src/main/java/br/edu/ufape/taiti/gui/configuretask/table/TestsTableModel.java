@@ -3,6 +3,9 @@ package br.edu.ufape.taiti.gui.configuretask.table;
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 
+/**
+ * Esta classe representa o modelo da tabela de scenarios selecionados.
+ */
 public class TestsTableModel extends AbstractTableModel {
 
     private String[] columns;

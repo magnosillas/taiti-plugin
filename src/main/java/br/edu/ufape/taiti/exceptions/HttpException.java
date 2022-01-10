@@ -1,5 +1,8 @@
 package br.edu.ufape.taiti.exceptions;
 
+/**
+ * Exceção usada quando um erro de requisição ocorre ao consultar o Pivotal Tracker.
+ */
 public class HttpException extends Exception {
 
     private String statusText;

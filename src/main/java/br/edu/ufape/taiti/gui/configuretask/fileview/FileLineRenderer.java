@@ -5,6 +5,9 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.io.File;
 
+/**
+ * Classe responsável por pintar o background da primeira linha da tabela de uma cor diferente das demais.
+ */
 public class FileLineRenderer extends DefaultTableCellRenderer {
 
     private File file;

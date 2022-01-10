@@ -8,6 +8,9 @@ import javax.swing.table.AbstractTableModel;
 import java.io.File;
 import java.util.ArrayList;
 
+/**
+ * Modelo da tabela onde é mostrado o conteúdo do arquivo.
+ */
 public class FeatureFileViewModel extends AbstractTableModel {
 
     private String[] columns;
@@ -48,6 +51,11 @@ public class FeatureFileViewModel extends AbstractTableModel {
         return value;
     }
 
+    /**
+     * Cada linha da tabela que é declarado um scenario deve ter um checkbox para selecionar o scenario e toda primeira linha
+     * da tabela possui um checkbox onde é possível marcar todos os scenarios de uma vez. Ao selecionar os checkboxs, eles
+     * são marcados nessa tabela e também na tabela onde mostra todos os scenarios selecionados.
+     */
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         FileLine fileLine = rows.get(rowIndex);
@@ -66,7 +74,7 @@ public class FeatureFileViewModel extends AbstractTableModel {
         } else if (columnIndex == 0 && rowIndex == 0 && line.equals(file.getName())) {
             if (!fileLine.getCheckbox()) {
                 fileLine.setCheckbox(true);
-                /*starts in third row (r = 2) because the first and second row are the name of file and a blank line, respectively*/
+                // Começa na terceira linha (r = 2), porque a primeira e segunda linha é o nome do arquivo e uma linha em branco, respectivamente.
                 for (int r = 2; r < getRowCount(); r++) {
                     if (!rows.get(r).getCheckbox()) {
                         setValueAt("", r, 0);

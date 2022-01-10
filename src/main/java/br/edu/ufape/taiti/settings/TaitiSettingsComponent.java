@@ -8,6 +8,9 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
+/**
+ * Classe responsável por criar a interface gráfica na configuração do plugin, disponível em File > Settings > TAITI.
+ */
 public class TaitiSettingsComponent {
 
     private final JPanel mainPanel;

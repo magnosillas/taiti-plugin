@@ -2,6 +2,9 @@ package br.edu.ufape.taiti.gui.configuretask.table;
 
 import java.io.File;
 
+/**
+ * Esta classe representa cada linha na tabela onde mostra todos os scenarios selecionados.
+ */
 public class TestRow {
     private File file;
     private String test;

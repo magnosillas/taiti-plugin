@@ -12,6 +12,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Classe responsável por fazer todas as requisições ao Pivotal Tracker. Para fazer as requisições é utilizado a
+ * biblioteca UniRest (http://kong.github.io/unirest-java/).
+ */
 public class PivotalTracker {
     private static final String PIVOTAL_URL = "https://www.pivotaltracker.com";
     private static final String PROJECT_PATH = "/n/projects/";

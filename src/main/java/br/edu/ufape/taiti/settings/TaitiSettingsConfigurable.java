@@ -12,6 +12,12 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+/**
+ * Esta classe é um controller para as configurações do plugin e está definida no arquivo plugin.xml.
+ *
+ * Mais informaçoes em: https://plugins.jetbrains.com/docs/intellij/persisting-sensitive-data.html e
+ * https://plugins.jetbrains.com/docs/intellij/settings-tutorial.html
+ */
 public class TaitiSettingsConfigurable implements Configurable {
 
     private TaitiSettingsComponent component;

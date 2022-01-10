@@ -1,5 +1,8 @@
 package br.edu.ufape.taiti.gui.configuretask.fileview;
 
+/**
+ * Esta classe representa uma linha de um arquivo feature representado na tabela.
+ */
 public class FileLine {
 
     private Boolean checkbox;

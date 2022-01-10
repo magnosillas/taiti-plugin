@@ -3,6 +3,9 @@ package br.edu.ufape.taiti.gui.configuretask.fileview;
 import java.io.File;
 import java.util.ArrayList;
 
+/**
+ * Esta classe representa um arquivo feature já aberto, ela é usada para guardar os estados dos scenarios já selecionados.
+ */
 public class OpenFeatureFile {
 
     private File file;

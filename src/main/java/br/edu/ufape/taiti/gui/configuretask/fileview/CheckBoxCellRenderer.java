@@ -5,6 +5,10 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.io.File;
 
+/**
+ * Classe responsável por renderizar os checkboxs apenas na primeira linha e nas linhas que declaram scenarios, na
+ * tabela responsável por mostrar o conteúdo dos arquivos cucumber.
+ */
 public class CheckBoxCellRenderer implements TableCellRenderer {
 
     private JCheckBox renderer;
