@@ -67,3 +67,6 @@ Uma vez finalizada a seleção dos testes relacionados à tarefa, basta clicar e
   <img alt="Tela do plugin" src="/doc/pivotal.png"/> 
 </figure>
 
+## Autores
+
+Esse projeto está sendo desenvolvido por Mágno Gomes, sob orientação de Thaís Burity e participação de Gabriel Viana, na Universidade Federal do Agreste de Pernambuco.
