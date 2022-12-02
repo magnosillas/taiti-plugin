@@ -16,6 +16,9 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
+
+        <toolWindow id="TAITIr" anchor="left" secondary="true" factoryClass="br.edu.ufape.taiti.gui.taskbar.TaskBar" />
+
         <projectConfigurable parentId="tools" instance="br.edu.ufape.taiti.settings.TaitiSettingsConfigurable"
                                  id="br.edu.ufape.taiti.settings.TaitiSettingsConfigurable" displayName="TAITI"
                                  nonDefaultProject="true"/>
@@ -27,6 +30,7 @@
         <action id="br.edu.ufape.taiti.actions.TaitiAction" class="br.edu.ufape.taiti.actions.TaitiAction"
                 text="TAITIr" description="An avoiding merge conflicts tool">
             <add-to-group group-id="ToolsMenu" anchor="first"/>
+
         </action>
     </actions>
 </idea-plugin>

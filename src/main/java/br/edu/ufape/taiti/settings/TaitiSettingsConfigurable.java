@@ -30,7 +30,7 @@ public class TaitiSettingsConfigurable implements Configurable {
     @Nls(capitalization = Nls.Capitalization.Title)
     @Override
     public String getDisplayName() {
-        return "TAITI";
+        return "TAITIr";
     }
 
     @Override
