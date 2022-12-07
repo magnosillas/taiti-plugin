@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 public class TaskBarGUI {
 
     private JPanel TaskBar;
+    private JPanel buttonsPanel;
     private JButton refreshButton;
     private JButton addButton;
     private JTextField txtSearch;
