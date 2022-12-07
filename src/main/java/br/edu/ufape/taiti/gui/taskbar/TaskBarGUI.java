@@ -1,35 +1,35 @@
 package br.edu.ufape.taiti.gui.taskbar;
 
 
+import br.edu.ufape.taiti.gui.TaitiDialog;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 
 import javax.swing.*;
 
 
+import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.awt.Color;
-import java.awt.Font;
 
 
-public class MyToolWindow {
+public class TaskBarGUI {
 
-    private JPanel myToolWindowContent;
+    private JPanel TaskBar;
     private JButton refreshButton;
     private JButton addButton;
     private JTextField txtSearch;
-    private JList tasksList;
-    private JPanel buttonsPanel;
-    private ArrayList<String> people;
-    private DefaultListModel listPeopleModel;
+    private JList<String> tasksList;
+    private final ArrayList<String> people;
+    private final DefaultListModel<String> listPeopleModel;
 
-    public MyToolWindow(ToolWindow toolWindow) {
+    public TaskBarGUI(ToolWindow toolWindow, Project project) {
 
         people = new ArrayList<>();
-        listPeopleModel = new DefaultListModel();
+        listPeopleModel = new DefaultListModel<>();
         tasksList.setModel(listPeopleModel);
         addPlaceHolderStyle(txtSearch);
 
@@ -54,22 +54,17 @@ public class MyToolWindow {
                 listPeopleModel.addAll(searchList(txtSearch.getText(),people));
             }
         });
-        addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                txtSearch.setToolTipText("Shit");
-            }
-        });
+
         txtSearch.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
                 super.focusGained(e);
-                if(txtSearch.getText().equals("Search")){
+
                     txtSearch.setText(null);
                     txtSearch.requestFocus();
                     //remove placeholder style
                     removePlaceHolderStyle(txtSearch);
-                }
+
             }
         });
         txtSearch.addFocusListener(new FocusAdapter() {
@@ -82,32 +77,35 @@ public class MyToolWindow {
                 }
             }
         });
+        addButton.addActionListener(e -> {
+
+            TaitiDialog taitiDialog = new TaitiDialog(project);
+            taitiDialog.show();
+        });
     }
     // Função para dar search na lista de strings
     private List<String> searchList(String searchWords, List<String> listOfStrings) {
         List<String> searchWordsArray = Arrays.asList(searchWords.trim().split(" "));
-        return listOfStrings.stream().filter(input -> {
-            return searchWordsArray.stream().allMatch(word ->
-                    input.toLowerCase().contains(word.toLowerCase()));
-        }).collect(Collectors.toList());
+        return listOfStrings.stream().filter(input -> searchWordsArray.stream().allMatch(word ->
+                input.toLowerCase().contains(word.toLowerCase()))).collect(Collectors.toList());
     }
 
     public void addPlaceHolderStyle(JTextField textField){
         Font font = textField.getFont();
         font = font.deriveFont(Font.ITALIC);
         textField.setFont(font);
-        textField.setForeground(Color.gray); //PlaceHolder font color
+        textField.setForeground(Color.GRAY); //PlaceHolder font color
     }
 
     public void removePlaceHolderStyle(JTextField textField){
         Font font = textField.getFont();
         font = font.deriveFont(Font.PLAIN);
         textField.setFont(font);
-        textField.setForeground(Color.LIGHT_GRAY); //PlaceHolder font color
+        textField.setForeground(Color.lightGray); //PlaceHolder font color
     }
 
     public JPanel getContent() {
-        return myToolWindowContent;
+        return TaskBar;
     }
 
 

@@ -1,6 +1,6 @@
 <idea-plugin>
     <id>br.edu.ufape.taiti-plugin</id>
-    <name>TAITI</name>
+    <name>TAITIr</name>
 
     <vendor email="gabrielalmeidavn@gmail.com" url="www.ufape.edu.br">UFAPE</vendor>
 
@@ -17,10 +17,11 @@
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
 
-        <toolWindow id="TAITIr" anchor="left" secondary="true" factoryClass="br.edu.ufape.taiti.gui.taskbar.TaskBar" />
+        <toolWindow id="TAITIr" anchor="left" secondary="true" factoryClass="br.edu.ufape.taiti.actions.TaskBarAction" />
+        <toolWindow id="Conflicts" anchor="bottom" secondary="true" factoryClass="br.edu.ufape.taiti.actions.ConflictsAction" />
 
         <projectConfigurable parentId="tools" instance="br.edu.ufape.taiti.settings.TaitiSettingsConfigurable"
-                                 id="br.edu.ufape.taiti.settings.TaitiSettingsConfigurable" displayName="TAITI"
+                                 id="br.edu.ufape.taiti.settings.TaitiSettingsConfigurable" displayName="TAITIr"
                                  nonDefaultProject="true"/>
         <projectService serviceImplementation="br.edu.ufape.taiti.settings.TaitiSettingsState"/>
     </extensions>
