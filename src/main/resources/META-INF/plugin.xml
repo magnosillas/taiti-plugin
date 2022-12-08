@@ -17,8 +17,8 @@
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
 
-        <toolWindow id="TAITIr" anchor="left" secondary="true" factoryClass="br.edu.ufape.taiti.actions.TaskBarAction" />
-        <toolWindow id="Conflicts" anchor="bottom" secondary="true" factoryClass="br.edu.ufape.taiti.actions.ConflictsAction" />
+        <toolWindow id="TaskList" anchor="left" secondary="false" factoryClass="br.edu.ufape.taiti.actions.TaskBarAction" />
+        <toolWindow id="Conflicts" anchor="bottom" secondary="false" factoryClass="br.edu.ufape.taiti.actions.ConflictsAction" />
 
         <projectConfigurable parentId="tools" instance="br.edu.ufape.taiti.settings.TaitiSettingsConfigurable"
                                  id="br.edu.ufape.taiti.settings.TaitiSettingsConfigurable" displayName="TAITIr"
@@ -28,10 +28,8 @@
 
     <actions>
         <!-- Add your actions here -->
-        <action id="br.edu.ufape.taiti.actions.TaitiAction" class="br.edu.ufape.taiti.actions.TaitiAction"
-                text="TAITIr" description="An avoiding merge conflicts tool">
-            <add-to-group group-id="ToolsMenu" anchor="first"/>
 
-        </action>
+
+
     </actions>
 </idea-plugin>

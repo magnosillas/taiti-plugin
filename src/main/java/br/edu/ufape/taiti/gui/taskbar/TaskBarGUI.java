@@ -78,6 +78,11 @@ public class TaskBarGUI {
                 }
             }
         });
+
+        /**
+         * Este método pega a referência ao projeto atualmente aberto no IntelliJ
+         * e cria um objeto TaitiDialog, responsável por mostrar a janela da aplicação.
+         */
         addButton.addActionListener(e -> {
 
             TaitiDialog taitiDialog = new TaitiDialog(project);

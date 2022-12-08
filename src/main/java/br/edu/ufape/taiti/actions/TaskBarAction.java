@@ -24,6 +24,7 @@ public class TaskBarAction implements ToolWindowFactory {
         ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
         Content content = contentFactory.createContent(taskBarGUI.getContent(), "", false);
         toolWindow.getContentManager().addContent(content);
+
     }
 
 
