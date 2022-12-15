@@ -1,9 +1,16 @@
 package br.edu.ufape.taiti.gui.taskbar;
 
 
+import br.edu.ufape.taiti.exceptions.HttpException;
 import br.edu.ufape.taiti.gui.TaitiDialog;
+import br.edu.ufape.taiti.service.PivotalTracker;
+import br.edu.ufape.taiti.settings.TaitiSettingsState;
+
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
+import kong.unirest.json.JSONArray;
+import kong.unirest.json.JSONObject;
+
 
 import javax.swing.*;
 
@@ -26,6 +33,7 @@ public class TaskBarGUI {
     private JList<String> tasksList;
     private final ArrayList<String> people;
     private final DefaultListModel<String> listPeopleModel;
+    private ArrayList<Task> storys;
 
     public TaskBarGUI(ToolWindow toolWindow, Project project) {
 
@@ -33,18 +41,18 @@ public class TaskBarGUI {
         listPeopleModel = new DefaultListModel<>();
         tasksList.setModel(listPeopleModel);
         addPlaceHolderStyle(txtSearch);
+        storys = new ArrayList<Task>();
 
 
+        //Inicializa um objeto PivotalTracker para busca de dados
+        TaitiSettingsState settings = TaitiSettingsState.getInstance(project);
+        settings.retrieveStoredCredentials(project);
+        PivotalTracker pivotalTracker = new PivotalTracker(settings.getToken(), settings.getPivotalURL(), project);
 
-
+        configTaskList(pivotalTracker);
 
         refreshButton.addActionListener(e -> {
-            people.add(txtSearch.getText());
-            listPeopleModel.removeAllElements();
-            for (String p : people) {
-                listPeopleModel.addElement(p);
-            }
-            txtSearch.setText("");
+            configTaskList(pivotalTracker);
         });
 
         txtSearch.addKeyListener(new KeyAdapter() {
@@ -88,6 +96,22 @@ public class TaskBarGUI {
             TaitiDialog taitiDialog = new TaitiDialog(project);
             taitiDialog.show();
         });
+
+
+        tasksList.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                JList l = (JList)e.getSource();
+                ListModel m = l.getModel();
+                int index = l.locationToIndex(e.getPoint());
+                if( index>-1 ) {
+                    /**String que fica na tooltip da tasklist **/
+                    l.setToolTipText("<html>" + storys.get(index).getStoryName() +
+                                    "<br>TaskID: #" + storys.get(index).getId()+
+                                    "<br>OwnerID: "+ storys.get(index).getOwnerID() +"</html>");
+                }
+            }
+        });
     }
     // Função para dar search na lista de strings
     private List<String> searchList(String searchWords, List<String> listOfStrings) {
@@ -108,6 +132,48 @@ public class TaskBarGUI {
         font = font.deriveFont(Font.PLAIN);
         textField.setFont(font);
         textField.setForeground(Color.lightGray); //PlaceHolder font color
+    }
+
+    public void configTaskList(PivotalTracker pivotalTracker){
+        try {
+
+            JSONArray plannedStories = pivotalTracker.getPlannedStories();
+            //Primeiro reseto as listas
+            people.clear();
+            storys.clear();
+
+            //Adiciono minhas tasks que não começaram e que tem o arquivo scenarios
+            for(Object obj : plannedStories){
+                Task plannedStory = new Task((JSONObject) obj);
+                JSONObject taitiComment = pivotalTracker.getTaitiComment(pivotalTracker.getComments(String.valueOf(plannedStory.getId())));
+                if(plannedStory.getState().equals("unstarted") && taitiComment.getString("text").equals("[TAITI] Scenarios")){
+                    storys.add(plannedStory);
+                    addListElement("<html><b>" + plannedStory.getStoryName()  + "</b></html>");
+                }
+            }
+
+            //Adiciono as outras tasks que não são minhas e que começaram
+            for( Object obj : plannedStories){
+                Task plannedStory = new Task((JSONObject) obj);
+                JSONObject taitiComment = pivotalTracker.getTaitiComment(pivotalTracker.getComments(String.valueOf(plannedStory.getId())));
+                if(plannedStory.getState().equals("started") && taitiComment.getString("text").equals("[TAITI] Scenarios")){
+                    storys.add(plannedStory);
+                    addListElement("<html>" + plannedStory.getStoryName()  + "</html>");
+                }
+            }
+        } catch (HttpException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void addListElement(String task){
+        people.add(task);
+        listPeopleModel.removeAllElements();
+        for (String p : people) {
+            listPeopleModel.addElement(p);
+        }
+
+
     }
 
     public JPanel getContent() {

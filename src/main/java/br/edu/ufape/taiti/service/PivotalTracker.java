@@ -203,7 +203,7 @@ public class PivotalTracker {
         }
     }
 
-    private JSONObject getTaitiComment(JSONArray comments) {
+    public JSONObject getTaitiComment(JSONArray comments) {
         JSONObject taitiComment = null;
 
         for (Object obj : comments) {
@@ -218,7 +218,7 @@ public class PivotalTracker {
         return taitiComment;
     }
 
-    private JSONArray getComments(String taskID) throws HttpException {
+    public JSONArray getComments(String taskID) throws HttpException {
         String request = "/projects/" + projectID + "/stories/" + taskID + "/comments";
 
         HttpResponse<JsonNode> response = Unirest.get(PIVOTAL_URL + API_PATH + request)
