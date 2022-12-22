@@ -20,6 +20,9 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
@@ -33,7 +36,7 @@ public class TaskBarGUI {
     private JList<String> tasksList;
     private final ArrayList<String> people;
     private final DefaultListModel<String> listPeopleModel;
-    private ArrayList<Task> storys;
+    private final ArrayList<Task> storys;
 
     public TaskBarGUI(ToolWindow toolWindow, Project project) {
 
@@ -41,7 +44,7 @@ public class TaskBarGUI {
         listPeopleModel = new DefaultListModel<>();
         tasksList.setModel(listPeopleModel);
         addPlaceHolderStyle(txtSearch);
-        storys = new ArrayList<Task>();
+        storys = new ArrayList<>();
 
 
         //Inicializa um objeto PivotalTracker para busca de dados
@@ -51,9 +54,7 @@ public class TaskBarGUI {
 
         configTaskList(pivotalTracker);
 
-        refreshButton.addActionListener(e -> {
-            configTaskList(pivotalTracker);
-        });
+        refreshButton.addActionListener(e -> configTaskList(pivotalTracker));
 
         txtSearch.addKeyListener(new KeyAdapter() {
             @Override
@@ -112,7 +113,17 @@ public class TaskBarGUI {
                 }
             }
         });
+        Runnable drawRunnable = new Runnable() {
+            public void run() {
+                configTaskList(pivotalTracker);
+            }
+        };
+
+        ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
+        exec.scheduleAtFixedRate(drawRunnable , 0, 1, TimeUnit.MINUTES);
     }
+
+
     // Função para dar search na lista de strings
     private List<String> searchList(String searchWords, List<String> listOfStrings) {
         List<String> searchWordsArray = Arrays.asList(searchWords.trim().split(" "));
@@ -175,6 +186,7 @@ public class TaskBarGUI {
 
 
     }
+
 
     public JPanel getContent() {
         return TaskBar;
