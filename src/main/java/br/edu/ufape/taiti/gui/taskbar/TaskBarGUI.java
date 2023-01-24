@@ -113,12 +113,17 @@ public class TaskBarGUI {
                 }
             }
         });
+        /**
+         * Essa parte é responsável por atualizar a lista
+         */
         Runnable drawRunnable = new Runnable() {
             public void run() {
                 configTaskList(pivotalTracker);
             }
         };
-
+        /**
+         * Para aumentar ou diminuir o tempo é só colocar os minutos em period ou trocar o TimeUnit para horas
+         */
         ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
         exec.scheduleAtFixedRate(drawRunnable , 0, 1, TimeUnit.MINUTES);
     }
@@ -159,7 +164,13 @@ public class TaskBarGUI {
                 JSONObject taitiComment = pivotalTracker.getTaitiComment(pivotalTracker.getComments(String.valueOf(plannedStory.getId())));
                 if(plannedStory.getState().equals("unstarted") && taitiComment.getString("text").equals("[TAITI] Scenarios")){
                     storys.add(plannedStory);
-                    addListElement("<html><b>" + plannedStory.getStoryName()  + "</b></html>");
+
+                    String storyName = plannedStory.getStoryName();
+                    if (storyName.length() > 50) {
+                        storyName = String.format("%s...", storyName.substring(0, 50));
+                    }
+
+                    addListElement("<html><b>" +  storyName + "</b></html>");
                 }
             }
 
@@ -169,7 +180,11 @@ public class TaskBarGUI {
                 JSONObject taitiComment = pivotalTracker.getTaitiComment(pivotalTracker.getComments(String.valueOf(plannedStory.getId())));
                 if(plannedStory.getState().equals("started") && taitiComment.getString("text").equals("[TAITI] Scenarios")){
                     storys.add(plannedStory);
-                    addListElement("<html>" + plannedStory.getStoryName()  + "</html>");
+                    String storyName = plannedStory.getStoryName();
+                    if (storyName.length() > 50) {
+                        storyName = String.format("%s...", storyName.substring(0, 50));
+                    }
+                    addListElement("<html>" + storyName  + "</html>");
                 }
             }
         } catch (HttpException e) {

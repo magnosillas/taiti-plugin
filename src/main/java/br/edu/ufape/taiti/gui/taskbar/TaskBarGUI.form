@@ -87,10 +87,7 @@
       </grid>
       <component id="abef7" class="javax.swing.JList" binding="tasksList">
         <constraints>
-          <grid row="1" column="0" row-span="2" col-span="1" vsize-policy="6" hsize-policy="7" anchor="8" fill="2" indent="0" use-parent-layout="false">
-            <preferred-size width="300" height="-1"/>
-            <maximum-size width="300" height="-1"/>
-          </grid>
+          <grid row="1" column="0" row-span="2" col-span="1" vsize-policy="6" hsize-policy="7" anchor="8" fill="2" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <layoutOrientation value="2"/>
