@@ -48,6 +48,7 @@ public class TaitiSettingsConfigurable implements Configurable {
     @Override
     public boolean isModified() {
         TaitiSettingsState settings = TaitiSettingsState.getInstance(project);
+
         boolean modified = !component.getPivotalURLText().equals(settings.pivotalURL);
         modified |= !component.getPivotalToken().equals(settings.token);
         return modified;

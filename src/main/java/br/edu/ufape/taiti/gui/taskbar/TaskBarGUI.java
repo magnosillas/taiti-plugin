@@ -37,7 +37,7 @@ public class TaskBarGUI {
     private final ArrayList<String> people;
     private final DefaultListModel<String> listPeopleModel;
     private final ArrayList<Task> storys;
-
+    private int ownerID;
     public TaskBarGUI(ToolWindow toolWindow, Project project) {
 
         people = new ArrayList<>();
@@ -55,6 +55,12 @@ public class TaskBarGUI {
         configTaskList(pivotalTracker);
 
         refreshButton.addActionListener(e -> configTaskList(pivotalTracker));
+
+        try {
+           ownerID = pivotalTracker.getPersonId();
+        } catch (HttpException e) {
+            throw new RuntimeException(e);
+        }
 
         txtSearch.addKeyListener(new KeyAdapter() {
             @Override
@@ -114,16 +120,14 @@ public class TaskBarGUI {
             }
         });
         /**
-         * Essa parte é responsável por atualizar a lista
+         * Essa parte é responsável pelo Refresh de tempo em tempo
          */
         Runnable drawRunnable = new Runnable() {
             public void run() {
                 configTaskList(pivotalTracker);
             }
         };
-        /**
-         * Para aumentar ou diminuir o tempo é só colocar os minutos em period ou trocar o TimeUnit para horas
-         */
+
         ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
         exec.scheduleAtFixedRate(drawRunnable , 0, 1, TimeUnit.MINUTES);
     }
@@ -153,43 +157,97 @@ public class TaskBarGUI {
     public void configTaskList(PivotalTracker pivotalTracker){
         try {
 
+//            JSONArray plannedStories = pivotalTracker.getPlannedStories();
+//            //Primeiro reseto as listas
+//            people.clear();
+//            storys.clear();
+//
+//            //Adiciono minhas tasks que não começaram e que tem o arquivo scenarios
+//            for(Object obj : plannedStories){
+//                Task plannedStory = new Task((JSONObject) obj);
+//                JSONObject taitiComment = pivotalTracker.getTaitiComment(pivotalTracker.getComments(String.valueOf(plannedStory.getId())));
+//                if(plannedStory.getState().equals("unstarted") && taitiComment.getString("text").equals("[TAITI] Scenarios")){
+//                    storys.add(plannedStory);
+//
+//                    String storyName = plannedStory.getStoryName();
+//                    if (storyName.length() > 50) {
+//                        storyName = String.format("%s...", storyName.substring(0, 50));
+//                    }
+//
+//                    addListElement("<html><b>" +  storyName + "</b></html>");
+//                }
+//            }
+//
+//            //Adiciono as outras tasks que não são minhas e que começaram
+//            for( Object obj : plannedStories){
+//                Task plannedStory = new Task((JSONObject) obj);
+//                JSONObject taitiComment = pivotalTracker.getTaitiComment(pivotalTracker.getComments(String.valueOf(plannedStory.getId())));
+//                if(plannedStory.getState().equals("started") && taitiComment.getString("text").equals("[TAITI] Scenarios")){
+//                    storys.add(plannedStory);
+//                    String storyName = plannedStory.getStoryName();
+//                    if (storyName.length() > 50) {
+//                        storyName = String.format("%s...", storyName.substring(0, 50));
+//                    }
+//                    addListElement("<html>" + storyName  + "</html>");
+//                }
+//            }
+
+
+
             JSONArray plannedStories = pivotalTracker.getPlannedStories();
-            //Primeiro reseto as listas
+            /**
+             * Primeiramente esvazio o array que contem as tasks para preenche-lo novamente com as informações mais recentes
+             */
             people.clear();
             storys.clear();
+            List<Task> unstartedStories = new ArrayList<>();
+            List<Task> startedStories = new ArrayList<>();
 
-            //Adiciono minhas tasks que não começaram e que tem o arquivo scenarios
-            for(Object obj : plannedStories){
-                Task plannedStory = new Task((JSONObject) obj);
+            for(int i = 0; i < plannedStories.length(); i++){
+                JSONObject obj = plannedStories.getJSONObject(i);
+                Task plannedStory = new Task(obj);
                 JSONObject taitiComment = pivotalTracker.getTaitiComment(pivotalTracker.getComments(String.valueOf(plannedStory.getId())));
-                if(plannedStory.getState().equals("unstarted") && taitiComment.getString("text").equals("[TAITI] Scenarios")){
-                    storys.add(plannedStory);
-
-                    String storyName = plannedStory.getStoryName();
-                    if (storyName.length() > 50) {
-                        storyName = String.format("%s...", storyName.substring(0, 50));
+                //Seleciono apenas as tasks que contem o arquivo [TAITI] Scenarios, ou seja, que já foram adicionados
+                if(taitiComment.getString("text").equals("[TAITI] Scenarios")) {
+                    //Adiciono a uma lista as minhas tasks que ainda não começaram
+                    if (plannedStory.getState().equals("unstarted") && plannedStory.getOwnerID() == ownerID) {
+                        unstartedStories.add(plannedStory);
                     }
-
-                    addListElement("<html><b>" +  storyName + "</b></html>");
+                    //Adiciono a uma lista as tasks que já começaram de outros membros
+                    else if (plannedStory.getState().equals("started") && plannedStory.getOwnerID() != ownerID) {
+                        startedStories.add(plannedStory);
+                    }
                 }
             }
 
-            //Adiciono as outras tasks que não são minhas e que começaram
-            for( Object obj : plannedStories){
-                Task plannedStory = new Task((JSONObject) obj);
-                JSONObject taitiComment = pivotalTracker.getTaitiComment(pivotalTracker.getComments(String.valueOf(plannedStory.getId())));
-                if(plannedStory.getState().equals("started") && taitiComment.getString("text").equals("[TAITI] Scenarios")){
-                    storys.add(plannedStory);
-                    String storyName = plannedStory.getStoryName();
-                    if (storyName.length() > 50) {
-                        storyName = String.format("%s...", storyName.substring(0, 50));
-                    }
-                    addListElement("<html>" + storyName  + "</html>");
-                }
+            // Add the unstarted stories to the main list first
+            for(Task unstartedStory : unstartedStories){
+                storys.add(unstartedStory);
+                String storyName = truncateStoryName(unstartedStory.getStoryName());
+                addListElement("<html><b>" +  storyName + "</b></html>");
             }
+
+            // Add the started stories to the main list
+            for(Task startedStory : startedStories){
+                storys.add(startedStory);
+                String storyName = truncateStoryName(startedStory.getStoryName());
+                addListElement("<html>" + storyName  + "</html>");
+            }
+
+
+
+
+
         } catch (HttpException e) {
             e.printStackTrace();
         }
+    }
+
+    private String truncateStoryName(String storyName){
+        if (storyName.length() > 50) {
+            storyName = String.format("%s...", storyName.substring(0, 50));
+        }
+        return storyName;
     }
 
     public void addListElement(String task){

@@ -99,6 +99,27 @@ public class PivotalTracker {
         return taitiFiles;
     }
 
+
+
+
+
+    public int getPersonId() throws HttpException{
+            String request = "/me?fields=%3Adefault";
+            HttpResponse<JsonNode> response = Unirest.get(PIVOTAL_URL + API_PATH + request)
+                    .header(TOKEN_HEADER, token)
+                    .asJson();
+
+            if (!response.isSuccess()) {
+                throw new HttpException(response.getStatusText(), response.getStatus());
+            }
+
+            JSONObject obj = response.getBody().getObject();
+
+            return obj.getInt("id");
+    }
+
+
+
     private JSONArray getFiles(String taskID) throws HttpException {
         String request = "/projects/" + projectID + "/stories/" + taskID + "/comments/?fields=file_attachments";
 
