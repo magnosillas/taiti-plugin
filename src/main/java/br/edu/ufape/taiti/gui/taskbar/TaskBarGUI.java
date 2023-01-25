@@ -157,43 +157,6 @@ public class TaskBarGUI {
     public void configTaskList(PivotalTracker pivotalTracker){
         try {
 
-//            JSONArray plannedStories = pivotalTracker.getPlannedStories();
-//            //Primeiro reseto as listas
-//            people.clear();
-//            storys.clear();
-//
-//            //Adiciono minhas tasks que não começaram e que tem o arquivo scenarios
-//            for(Object obj : plannedStories){
-//                Task plannedStory = new Task((JSONObject) obj);
-//                JSONObject taitiComment = pivotalTracker.getTaitiComment(pivotalTracker.getComments(String.valueOf(plannedStory.getId())));
-//                if(plannedStory.getState().equals("unstarted") && taitiComment.getString("text").equals("[TAITI] Scenarios")){
-//                    storys.add(plannedStory);
-//
-//                    String storyName = plannedStory.getStoryName();
-//                    if (storyName.length() > 50) {
-//                        storyName = String.format("%s...", storyName.substring(0, 50));
-//                    }
-//
-//                    addListElement("<html><b>" +  storyName + "</b></html>");
-//                }
-//            }
-//
-//            //Adiciono as outras tasks que não são minhas e que começaram
-//            for( Object obj : plannedStories){
-//                Task plannedStory = new Task((JSONObject) obj);
-//                JSONObject taitiComment = pivotalTracker.getTaitiComment(pivotalTracker.getComments(String.valueOf(plannedStory.getId())));
-//                if(plannedStory.getState().equals("started") && taitiComment.getString("text").equals("[TAITI] Scenarios")){
-//                    storys.add(plannedStory);
-//                    String storyName = plannedStory.getStoryName();
-//                    if (storyName.length() > 50) {
-//                        storyName = String.format("%s...", storyName.substring(0, 50));
-//                    }
-//                    addListElement("<html>" + storyName  + "</html>");
-//                }
-//            }
-
-
-
             JSONArray plannedStories = pivotalTracker.getPlannedStories();
             /**
              * Primeiramente esvazio o array que contem as tasks para preenche-lo novamente com as informações mais recentes
@@ -234,15 +197,11 @@ public class TaskBarGUI {
                 addListElement("<html>" + storyName  + "</html>");
             }
 
-
-
-
-
         } catch (HttpException e) {
             e.printStackTrace();
         }
     }
-
+ // Função para limitar o texto das tasks na TaskList
     private String truncateStoryName(String storyName){
         if (storyName.length() > 50) {
             storyName = String.format("%s...", storyName.substring(0, 50));
@@ -256,8 +215,6 @@ public class TaskBarGUI {
         for (String p : people) {
             listPeopleModel.addElement(p);
         }
-
-
     }
 
 
