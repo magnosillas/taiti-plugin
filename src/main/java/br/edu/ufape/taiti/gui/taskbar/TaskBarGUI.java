@@ -37,7 +37,7 @@ public class TaskBarGUI {
     private final ArrayList<String> people;
     private final DefaultListModel<String> listPeopleModel;
     private final ArrayList<Task> storys;
-    private int ownerID;
+    private final int ownerID;
     public TaskBarGUI(ToolWindow toolWindow, Project project) {
 
         people = new ArrayList<>();
@@ -109,7 +109,7 @@ public class TaskBarGUI {
             @Override
             public void mouseMoved(MouseEvent e) {
                 JList l = (JList)e.getSource();
-                ListModel m = l.getModel();
+                l.getModel();
                 int index = l.locationToIndex(e.getPoint());
                 if( index>-1 ) {
                     /**String que fica na tooltip da tasklist **/
@@ -162,28 +162,20 @@ public class TaskBarGUI {
             listPeopleModel.removeAllElements();
             List<Task> unstartedStories = new ArrayList<>();
             List<Task> startedStories = new ArrayList<>();
-            String scenarios = "";
             for(int i = 0; i < plannedStories.length(); i++){
                 JSONObject obj = plannedStories.getJSONObject(i);
                 Task plannedStory = new Task(obj);
-
                 JSONObject taitiComment = pivotalTracker.getTaitiComment(pivotalTracker.getComments(String.valueOf(plannedStory.getId())));
                 //Seleciono apenas as tasks que contem o arquivo [TAITI] Scenarios, ou seja, que já foram adicionados
-                if(taitiComment == null) {
-                    scenarios = "banana";
-                }else {
-                    scenarios = taitiComment.getString("text");
-                }
-                    if (scenarios.equals("[TAITI] Scenarios")) {
-                        //Adiciono a uma lista as minhas tasks que ainda não começaram
-                        if (plannedStory.getState().equals("unstarted") && plannedStory.getOwnerID() == ownerID) {
-                            unstartedStories.add(plannedStory);
-                        }
-                        //Adiciono a uma lista as tasks que já começaram de outros membros
-                        else if (plannedStory.getState().equals("started") && plannedStory.getOwnerID() != ownerID) {
-                            startedStories.add(plannedStory);
-                        }
-
+                if ( (taitiComment != null && taitiComment.getString("text").equals("[TAITI] Scenarios"))) {
+                    //Adiciono a uma lista as minhas tasks que ainda não começaram
+                    if (plannedStory.getState().equals("unstarted") && plannedStory.getOwnerID() == ownerID) {
+                        unstartedStories.add(plannedStory);
+                    }
+                    //Adiciono a uma lista as tasks que já começaram de outros membros
+                    else if (plannedStory.getState().equals("started") && plannedStory.getOwnerID() != ownerID) {
+                        startedStories.add(plannedStory);
+                    }
                 }
             }
 
@@ -221,10 +213,10 @@ public class TaskBarGUI {
         }
     }
 
-
     public JPanel getContent() {
         return TaskBar;
     }
+
 
 
 }
