@@ -1,16 +1,16 @@
 package br.edu.ufape.taiti.gui.taskbar;
 
 
-import br.edu.ufape.taiti.exceptions.HttpException;
+
 import br.edu.ufape.taiti.gui.TaitiDialog;
 import br.edu.ufape.taiti.service.PivotalTracker;
 import br.edu.ufape.taiti.service.Stories;
+import br.edu.ufape.taiti.service.Task;
 import br.edu.ufape.taiti.settings.TaitiSettingsState;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
-import kong.unirest.json.JSONArray;
-import kong.unirest.json.JSONObject;
+
 
 
 import javax.swing.*;
@@ -29,23 +29,32 @@ import java.util.stream.Collectors;
 
 public class TaskBarGUI {
 
+
     private JPanel TaskBar;
     private JPanel buttonsPanel;
     private JButton refreshButton;
     private JButton addButton;
     private JTextField txtSearch;
-    private JList<String> tasksList;
-    private final ArrayList<String> people;
-    private final DefaultListModel<String> listPeopleModel;
-    private final ArrayList<Task> storys;
-    private final int ownerID;
+    private JList<String> unstartedList;
+    private JList<String> startedList;
+    private final ArrayList<String> list1;
+    private final ArrayList<String> list2;
+    private final DefaultListModel<String> listUnstartedModel;
+    private final DefaultListModel<String> listStartedModel;
+    private final ArrayList<Task> storysList1;
+    private final ArrayList<Task> storysList2;
+
     public TaskBarGUI(ToolWindow toolWindow, Project project) {
 
-        people = new ArrayList<>();
-        listPeopleModel = new DefaultListModel<>();
-        tasksList.setModel(listPeopleModel);
+        list1 = new ArrayList<>();
+        list2 = new ArrayList<>();
+        listUnstartedModel = new DefaultListModel<>();
+        unstartedList.setModel(listUnstartedModel);
+        listStartedModel = new DefaultListModel<>();
+        startedList.setModel(listStartedModel);
         addPlaceHolderStyle(txtSearch);
-        storys = new ArrayList<>();
+        storysList1 = new ArrayList<>();
+        storysList2 = new ArrayList<>();
 
 
         //Inicializa um objeto PivotalTracker para busca de dados
@@ -57,18 +66,14 @@ public class TaskBarGUI {
 
         refreshButton.addActionListener(e -> configTaskList(pivotalTracker));
 
-        try {
-           ownerID = pivotalTracker.getPersonId();
-        } catch (HttpException e) {
-            throw new RuntimeException(e);
-        }
-
         txtSearch.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
                 super.keyReleased(e);
-                listPeopleModel.clear();
-                listPeopleModel.addAll(searchList(txtSearch.getText(),people));
+                listUnstartedModel.clear();
+                listUnstartedModel.addAll(searchList(txtSearch.getText(), list1));
+                listStartedModel.clear();
+                listStartedModel.addAll(searchList(txtSearch.getText(), list2));
             }
         });
 
@@ -106,7 +111,7 @@ public class TaskBarGUI {
         });
 
 
-        tasksList.addMouseMotionListener(new MouseMotionAdapter() {
+        unstartedList.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
                 JList l = (JList)e.getSource();
@@ -114,9 +119,23 @@ public class TaskBarGUI {
                 int index = l.locationToIndex(e.getPoint());
                 if( index>-1 ) {
                     /**String que fica na tooltip da tasklist **/
-                    l.setToolTipText("<html>" + storys.get(index).getStoryName() +
-                                    "<br>TaskID: #" + storys.get(index).getId()+
-                                    "<br>OwnerID: "+ storys.get(index).getOwnerID() +"</html>");
+                    l.setToolTipText("<html>" + storysList1.get(index).getStoryName() +
+                                    "<br>TaskID: #" + storysList1.get(index).getId()+
+                                    "<br>OwnerID: "+ storysList1.get(index).getOwnerID() +"</html>");
+                }
+            }
+        });
+        startedList.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                JList l = (JList)e.getSource();
+                l.getModel();
+                int index = l.locationToIndex(e.getPoint());
+                if( index>-1 ) {
+                    /**String que fica na tooltip da tasklist **/
+                    l.setToolTipText("<html>" + storysList2.get(index).getStoryName() +
+                            "<br>TaskID: #" + storysList2.get(index).getId()+
+                            "<br>OwnerID: "+ storysList2.get(index).getOwnerID() +"</html>");
                 }
             }
         });
@@ -125,7 +144,7 @@ public class TaskBarGUI {
          */
 
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-        executor.scheduleAtFixedRate(() -> configTaskList(pivotalTracker), 0, 60, TimeUnit.SECONDS);
+        executor.scheduleAtFixedRate(() -> configTaskList(pivotalTracker), 0, 1, TimeUnit.MINUTES);
 
     }
 
@@ -153,29 +172,33 @@ public class TaskBarGUI {
 
     public void configTaskList(PivotalTracker pivotalTracker){
 
-            /**
-             * Primeiramente esvazio o array que contem as tasks para preenche-lo novamente com as informações mais recentes
-             */
-            people.clear();
-            storys.clear();
-            listPeopleModel.removeAllElements();
+        /**
+         * Primeiramente esvazio o array que contem as tasks para preenche-lo novamente com as informações mais recentes
+         */
+
+
 
             Stories plannedStories = new Stories(pivotalTracker);
             plannedStories.clearLists();
             plannedStories.startList();
+            listUnstartedModel.removeAllElements();
+            listStartedModel.removeAllElements();
+            list1.clear();
+            list2.clear();
+            storysList1.clear();
 
             // Add the unstarted stories to the main list first
             for(Task unstartedStory : plannedStories.getUnstartedStories()){
-                storys.add(unstartedStory);
+                storysList1.add(unstartedStory);
                 String storyName = truncateStoryName(unstartedStory.getStoryName());
-                addListElement("<html><b>" +  storyName + "</b></html>");
+                addListElement(storyName,list1,listUnstartedModel );
             }
 
             // Add the started stories to the main list
             for(Task startedStory : plannedStories.getStartedStories()){
-                storys.add(startedStory);
+                storysList2.add(startedStory);
                 String storyName = truncateStoryName(startedStory.getStoryName());
-                addListElement("<html>" + storyName  + "</html>");
+                addListElement(storyName,list2,listStartedModel);
             }
     }
  // Função para limitar o texto das tasks na TaskList
@@ -186,11 +209,11 @@ public class TaskBarGUI {
         return storyName;
     }
 
-    public void addListElement(String task){
-        people.add(task);
-        listPeopleModel.removeAllElements();
-        for (String p : people) {
-            listPeopleModel.addElement(p);
+    public void addListElement(String task, ArrayList<String> list, DefaultListModel<String> model){
+        list.add(task);
+        model.removeAllElements();
+        for (String p : list) {
+            model.addElement(p);
         }
     }
 

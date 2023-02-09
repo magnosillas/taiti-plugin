@@ -1,7 +1,6 @@
 package br.edu.ufape.taiti.service;
 
 import br.edu.ufape.taiti.exceptions.HttpException;
-import br.edu.ufape.taiti.gui.taskbar.Task;
 import kong.unirest.json.JSONArray;
 import kong.unirest.json.JSONObject;
 
@@ -9,11 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Stories {
-    private List<Task> unstartedStories;
-    private List<Task> startedStories;
-    private JSONArray plannedStories;
-    private PivotalTracker pivotalTracker;
-    private int ownerID;
+    private final List<Task> unstartedStories;
+    private final List<Task> startedStories;
+    private final PivotalTracker pivotalTracker;
+    private final int ownerID;
 
     public Stories(PivotalTracker pivotalTracker){
 
@@ -36,7 +34,7 @@ public class Stories {
 
     public void startList(){
         try {
-            plannedStories = pivotalTracker.getPlannedStories();
+            JSONArray plannedStories = pivotalTracker.getPlannedStories();
 
             for(int i = 0; i < plannedStories.length(); i++){
                 JSONObject obj = plannedStories.getJSONObject(i);

@@ -1,4 +1,4 @@
-package br.edu.ufape.taiti.gui.taskbar;
+package br.edu.ufape.taiti.service;
 
 
 import kong.unirest.json.JSONObject;

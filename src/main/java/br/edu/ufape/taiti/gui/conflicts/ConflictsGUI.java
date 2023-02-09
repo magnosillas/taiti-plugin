@@ -1,19 +1,27 @@
 package br.edu.ufape.taiti.gui.conflicts;
 
+import br.edu.ufape.taiti.service.PivotalTracker;
+import br.edu.ufape.taiti.service.Stories;
+import br.edu.ufape.taiti.service.Task;
+import br.edu.ufape.taiti.settings.TaitiSettingsState;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
-import org.jdesktop.swingx.renderer.DefaultTableRenderer;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
+import java.util.List;
 
 public class ConflictsGUI {
     private JPanel ConflictsPanel;
     private JTable ShowTable;
+    private PivotalTracker pivotalTracker;
 
     public ConflictsGUI(ToolWindow toolWindow, Project project){
+        TaitiSettingsState settings = TaitiSettingsState.getInstance(project);
+        settings.retrieveStoredCredentials(project);
+        pivotalTracker = new PivotalTracker(settings.getToken(), settings.getPivotalURL(), project);
 
         createTable();
 
@@ -21,7 +29,12 @@ public class ConflictsGUI {
 
     private void createTable() {
 
-        Object[][] data = { {"#754924836","Como Nutricionista eu quero fazer Login no sistema para cadastrar e acompanhar meus pacientes",
+        Stories plannedStories = new Stories(pivotalTracker);
+        plannedStories.clearLists();
+        plannedStories.startList();
+        List<Task> unstartedTasks = plannedStories.getUnstartedStories();
+
+        Object[][] data = { { "#" + unstartedTasks.get(0).getId() ,"Como Nutricionista eu quero fazer Login no sistema para cadastrar e acompanhar meus pacientes",
                             "https://www.pivotaltracker.com/story/show/183924843",2,null},
                             {"#183924836","Ele Gosta","https://www.pivotaltracker.com/story/show/183924836",4,null}
 
