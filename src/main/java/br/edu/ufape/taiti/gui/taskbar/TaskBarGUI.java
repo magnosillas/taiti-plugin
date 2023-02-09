@@ -4,6 +4,7 @@ package br.edu.ufape.taiti.gui.taskbar;
 import br.edu.ufape.taiti.exceptions.HttpException;
 import br.edu.ufape.taiti.gui.TaitiDialog;
 import br.edu.ufape.taiti.service.PivotalTracker;
+import br.edu.ufape.taiti.service.Stories;
 import br.edu.ufape.taiti.settings.TaitiSettingsState;
 
 import com.intellij.openapi.project.Project;
@@ -151,51 +152,31 @@ public class TaskBarGUI {
     }
 
     public void configTaskList(PivotalTracker pivotalTracker){
-        try {
 
-            JSONArray plannedStories = pivotalTracker.getPlannedStories();
             /**
              * Primeiramente esvazio o array que contem as tasks para preenche-lo novamente com as informações mais recentes
              */
             people.clear();
             storys.clear();
             listPeopleModel.removeAllElements();
-            List<Task> unstartedStories = new ArrayList<>();
-            List<Task> startedStories = new ArrayList<>();
-            for(int i = 0; i < plannedStories.length(); i++){
-                JSONObject obj = plannedStories.getJSONObject(i);
-                Task plannedStory = new Task(obj);
-                JSONObject taitiComment = pivotalTracker.getTaitiComment(pivotalTracker.getComments(String.valueOf(plannedStory.getId())));
-                //Seleciono apenas as tasks que contem o arquivo [TAITI] Scenarios, ou seja, que já foram adicionados
-                if ( (taitiComment != null && taitiComment.getString("text").equals("[TAITI] Scenarios"))) {
-                    //Adiciono a uma lista as minhas tasks que ainda não começaram
-                    if (plannedStory.getState().equals("unstarted") && plannedStory.getOwnerID() == ownerID) {
-                        unstartedStories.add(plannedStory);
-                    }
-                    //Adiciono a uma lista as tasks que já começaram de outros membros
-                    else if (plannedStory.getState().equals("started") && plannedStory.getOwnerID() != ownerID) {
-                        startedStories.add(plannedStory);
-                    }
-                }
-            }
+
+            Stories plannedStories = new Stories(pivotalTracker);
+            plannedStories.clearLists();
+            plannedStories.startList();
 
             // Add the unstarted stories to the main list first
-            for(Task unstartedStory : unstartedStories){
+            for(Task unstartedStory : plannedStories.getUnstartedStories()){
                 storys.add(unstartedStory);
                 String storyName = truncateStoryName(unstartedStory.getStoryName());
                 addListElement("<html><b>" +  storyName + "</b></html>");
             }
 
             // Add the started stories to the main list
-            for(Task startedStory : startedStories){
+            for(Task startedStory : plannedStories.getStartedStories()){
                 storys.add(startedStory);
                 String storyName = truncateStoryName(startedStory.getStoryName());
                 addListElement("<html>" + storyName  + "</html>");
             }
-
-        } catch (HttpException e) {
-            e.printStackTrace();
-        }
     }
  // Função para limitar o texto das tasks na TaskList
     private String truncateStoryName(String storyName){
