@@ -3,6 +3,7 @@ package br.edu.ufape.taiti.gui.taskbar;
 
 
 import br.edu.ufape.taiti.gui.TaitiDialog;
+
 import br.edu.ufape.taiti.service.PivotalTracker;
 import br.edu.ufape.taiti.service.Stories;
 import br.edu.ufape.taiti.service.Task;
@@ -100,7 +101,7 @@ public class TaskBarGUI {
             }
         });
 
-        /**
+        /*
          * Este método pega a referência ao projeto atualmente aberto no IntelliJ
          * e cria um objeto TaitiDialog, responsável por mostrar a janela da aplicação.
          */
@@ -115,13 +116,13 @@ public class TaskBarGUI {
             @Override
             public void mouseMoved(MouseEvent e) {
                 JList l = (JList)e.getSource();
-                l.getModel();
+
                 int index = l.locationToIndex(e.getPoint());
                 if( index>-1 ) {
-                    /**String que fica na tooltip da tasklist **/
+                    /*String que fica na tooltip da tasklist **/
                     l.setToolTipText("<html>" + storysList1.get(index).getStoryName() +
                                     "<br>TaskID: #" + storysList1.get(index).getId()+
-                                    "<br>OwnerID: "+ storysList1.get(index).getOwnerID() +"</html>");
+                                    "<br>OwnerID: "+ storysList1.get(index).getPersonName() +"</html>");
                 }
             }
         });
@@ -129,17 +130,17 @@ public class TaskBarGUI {
             @Override
             public void mouseMoved(MouseEvent e) {
                 JList l = (JList)e.getSource();
-                l.getModel();
+
                 int index = l.locationToIndex(e.getPoint());
                 if( index>-1 ) {
-                    /**String que fica na tooltip da tasklist **/
+                    /*String que fica na tooltip da tasklist **/
                     l.setToolTipText("<html>" + storysList2.get(index).getStoryName() +
                             "<br>TaskID: #" + storysList2.get(index).getId()+
-                            "<br>OwnerID: "+ storysList2.get(index).getOwnerID() +"</html>");
+                            "<br>Owner: "+ storysList2.get(index).getPersonName() +"</html>");
                 }
             }
         });
-        /**
+        /*
          * Essa parte é responsável pelo Refresh de tempo em tempo
          */
 
@@ -175,6 +176,7 @@ public class TaskBarGUI {
         /**
          * Primeiramente esvazio o array que contem as tasks para preenche-lo novamente com as informações mais recentes
          */
+
 
 
 

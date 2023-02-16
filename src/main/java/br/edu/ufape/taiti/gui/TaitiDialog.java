@@ -1,23 +1,27 @@
 package br.edu.ufape.taiti.gui;
 
+import br.edu.ufape.taiti.exceptions.HttpException;
 import br.edu.ufape.taiti.service.PivotalTracker;
 import br.edu.ufape.taiti.settings.TaitiSettingsState;
 import br.edu.ufape.taiti.tool.TaitiTool;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.ValidationInfo;
+import com.intellij.ui.table.JBTable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jsoup.internal.StringUtil;
 
 import javax.swing.*;
+import java.io.File;
+import java.io.IOException;
 
-/**
- * Esta classe é responsável por mostrar a tela principal da aplicação. Ela possui um objeto MainPanel,
- * responsável por toda a interface gráfica da aplicação, possui um objeto PivotalTracker, responsável por toda a
- * comunicação com o Pivotal Tracker e possui um objeto TaitiTool, responsável por rodar a ferramenta TAITI.
- */
+
 public class TaitiDialog extends DialogWrapper {
 
     private final MainPanel mainPanel;
+    private final JTextField textTaskID;
+    private final JBTable table;
 
     private PivotalTracker pivotalTracker;
     private TaitiTool taiti;
@@ -27,21 +31,18 @@ public class TaitiDialog extends DialogWrapper {
     public TaitiDialog(Project project) {
         super(true);
 
+        this.mainPanel = new MainPanel(project);
+        this.textTaskID = mainPanel.getTextTaskID();
+        this.table = mainPanel.getTable();
         this.project = project;
+
         prepareServices();
 
-        this.mainPanel = new MainPanel(project, taiti, pivotalTracker);
-
-        setTitle("TAITIr - Test Analyzer for Inferring Task Interface and Conflict Risk");
-        setSize(1100,630);
+        setTitle("TAITI");
+        setSize(1000,810);
         init();
     }
 
-    /**
-     * Neste método é inicializado os objetos responsáveis pelo Pivotal Tracker e por rodar TAITI,
-     * para isso é necessário obter o token e o link do Pivotal Tracker onde o usuário adicionou nas configurações,
-     * assim, é criado um objeto que guarda os estados das configurações do plugin.
-     */
     private void prepareServices() {
         TaitiSettingsState settings = TaitiSettingsState.getInstance(project);
         settings.retrieveStoredCredentials(project);
@@ -50,22 +51,64 @@ public class TaitiDialog extends DialogWrapper {
         pivotalTracker = new PivotalTracker(settings.getToken(), settings.getPivotalURL(), project);
     }
 
-    /**
-     * Este método deve retornar um Componente responsável por mostrar toda a parte gráfica do plugin,
-     * por isso, é retornado o painel raiz do MainPanel.
-     */
     @Override
     protected @Nullable JComponent createCenterPanel() {
         return mainPanel.getRootPanel();
     }
 
-    /**
-     * Este método é responsável por mostrar os botões na janela da aplicação, mas como os nomes e ações dos botões mudam
-     * de uma tela para outra, é retornado um array vazio aqui para que não mostre nenhum botão na tela e esse botões
-     * serão adicionado dinamicamente nas classes responsáveis pela interface gráfica.
-     */
+    @Override
+    public @Nullable JComponent getPreferredFocusedComponent() {
+        return textTaskID;
+    }
+
+    @Override
+    protected @Nullable ValidationInfo doValidate() {
+        ValidationInfo validationInfo;
+
+        // check if the fields is empty
+        if (StringUtil.isBlank(textTaskID.getText())) {
+            validationInfo = new ValidationInfo("The Task ID can not be empty.", textTaskID);
+            return validationInfo;
+        }
+        if (table.getRowCount() == 1) {
+            validationInfo = new ValidationInfo("Select at least one scenario.", table);
+            return validationInfo;
+        }
+
+        // check if the input data is valid
+        String regex = "#?\\d+$";
+        if (!textTaskID.getText().matches(regex)) {
+            validationInfo = new ValidationInfo("The task ID is wrong.", textTaskID);
+            return validationInfo;
+        }
+
+        return null;
+    }
+
     @Override
     protected Action @NotNull [] createActions() {
-        return new Action[]{};
+        return new Action[]{getOKAction(), getCancelAction()};
     }
+
+    @Override
+    protected void doOKAction() {
+        super.doOKAction();
+
+        String taskID = textTaskID.getText().replace("#", "");
+
+        try {
+            File file = taiti.createScenariosFile(mainPanel.getScenarios());
+            pivotalTracker.saveScenarios(file, taskID);
+            taiti.deleteScenariosFile();
+        } catch (IOException e) {
+            System.out.println("Erro ao criar o arquivo!");
+        } catch (HttpException e) {
+            System.out.println(e.getStatusText() + " - " + e.getStatusNumber());
+            taiti.deleteScenariosFile();
+        }
+    }
+
+
+
+
 }

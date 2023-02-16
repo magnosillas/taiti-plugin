@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * Classe responsável por fazer todas as requisições ao Pivotal Tracker. Para fazer as requisições é utilizado a
- * biblioteca UniRest (http://kong.github.io/unirest-java/).
+ * biblioteca UniRest (<a href="http://kong.github.io/unirest-java/">...</a>).
  */
 public class PivotalTracker {
     private static final String PIVOTAL_URL = "https://www.pivotaltracker.com";
@@ -118,6 +118,31 @@ public class PivotalTracker {
             return obj.getInt("id");
     }
 
+    public List<Person> getMembers() throws HttpException{
+
+        String request = "/projects/" + projectID + "/memberships";
+
+        HttpResponse<JsonNode> response = Unirest.get(PIVOTAL_URL + API_PATH + request)
+                .header(TOKEN_HEADER, token)
+                .asJson();
+
+        if (!response.isSuccess()) {
+            throw new HttpException(response.getStatusText(), response.getStatus());
+        }
+
+        JSONArray memberships = response.getBody().getArray();
+        List<Person> people = new ArrayList<>();
+        for (int i = 0; i < memberships.length(); i++) {
+            JSONObject membership = memberships.getJSONObject(i);
+            JSONObject person = membership.getJSONObject("person");
+            int id = person.getInt("id");
+            String name = person.getString("name");
+            people.add(new Person(id, name));
+        }
+
+        return people;
+
+    }
 
 
     private JSONArray getFiles(String taskID) throws HttpException {

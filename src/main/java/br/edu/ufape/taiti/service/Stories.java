@@ -38,7 +38,7 @@ public class Stories {
 
             for(int i = 0; i < plannedStories.length(); i++){
                 JSONObject obj = plannedStories.getJSONObject(i);
-                Task plannedStory = new Task(obj);
+                Task plannedStory = new Task(obj, pivotalTracker.getMembers());
                 JSONObject taitiComment = pivotalTracker.getTaitiComment(pivotalTracker.getComments(String.valueOf(plannedStory.getId())));
                 //Seleciono apenas as tasks que contem o arquivo [TAITI] Scenarios, ou seja, que já foram adicionados
                 if ( (taitiComment != null && taitiComment.getString("text").equals("[TAITI] Scenarios"))) {
@@ -67,7 +67,5 @@ public class Stories {
         return startedStories;
     }
 
-    public int getOwnerID() {
-        return ownerID;
-    }
+
 }

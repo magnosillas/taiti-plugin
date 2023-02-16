@@ -2,15 +2,14 @@ package br.edu.ufape.taiti.gui.configuretask.table;
 
 import java.io.File;
 
-/**
- * Esta classe representa cada linha na tabela onde mostra todos os scenarios selecionados.
- */
 public class TestRow {
     private File file;
+    private Boolean checkbox;
     private String test;
 
-    public TestRow(File file, String test) {
+    public TestRow(File file, Boolean checkbox, String test) {
         this.file = file;
+        this.checkbox = checkbox;
         this.test = test;
     }
 
@@ -18,8 +17,24 @@ public class TestRow {
         return file;
     }
 
+    public Boolean getCheckbox() {
+        return checkbox;
+    }
+
     public String getTest() {
         return test;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
+    }
+
+    public void setCheckbox(Boolean checkbox) {
+        this.checkbox = checkbox;
+    }
+
+    public void setTest(String test) {
+        this.test = test;
     }
 
     @Override
@@ -31,10 +46,5 @@ public class TestRow {
         }
 
         return false;
-    }
-
-    @Override
-    public String toString() {
-        return getTest();
     }
 }
