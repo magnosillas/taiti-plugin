@@ -11,7 +11,7 @@ import br.edu.ufape.taiti.settings.TaitiSettingsState;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
-
+import kong.unirest.json.JSONArray;
 
 
 import javax.swing.*;
@@ -44,6 +44,7 @@ public class TaskBarGUI {
     private final DefaultListModel<String> listStartedModel;
     private final ArrayList<Task> storysList1;
     private final ArrayList<Task> storysList2;
+    private JSONArray files;
 
     public TaskBarGUI(ToolWindow toolWindow, Project project) {
 
@@ -107,7 +108,8 @@ public class TaskBarGUI {
          */
         addButton.addActionListener(e -> {
 
-            TaitiDialog taitiDialog = new TaitiDialog(project);
+
+            TaitiDialog taitiDialog = new TaitiDialog(project, this);
             taitiDialog.show();
         });
 
@@ -122,7 +124,7 @@ public class TaskBarGUI {
                     /*String que fica na tooltip da tasklist **/
                     l.setToolTipText("<html>" + storysList1.get(index).getStoryName() +
                                     "<br>TaskID: #" + storysList1.get(index).getId()+
-                                    "<br>OwnerID: "+ storysList1.get(index).getPersonName() +"</html>");
+                                    "<br>Owner: "+ storysList1.get(index).getPersonName() +"</html>");
                 }
             }
         });
@@ -176,9 +178,6 @@ public class TaskBarGUI {
         /**
          * Primeiramente esvazio o array que contem as tasks para preenche-lo novamente com as informações mais recentes
          */
-
-
-
 
             Stories plannedStories = new Stories(pivotalTracker);
             plannedStories.clearLists();

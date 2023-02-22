@@ -10,11 +10,11 @@ import java.util.ArrayList;
 
 public class FeatureFileViewModel extends AbstractTableModel {
 
-    private String[] columns;
-    private ArrayList<FileLine> rows;
-    private ArrayList<ScenarioTestInformation> scenarios;
-    private TestsTableModel tableModel;
-    private File file;
+    private final String[] columns;
+    private final ArrayList<FileLine> rows;
+    private final ArrayList<ScenarioTestInformation> scenarios;
+    private final TestsTableModel tableModel;
+    private final File file;
 
     public FeatureFileViewModel(File file, ArrayList<FileLine> rows, ArrayList<ScenarioTestInformation> scenarios, TestsTableModel tableModel) {
         this.file = file;

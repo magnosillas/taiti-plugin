@@ -60,6 +60,13 @@ public class MainPanel {
         configureTree();
         initTable();
         initCenterPanel();
+        textTaskID.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                super.focusLost(e);
+
+            }
+        });
     }
 
     public JPanel getRootPanel() {
