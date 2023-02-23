@@ -85,7 +85,7 @@ public class MainPanel {
         return table;
     }
 
-    private void updateCenterPanel(File file) {
+    public void updateCenterPanel(File file) {
         String filePath = file.getAbsolutePath();
         String fileName = file.getName();
         OpenFeatureFile openFeatureFile;
@@ -136,6 +136,15 @@ public class MainPanel {
         featureFileView.setRowSelectionAllowed(false);
 
         centerPanel.add(new JScrollPane(featureFileView), BorderLayout.CENTER);
+    }
+
+    public void addScenario(File file, int row){
+        updateCenterPanel(file);
+        if(repositoryOpenFeatureFile.exists(file)){
+
+            featureFileViewModel.setValueAt(true, row+1, 0);
+            featureFileViewModel.fireTableDataChanged();
+        }
     }
 
     private void initTable() {

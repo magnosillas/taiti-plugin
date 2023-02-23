@@ -49,7 +49,7 @@ public class FeatureFileViewModel extends AbstractTableModel {
     }
 
     @Override
-    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+    public void setValueAt(Object Value, int rowIndex, int columnIndex) {
         FileLine fileLine = rows.get(rowIndex);
         String line = fileLine.getLine().strip();
         if (columnIndex == 0 && line.startsWith("Scenario")) {

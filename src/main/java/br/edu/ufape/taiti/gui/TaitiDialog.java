@@ -14,10 +14,8 @@ import org.jetbrains.annotations.Nullable;
 import org.jsoup.internal.StringUtil;
 
 import javax.swing.*;
-import java.awt.event.FocusEvent;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -32,6 +30,7 @@ public class TaitiDialog extends DialogWrapper {
     private TaitiTool taiti;
 
     private final Project project;
+    private boolean executed = false;
 
     public TaitiDialog(Project project, TaskBarGUI taskBarGUI) {
         super(true);
@@ -94,21 +93,49 @@ public class TaitiDialog extends DialogWrapper {
             return validationInfo;
         }
 
-        try {
-            String storyID = textTaskID.getText().replace("#", "");
-            File files = pivotalTracker.downloadFiles(storyID);
-            TaitiTool taiti = new TaitiTool(project);
-            List<String[]> records = taiti.readTaitiFile(files);
-            for (String[] record : records) {
-                for (String field : record) {
-                    System.out.print(field + ", ");
+        if(!executed){
+            try {
+                String storyID = textTaskID.getText().replace("#", "");
+                File files = pivotalTracker.downloadFiles(storyID);
+                if(files != null) {
+                    TaitiTool taiti = new TaitiTool(project);
+                    List<String[]> records = taiti.readTaitiFile(files);
+
+                    for(String[] record : records){
+                        String filepath = record[0];
+                        String absolutePath = project.getBasePath() + "/" + filepath;
+                        File file = new File(absolutePath);
+
+                        String row = record[1];
+                        String numbers = row.substring(1, row.length() - 1);
+                        numbers = numbers.replaceAll(",\\s", ",");
+                        String[] parts = numbers.split(",");
+                        for(String num : parts){
+                            int intNum = Integer.parseInt(num);
+                            mainPanel.addScenario(file, intNum);
+                        }
+
+                    }
+
+//                    String filepath = records.get(0)[0];
+//                    String absolutePath = project.getBasePath() + "/" + filepath;
+//
+//                    File file = new File(absolutePath);
+//                    String row = records.get(0)[1];
+//                    String numbers = row.substring(1, row.length() - 1);
+//                    String[] parts = numbers.split(",");
+
+
+//                    mainPanel.addScenario(file, Integer.parseInt(parts[0]));
+
+                    files.delete();
+                    executed = true;
                 }
-                System.out.println();
+
+
+            } catch (HttpException en) {
+                throw new RuntimeException(en);
             }
-
-
-        } catch (HttpException en) {
-            throw new RuntimeException(en);
         }
 
         return null;
