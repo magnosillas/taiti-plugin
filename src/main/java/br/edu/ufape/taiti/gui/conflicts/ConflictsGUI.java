@@ -30,12 +30,11 @@ public class ConflictsGUI {
 
     private void createTable() {
 
-        Stories plannedStories = new Stories(pivotalTracker, project);
-        plannedStories.clearLists();
-        plannedStories.startList();
-        List<Task> unstartedTasks = plannedStories.getUnstartedStories();
 
-        Object[][] data = { { "#" + unstartedTasks.get(0).getId() ,"Como Nutricionista eu quero fazer Login no sistema para cadastrar e acompanhar meus pacientes",
+
+
+
+        Object[][] data = { { "#" + "u646465" ,"Como Nutricionista eu quero fazer Login no sistema para cadastrar e acompanhar meus pacientes",
                             "https://www.pivotaltracker.com/story/show/183924843",2,null},
                             {"#183924836","Ele Gosta","https://www.pivotaltracker.com/story/show/183924836",4,null}
 
