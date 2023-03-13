@@ -45,8 +45,11 @@ public class TaskBarGUI {
     private final ArrayList<Task> storysList1;
     private final ArrayList<Task> storysList2;
     private JSONArray files;
+    private Project project;
 
     public TaskBarGUI(ToolWindow toolWindow, Project project) {
+
+        this.project=project;
 
         list1 = new ArrayList<>();
         list2 = new ArrayList<>();
@@ -179,7 +182,7 @@ public class TaskBarGUI {
          * Primeiramente esvazio o array que contem as tasks para preenche-lo novamente com as informações mais recentes
          */
 
-            Stories plannedStories = new Stories(pivotalTracker);
+            Stories plannedStories = new Stories(pivotalTracker, project);
             plannedStories.clearLists();
             plannedStories.startList();
             listUnstartedModel.removeAllElements();
@@ -216,6 +219,14 @@ public class TaskBarGUI {
         for (String p : list) {
             model.addElement(p);
         }
+    }
+
+    public ArrayList<Task> getStorysList1() {
+        return storysList1;
+    }
+
+    public ArrayList<Task> getStorysList2() {
+        return storysList2;
     }
 
     public JPanel getContent() {

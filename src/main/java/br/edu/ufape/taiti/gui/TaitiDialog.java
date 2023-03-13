@@ -3,6 +3,7 @@ package br.edu.ufape.taiti.gui;
 import br.edu.ufape.taiti.exceptions.HttpException;
 import br.edu.ufape.taiti.gui.taskbar.TaskBarGUI;
 import br.edu.ufape.taiti.service.PivotalTracker;
+import br.edu.ufape.taiti.service.Task;
 import br.edu.ufape.taiti.settings.TaitiSettingsState;
 import br.edu.ufape.taiti.tool.TaitiTool;
 import com.intellij.openapi.project.Project;
@@ -16,6 +17,7 @@ import org.jsoup.internal.StringUtil;
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -93,50 +95,31 @@ public class TaitiDialog extends DialogWrapper {
             return validationInfo;
         }
 
-        if(!executed){
-            try {
-                String storyID = textTaskID.getText().replace("#", "");
-                File files = pivotalTracker.downloadFiles(storyID);
-                if(files != null) {
-                    TaitiTool taiti = new TaitiTool(project);
-                    List<String[]> records = taiti.readTaitiFile(files);
+        if (!executed) {
+            String storyID = textTaskID.getText().replace("#", ""); //pego a id que escrevi na tela add
+            List<Task> allTasks = new ArrayList<>();
+            allTasks.addAll(taskBarGUI.getStorysList1()); //crio uma lista para todas as tasks com scenarios existentes
+            allTasks.addAll(taskBarGUI.getStorysList2());
 
-                    for(String[] record : records){
-                        String filepath = record[0];
-                        String absolutePath = project.getBasePath() + "/" + filepath;
+            for (Task task : allTasks) { // percorro todas as tasks
+                if (String.valueOf(task.getId()).equals(storyID)) { //verifico se a task que estou adicionando ja tem scenarios
+                    List<String[]> scenarios = task.getScenarios(); //pego os scenarios da task encontrada
+                    for (String[] lines : scenarios) { // percoso scenario por scenario
+                        String absolutePath = lines[0];
+                        String[] numbers = lines[1].replaceAll("[\\[\\]]", "").split(", ");
                         File file = new File(absolutePath);
-
-                        String row = record[1];
-                        String numbers = row.substring(1, row.length() - 1);
-                        numbers = numbers.replaceAll(",\\s", ",");
-                        String[] parts = numbers.split(",");
-                        for(String num : parts){
-                            int intNum = Integer.parseInt(num);
-                            mainPanel.addScenario(file, intNum);
+                        for (String num : numbers) {
+                            int numero = Integer.parseInt(num);
+                            mainPanel.addScenario(file, numero); // adiciono os scenarios
                         }
-
                     }
-
-//                    String filepath = records.get(0)[0];
-//                    String absolutePath = project.getBasePath() + "/" + filepath;
-//
-//                    File file = new File(absolutePath);
-//                    String row = records.get(0)[1];
-//                    String numbers = row.substring(1, row.length() - 1);
-//                    String[] parts = numbers.split(",");
-
-
-//                    mainPanel.addScenario(file, Integer.parseInt(parts[0]));
-
-                    files.delete();
-                    executed = true;
+                    break; // interrompe o loop externo
                 }
-
-
-            } catch (HttpException en) {
-                throw new RuntimeException(en);
             }
+
+            executed = true;
         }
+
 
         return null;
 

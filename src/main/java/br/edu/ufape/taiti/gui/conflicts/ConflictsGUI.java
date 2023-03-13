@@ -17,19 +17,20 @@ public class ConflictsGUI {
     private JPanel ConflictsPanel;
     private JTable ShowTable;
     private PivotalTracker pivotalTracker;
+    private Project project;
 
     public ConflictsGUI(ToolWindow toolWindow, Project project){
         TaitiSettingsState settings = TaitiSettingsState.getInstance(project);
         settings.retrieveStoredCredentials(project);
         pivotalTracker = new PivotalTracker(settings.getToken(), settings.getPivotalURL(), project);
-
+        this.project = project;
         createTable();
 
     }
 
     private void createTable() {
 
-        Stories plannedStories = new Stories(pivotalTracker);
+        Stories plannedStories = new Stories(pivotalTracker, project);
         plannedStories.clearLists();
         plannedStories.startList();
         List<Task> unstartedTasks = plannedStories.getUnstartedStories();

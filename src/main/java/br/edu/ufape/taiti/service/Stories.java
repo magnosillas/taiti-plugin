@@ -1,6 +1,8 @@
 package br.edu.ufape.taiti.service;
 
 import br.edu.ufape.taiti.exceptions.HttpException;
+import br.edu.ufape.taiti.tool.TaitiTool;
+import com.intellij.openapi.project.Project;
 import kong.unirest.json.JSONArray;
 import kong.unirest.json.JSONObject;
 
@@ -12,9 +14,10 @@ public class Stories {
     private final List<Task> startedStories;
     private final PivotalTracker pivotalTracker;
     private final int ownerID;
+    private Project project;
+    public Stories(PivotalTracker pivotalTracker, Project project){
 
-    public Stories(PivotalTracker pivotalTracker){
-
+        this.project = project;
         this.pivotalTracker = pivotalTracker;
         unstartedStories = new ArrayList<>();
         startedStories = new ArrayList<>();
@@ -27,6 +30,8 @@ public class Stories {
 
     }
 
+
+
     public void clearLists(){
         unstartedStories.clear();
         startedStories.clear();
@@ -38,7 +43,7 @@ public class Stories {
 
             for(int i = 0; i < plannedStories.length(); i++){
                 JSONObject obj = plannedStories.getJSONObject(i);
-                Task plannedStory = new Task(obj, pivotalTracker.getMembers());
+                Task plannedStory = new Task(obj, pivotalTracker, project);
                 JSONObject taitiComment = pivotalTracker.getTaitiComment(pivotalTracker.getComments(String.valueOf(plannedStory.getId())));
                 //Seleciono apenas as tasks que contem o arquivo [TAITI] Scenarios, ou seja, que já foram adicionados
                 if ( (taitiComment != null && taitiComment.getString("text").equals("[TAITI] Scenarios"))) {
