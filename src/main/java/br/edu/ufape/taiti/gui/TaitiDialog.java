@@ -103,14 +103,13 @@ public class TaitiDialog extends DialogWrapper {
 
             for (Task task : allTasks) { // percorro todas as tasks
                 if (String.valueOf(task.getId()).equals(storyID)) { //verifico se a task que estou adicionando ja tem scenarios
-                    List<String[]> scenarios = task.getScenarios(); //pego os scenarios da task encontrada
-                    for (String[] lines : scenarios) { // percoso scenario por scenario
-                        String absolutePath = lines[0];
-                        String[] numbers = lines[1].replaceAll("[\\[\\]]", "").split(", ");
+                    List<Object[]> scenarios = task.getScenarios(); //pego os scenarios da task encontrada
+                    for (Object[] lines : scenarios) { // percoso scenario por scenario
+                        String absolutePath = (String)lines[0];
+
                         File file = new File(absolutePath);
-                        for (String num : numbers) {
-                            int numero = Integer.parseInt(num);
-                            mainPanel.addScenario(file, numero); // adiciono os scenarios
+                        for (int num : (int[])lines[1]) {
+                            mainPanel.addScenario(file, num); // adiciono os scenarios
                         }
                     }
                     break; // interrompe o loop externo

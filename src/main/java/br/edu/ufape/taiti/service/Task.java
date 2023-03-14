@@ -8,7 +8,6 @@ import kong.unirest.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Task {
@@ -21,7 +20,10 @@ public class Task {
     private  final int ownerID;
     private final String url;
     private String personName;
-    private List<String[]> scenarios = new ArrayList<>();
+    private List<Object[]> scenarios = new ArrayList<>();
+    ArrayList<Task> conflictTasks = new ArrayList<>();
+    ArrayList<ArrayList<Object[]>> conflictScenarios = new ArrayList<>();
+    private int conflictNum;
 
 
 
@@ -55,7 +57,13 @@ public class Task {
                 List<String[]> arquivo = taiti.readTaitiFile(files);
                 for (String[] linha : arquivo) {
                     String absolutePath = project.getBasePath() + "/" + linha[0];
-                    String[] arr = new String[] { absolutePath, linha[1] };
+                    String[] numbersString = linha[1].replaceAll("[\\[\\]]", "").split(", ");
+
+                    int[] numbersInt = new int[numbersString.length];
+                    for (int i = 0; i < numbersString.length; i++) {
+                        numbersInt[i] = Integer.parseInt(numbersString[i]);
+                    }
+                    Object[] arr = new Object[] {absolutePath, numbersInt};
                     scenarios.add(arr);
                 }
                 files.delete();
@@ -68,7 +76,53 @@ public class Task {
         }
     }
 
-    public List<String[]> getScenarios() {
+    public void checkConflictRisk(List<Task> listTask) {
+
+        conflictNum = 0;
+
+
+
+
+        for (Object[] lines : scenarios) { // percorro scenario por scenario
+            String absolutePath = (String)lines[0];
+            int[] numbers = (int[]) lines[1];
+
+            for (Task auxTask : listTask) {
+                ArrayList<Object[]> conflictScenariosAux = new ArrayList<>();
+                List<Object[]> auxScenarios = auxTask.getScenarios(); //pego os scenarios da task que vou verificar
+                for (Object[] auxLines : auxScenarios) { // percoso scenario por scenario
+                    String auxAbsolutePath = (String)auxLines[0];
+                    int[] auxNumbers = (int[]) auxLines[1];
+
+                    if(absolutePath.equals(auxAbsolutePath)){
+                        ArrayList<Integer> conflictRows = new ArrayList<>();
+
+
+                        for (int num: numbers) {
+                            for (int auxNum:auxNumbers) {
+                                if(num == auxNum){
+                                    conflictRows.add(num);
+                                    conflictNum++;
+
+                                }
+                            }
+
+                        }
+                        if(!conflictRows.isEmpty()){
+                            conflictScenariosAux.add( new Object[] {absolutePath, conflictRows});
+                        }
+                    }
+                }
+                if(!conflictScenariosAux.isEmpty()){
+                    conflictTasks.add(auxTask);
+                    conflictScenarios.add(conflictScenariosAux);
+                }
+            }
+
+        }
+    }
+
+    public List<Object[]> getScenarios() {
         return scenarios;
     }
 

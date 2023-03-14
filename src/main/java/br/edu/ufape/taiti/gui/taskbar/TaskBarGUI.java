@@ -8,6 +8,7 @@ import br.edu.ufape.taiti.service.Task;
 import br.edu.ufape.taiti.settings.TaitiSettingsState;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.JBColor;
 
 import javax.swing.*;
@@ -35,14 +36,13 @@ public class TaskBarGUI {
     private JButton addButton;
     private JTextField txtSearch;
 
-
     private JTable unstartedTable;
     private JTable startedTable;
 
     private final ArrayList<Task> storysList1;
     private final ArrayList<Task> storysList2;
 
-    private Project project;
+    private final Project project;
 
     public TaskBarGUI(ToolWindow toolWindow, Project project) {
 
@@ -189,6 +189,25 @@ public class TaskBarGUI {
 
             }
         });
+        unstartedTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                if (e.getClickCount() == 2) { // Verifica se foi um clique duplo
+                    int index = unstartedTable.getSelectedRow(); // Obtém o índice da linha selecionada
+                    Task task = storysList1.get(index);
+                    task.checkConflictRisk(storysList2);
+                    ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
+                    ToolWindow myToolWindow = toolWindowManager.getToolWindow("Conflicts");
+                    if (myToolWindow != null) {
+                        myToolWindow.show(null);
+
+                    }
+
+                }
+
+            }
+        });
     }
 
 
@@ -214,7 +233,7 @@ public class TaskBarGUI {
          * Primeiramente esvazio o array que contem as tasks para preenche-lo novamente com as informações mais recentes
          */
 
-            Stories plannedStories = new Stories(pivotalTracker, project);
+        Stories plannedStories = new Stories(pivotalTracker, project);
             plannedStories.clearLists();
             plannedStories.startList();
             limparListas();
@@ -243,10 +262,10 @@ public class TaskBarGUI {
             storysList.add(Story);
             String storyName = truncateStoryName(Story.getStoryName());
 
-            List<String[]> scenario = Story.getScenarios();
+            List<Object[]> scenario = Story.getScenarios();
             int sum = 0;
-            for (String[] lines : scenario) { // percoso scenario por scenario
-                String[] numbers = lines[1].replaceAll("[\\[\\]]", "").split(", ");
+            for (Object[] lines : scenario) { // percoso scenario por scenario
+                int[] numbers = (int[]) lines[1];
                 sum += numbers.length;
             }
             model.addRow(new Object[]{storyName, sum});
