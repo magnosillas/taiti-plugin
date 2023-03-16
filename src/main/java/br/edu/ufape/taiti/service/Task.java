@@ -122,6 +122,18 @@ public class Task {
         }
     }
 
+    public ArrayList<Task> getConflictTasks() {
+        return conflictTasks;
+    }
+
+    public ArrayList<ArrayList<Object[]>> getConflictScenarios() {
+        return conflictScenarios;
+    }
+
+    public int getConflictNum() {
+        return conflictNum;
+    }
+
     public List<Object[]> getScenarios() {
         return scenarios;
     }

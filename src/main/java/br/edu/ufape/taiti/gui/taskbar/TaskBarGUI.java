@@ -2,6 +2,7 @@ package br.edu.ufape.taiti.gui.taskbar;
 
 
 import br.edu.ufape.taiti.gui.TaitiDialog;
+import br.edu.ufape.taiti.gui.conflicts.ConflictsGUI;
 import br.edu.ufape.taiti.service.PivotalTracker;
 import br.edu.ufape.taiti.service.Stories;
 import br.edu.ufape.taiti.service.Task;
@@ -53,7 +54,7 @@ public class TaskBarGUI {
         storysList1 = new ArrayList<>();
         storysList2 = new ArrayList<>();
 
-        modelo1 = new DefaultTableModel(null,new String[]{"<html><b>My unstarted tasks</b></html>", "<html><b>Scenarios</b></html>"}){
+        modelo1 = new DefaultTableModel(null,new String[]{"<html><b>My unstarted tasks</b></html>", "<html><b>Conflict Risk</b></html>"}){
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; // Tornar todas as células não editáveis
@@ -62,7 +63,7 @@ public class TaskBarGUI {
         unstartedTable.setModel(modelo1);
 
         // Definir a largura da segunda coluna como 20 pixels
-        unstartedTable.getColumnModel().getColumn(1).setMaxWidth(200);
+        unstartedTable.getColumnModel().getColumn(1).setMaxWidth(100);
 
         //centralizar os numeros de Scenarios
         TableColumnModel columns = unstartedTable.getColumnModel();
@@ -70,7 +71,7 @@ public class TaskBarGUI {
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         columns.getColumn(1).setCellRenderer(centerRenderer);
 
-        modelo2 = new DefaultTableModel(null,new String[]{"<html><b>Coworkes started tasks</b></html>", "<html><b>Scenarios</b></html>"}){
+        modelo2 = new DefaultTableModel(null,new String[]{"<html><b>Coworkes started tasks</b></html>", "<html><b>Conflict Risk</b></html>"}){
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; // Tornar todas as células não editáveis
@@ -79,7 +80,7 @@ public class TaskBarGUI {
         startedTable.setModel(modelo2);
 
         // Definir a largura da segunda coluna como 20 pixels
-        startedTable.getColumnModel().getColumn(1).setMaxWidth(200);
+        startedTable.getColumnModel().getColumn(1).setMaxWidth(100);
 
         //centralizar os numeros de Scenarios
         TableColumnModel columns2 = startedTable.getColumnModel();
@@ -197,11 +198,16 @@ public class TaskBarGUI {
                     int index = unstartedTable.getSelectedRow(); // Obtém o índice da linha selecionada
                     Task task = storysList1.get(index);
                     task.checkConflictRisk(storysList2);
+
                     ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
                     ToolWindow myToolWindow = toolWindowManager.getToolWindow("Conflicts");
+
+
+                    ConflictsGUI.fillTable(task);
+
+
                     if (myToolWindow != null) {
                         myToolWindow.show(null);
-
                     }
 
                 }
