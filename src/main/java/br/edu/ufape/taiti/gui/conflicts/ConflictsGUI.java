@@ -6,6 +6,8 @@ import br.edu.ufape.taiti.service.Task;
 import br.edu.ufape.taiti.settings.TaitiSettingsState;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.ui.components.JBScrollPane;
+import com.intellij.ui.table.JBTable;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -22,17 +24,20 @@ public class ConflictsGUI {
     private static DefaultTableModel modeloTabela;
 
     private JPanel ConflictsPanel;
-    private JTable ShowTable;
-    private PivotalTracker pivotalTracker;
+    private static JPanel labelPanel;
+    private JBTable ShowTable;
+
     private static Project project;
-    private DefaultTableModel modeloaTabela;
+
 
 
     public ConflictsGUI(ToolWindow toolWindow, Project project){
-        TaitiSettingsState settings = TaitiSettingsState.getInstance(project);
-        settings.retrieveStoredCredentials(project);
-        pivotalTracker = new PivotalTracker(settings.getToken(), settings.getPivotalURL(), project);
+
+
         this.project = project;
+        ConflictsPanel = new JPanel();
+        ShowTable = new JBTable();
+        labelPanel = new JPanel();
         createTable();
 
         ShowTable.addMouseMotionListener(new MouseMotionAdapter() {
@@ -61,9 +66,9 @@ public class ConflictsGUI {
                 return false; // Tornar todas as células não editáveis
             }
         };
-
-
         ShowTable.setModel(modeloTabela);
+
+
         TableColumnModel columns = ShowTable.getColumnModel();
         columns.getColumn(0).setMinWidth(100);
         columns.getColumn(1).setMinWidth(250);
@@ -89,6 +94,17 @@ public class ConflictsGUI {
                 return textArea;
             }
         });
+
+
+        ConflictsPanel.setLayout(new BorderLayout());
+
+
+        JScrollPane scrollPane = new JBScrollPane(ShowTable);
+        if (ConflictsPanel != null) {
+            ConflictsPanel.add(labelPanel, BorderLayout.NORTH);
+            ConflictsPanel.add(scrollPane, BorderLayout.CENTER);
+        }
+
 
 
 
@@ -141,7 +157,11 @@ public class ConflictsGUI {
 
     }
 
-
+    public static void setLabel(String texto){
+        labelPanel.removeAll();
+        labelPanel.validate();
+        labelPanel.add(new JLabel(texto));
+    }
 
 
     public JPanel getContent() {

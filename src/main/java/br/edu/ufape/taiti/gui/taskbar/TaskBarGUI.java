@@ -3,6 +3,7 @@ package br.edu.ufape.taiti.gui.taskbar;
 
 import br.edu.ufape.taiti.gui.TaitiDialog;
 import br.edu.ufape.taiti.gui.conflicts.ConflictsGUI;
+import br.edu.ufape.taiti.gui.conflicts.ConflictsTable;
 import br.edu.ufape.taiti.service.PivotalTracker;
 import br.edu.ufape.taiti.service.Stories;
 import br.edu.ufape.taiti.service.Task;
@@ -202,8 +203,15 @@ public class TaskBarGUI {
                     ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
                     ToolWindow myToolWindow = toolWindowManager.getToolWindow("Conflicts");
 
+                    String texto = "Tabela de conflitos da task " + task.getName() + " que contem "
+                            + task.getConflictNum() + " conflitos.";
 
+                    ConflictsGUI.setLabel(texto);
                     ConflictsGUI.fillTable(task);
+
+
+
+
 
 
                     if (myToolWindow != null) {
