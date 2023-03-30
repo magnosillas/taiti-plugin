@@ -5,8 +5,8 @@ package br.edu.ufape.taiti.exceptions;
  */
 public class HttpException extends Exception {
 
-    private String statusText;
-    private int statusNumber;
+    private final String statusText;
+    private final int statusNumber;
 
     public HttpException(String statusText, int statusNumber) {
         super(statusText + statusNumber);

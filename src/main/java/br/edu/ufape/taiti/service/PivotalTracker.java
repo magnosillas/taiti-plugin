@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * Classe responsável por fazer todas as requisições ao Pivotal Tracker. Para fazer as requisições é utilizado a
- * biblioteca UniRest (http://kong.github.io/unirest-java/).
+ * biblioteca UniRest (<a href="http://kong.github.io/unirest-java/">...</a>).
  */
 public class PivotalTracker {
     private static final String PIVOTAL_URL = "https://www.pivotaltracker.com";
@@ -42,30 +42,33 @@ public class PivotalTracker {
         postCommentWithFile(scenarios, taskID);
     }
 
-    public ArrayList<File> downloadFiles() throws HttpException {
+    public File downloadFiles(String storyId) throws HttpException {
         File tempTaitiDirectory = new File(getProjectPath() + File.separator + "temp_taiti");
 
         if (!(tempTaitiDirectory.exists() && tempTaitiDirectory.isDirectory())) {
             tempTaitiDirectory.mkdir();
         }
 
-        ArrayList<File> files = new ArrayList<>();
+        JSONArray taitiFiles = getTaitiFiles();
 
-        for (Object obj : getTaitiFiles()) {
+        for (Object obj : taitiFiles) {
             if (obj instanceof JSONObject) {
                 JSONObject taitiFile = (JSONObject) obj;
+                int fileStoryID = taitiFile.getInt("story_id");
 
-                File result = Unirest.get(PIVOTAL_URL + taitiFile.get("download_url"))
-                        .header(TOKEN_HEADER, token)
-                        .asFile(getProjectPath() + File.separator + "temp_taiti" + File.separator + "file-" + taitiFile.get("story_id") + ".csv")
-                        .getBody();
-
-                files.add(result);
+                if (fileStoryID == Integer.parseInt(storyId)) {
+                    return Unirest.get(PIVOTAL_URL + taitiFile.getString("download_url"))
+                            .header(TOKEN_HEADER, token)
+                            .asFile(getProjectPath() + File.separator + "temp_taiti" + File.separator + "file-" + fileStoryID + ".csv")
+                            .getBody();
+                }
             }
         }
 
-        return files;
+        return null;
     }
+
+//curl -X GET -H "X-TrackerToken: ce2a6540e0be3574c871f403fb12ef0f" "https://www.pivotaltracker.com/file_attachments/118790662/download" -o "myfile.csv"
 
     public JSONArray getTaitiFiles() throws HttpException {
         JSONArray plannedStories = getPlannedStories();
@@ -113,6 +116,80 @@ public class PivotalTracker {
         return response.getBody().getArray();
     }
 
+    public JSONObject getTaitiComment(JSONArray comments) {
+        JSONObject taitiComment = null;
+
+        for (Object obj : comments) {
+            if (obj instanceof JSONObject) {
+                JSONObject comment = (JSONObject) obj;
+                if (!comment.isNull("text") && comment.get("text").equals(TAITI_MSG)) {
+                    taitiComment = comment;
+                }
+            }
+        }
+
+        return taitiComment;
+    }
+
+    public JSONArray getComments(String taskID) throws HttpException {
+        String request = "/projects/" + projectID + "/stories/" + taskID + "/comments";
+
+        HttpResponse<JsonNode> response = Unirest.get(PIVOTAL_URL + API_PATH + request)
+                .header(TOKEN_HEADER, token)
+                .asJson();
+
+        if (!response.isSuccess()) {
+            throw new HttpException(response.getStatusText(), response.getStatus());
+        }
+
+        return response.getBody().getArray();
+    }
+
+
+    public int getPersonId() throws HttpException{
+            String request = "/me?fields=%3Adefault";
+            HttpResponse<JsonNode> response = Unirest.get(PIVOTAL_URL + API_PATH + request)
+                    .header(TOKEN_HEADER, token)
+                    .asJson();
+
+            if (!response.isSuccess()) {
+                throw new HttpException(response.getStatusText(), response.getStatus());
+            }
+
+            JSONObject obj = response.getBody().getObject();
+
+            return obj.getInt("id");
+    }
+
+    public List<Person> getMembers() throws HttpException{
+
+        String request = "/projects/" + projectID + "/memberships";
+
+        HttpResponse<JsonNode> response = Unirest.get(PIVOTAL_URL + API_PATH + request)
+                .header(TOKEN_HEADER, token)
+                .asJson();
+
+        if (!response.isSuccess()) {
+            throw new HttpException(response.getStatusText(), response.getStatus());
+        }
+
+        JSONArray memberships = response.getBody().getArray();
+        List<Person> people = new ArrayList<>();
+        for (int i = 0; i < memberships.length(); i++) {
+            JSONObject membership = memberships.getJSONObject(i);
+            JSONObject person = membership.getJSONObject("person");
+            int id = person.getInt("id");
+            String name = person.getString("name");
+            people.add(new Person(id, name));
+        }
+
+        return people;
+
+    }
+
+
+
+    // curl -X GET -H "X-TrackerToken: ce2a6540e0be3574c871f403fb12ef0f" "https://www.pivotaltracker.com/services/v5/projects/2590203/stories/184312223/comments/?fields=file_attachments"
     public JSONArray getPlannedStories() throws HttpException {
         JSONArray stories = new JSONArray();
 
@@ -203,34 +280,9 @@ public class PivotalTracker {
         }
     }
 
-    private JSONObject getTaitiComment(JSONArray comments) {
-        JSONObject taitiComment = null;
 
-        for (Object obj : comments) {
-            if (obj instanceof JSONObject) {
-                JSONObject comment = (JSONObject) obj;
-                if (!comment.isNull("text") && comment.get("text").equals(TAITI_MSG)) {
-                    taitiComment = comment;
-                }
-            }
-        }
 
-        return taitiComment;
-    }
 
-    private JSONArray getComments(String taskID) throws HttpException {
-        String request = "/projects/" + projectID + "/stories/" + taskID + "/comments";
-
-        HttpResponse<JsonNode> response = Unirest.get(PIVOTAL_URL + API_PATH + request)
-                .header(TOKEN_HEADER, token)
-                .asJson();
-
-        if (!response.isSuccess()) {
-            throw new HttpException(response.getStatusText(), response.getStatus());
-        }
-
-        return response.getBody().getArray();
-    }
 
     private String getID(JSONObject json) {
         return String.valueOf(json.get("id"));

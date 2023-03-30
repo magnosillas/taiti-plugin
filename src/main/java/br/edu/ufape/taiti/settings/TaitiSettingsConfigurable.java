@@ -30,7 +30,7 @@ public class TaitiSettingsConfigurable implements Configurable {
     @Nls(capitalization = Nls.Capitalization.Title)
     @Override
     public String getDisplayName() {
-        return "TAITI";
+        return "TAITIr";
     }
 
     @Override
@@ -48,8 +48,13 @@ public class TaitiSettingsConfigurable implements Configurable {
     @Override
     public boolean isModified() {
         TaitiSettingsState settings = TaitiSettingsState.getInstance(project);
+
         boolean modified = !component.getPivotalURLText().equals(settings.pivotalURL);
         modified |= !component.getPivotalToken().equals(settings.token);
+        modified |= !component.getGithubURLText().equals(settings.githubURL);
+        modified |= !component.getScenariosFolder().equals(settings.scenariosFolder);
+        modified |= !component.getUnityTestFolder().equals(settings.unityTestFolder);
+        modified |= !component.getStepDefinitionsFolder().equals(settings.stepDefinitionsFolder);
         return modified;
     }
 
@@ -59,6 +64,10 @@ public class TaitiSettingsConfigurable implements Configurable {
         validate();
         settings.pivotalURL = component.getPivotalURLText();
         settings.token = component.getPivotalToken();
+        settings.githubURL = component.getGithubURLText();
+        settings.scenariosFolder = component.getScenariosFolder();
+        settings.unityTestFolder = component.getUnityTestFolder();
+        settings.stepDefinitionsFolder = component.getStepDefinitionsFolder();
         settings.storeCredentials(project);
     }
 
@@ -68,6 +77,10 @@ public class TaitiSettingsConfigurable implements Configurable {
         settings.retrieveStoredCredentials(project);
         component.setPivotalURLText(settings.pivotalURL);
         component.setPivotalToken(settings.token);
+        component.setGithubURLText(settings.githubURL);
+        component.setStepDefinitionsFolder(settings.stepDefinitionsFolder);
+        component.setUnityTestFolder(settings.unityTestFolder);
+        component.setScenariosFolder(settings.scenariosFolder);
     }
 
     @Override
@@ -83,6 +96,18 @@ public class TaitiSettingsConfigurable implements Configurable {
         if (StringUtil.isBlank(component.getPivotalToken())) {
             throw new ConfigurationException("The PivotalTracker token field is empty", "Cannot Save Settings");
         }
+        if (StringUtil.isBlank(component.getGithubURLText())) {
+            throw new ConfigurationException("The GitHub URL field is empty", "Cannot Save Settings");
+        }
+        if (StringUtil.isBlank(component.getScenariosFolder())) {
+            throw new ConfigurationException("The Scenarios Folder path field is empty", "Cannot Save Settings");
+        }
+        if (StringUtil.isBlank(component.getStepDefinitionsFolder())) {
+            throw new ConfigurationException("The step deifinitions folder path field is empty", "Cannot Save Settings");
+        }
+        if (StringUtil.isBlank(component.getUnityTestFolder())) {
+            throw new ConfigurationException("The unity test folder path field is empty", "Cannot Save Settings");
+        }
 
         // check if the input data is valid
         try {
@@ -96,6 +121,7 @@ public class TaitiSettingsConfigurable implements Configurable {
                     "The PivotalTracker URL is malformed, example of URL: https://www.pivotaltracker.com/n/projects/{project_id}",
                     "Cannot Save Settings");
         }
+
     }
 
 }

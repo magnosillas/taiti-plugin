@@ -120,7 +120,7 @@ public class TaitiTool {
         return file.delete();
     }
 
-    private ArrayList<String[]> readTaitiFile(File file) {
+    public ArrayList<String[]> readTaitiFile(File file) {
         BufferedReader br;
         String csvDivisor = ";";
         ArrayList<String[]> contentFile = new ArrayList<>();
@@ -128,8 +128,11 @@ public class TaitiTool {
         try {
             br = new BufferedReader(new FileReader(file.getPath()));
             String l = br.readLine();
+            // Read the file line by line
             while (l != null) {
+                // Split each line into an array of fields
                 String[] line = l.split(csvDivisor);
+                // Add the array of fields to the list of records
                 if (!(line[0].equals("path") && line[1].equals("lines"))) {
                     contentFile.add(line);
                 }

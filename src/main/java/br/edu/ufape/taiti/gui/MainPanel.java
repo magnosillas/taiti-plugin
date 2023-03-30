@@ -1,172 +1,306 @@
 package br.edu.ufape.taiti.gui;
 
-import br.edu.ufape.taiti.exceptions.HttpException;
-import br.edu.ufape.taiti.gui.configuretask.TaskConfigurePanel;
-import br.edu.ufape.taiti.gui.configuretask.table.TableDialog;
-import br.edu.ufape.taiti.gui.configuretask.table.TablePanel;
-import br.edu.ufape.taiti.gui.riskanalysis.RiskAnalysisPanel;
-import br.edu.ufape.taiti.service.PivotalTracker;
-import br.edu.ufape.taiti.tool.TaitiTool;
+import br.edu.ufape.taiti.gui.configuretask.fileview.*;
+import br.edu.ufape.taiti.gui.configuretask.tree.TaitiTree;
+import br.edu.ufape.taiti.gui.configuretask.tree.TaitiTreeFileNode;
+import br.edu.ufape.taiti.gui.configuretask.table.TestRow;
+import br.edu.ufape.taiti.gui.configuretask.table.TestsTableModel;
+import br.edu.ufape.taiti.gui.configuretask.table.TestsTableRenderer;
+import br.edu.ufape.taiti.tool.ScenarioTestInformation;
 import com.intellij.openapi.project.Project;
-import com.intellij.ui.components.JBLabel;
-import com.intellij.ui.components.JBList;
-import com.intellij.util.ui.JBFont;
+import com.intellij.openapi.project.ProjectUtil;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.ui.JBColor;
+import com.intellij.ui.table.JBTable;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Scanner;
 
-/**
- * Esta é a classe principal responsável pela interface gráfica. O layout da interface é configurado no arquivo MainPanel.form.
- * O plugin tem duas etapas, a primeira parte é selecionar as tarefas e salvá-las no Pivotal Tracker, as classe que implementam
- * a interface gráfica responsável por isso são a TablePanel e TaskConfigurePanel, e a segunda parte é rodar a análise de conflito
- * e a interface gráfica responsável por essa parte é feita pela classe RiskAnalysisPanel.
- */
 public class MainPanel {
     private JPanel rootPanel;
-    private JSplitPane mainSplit;
-    private JPanel contentPanel;
-    private JPanel leftPanel;
-    private JPanel listPanel;
-    private JPanel buttonsPanel;
-    private JPanel btnP; // esse objeto representa o painel onde é colocado os botões das ações.
-    private JBList<String> optionsList;
+    private JPanel centerPanel;
+    private JPanel northPanel;
+    private JPanel southPanel;
+    private JPanel treePanel;
+    private JPanel inputPanel;
 
-    private TablePanel tablePanelDialog;
-    private TaskConfigurePanel taskConfigurePanel;
-    private RiskAnalysisPanel riskAnalysisPanel;
+    private JSplitPane mainSplit;
+    private JSplitPane leftSplit;
+
+    private TaitiTree tree;
+
+    private JLabel labelTaskID;
+    private JTextField textTaskID;
+
+    private JBTable table;
+    private TestsTableModel tableModel;
+    private FeatureFileView featureFileView;
+    private FeatureFileViewModel featureFileViewModel;
+
+    private final ArrayList<ScenarioTestInformation> scenarios;
+    private final RepositoryOpenFeatureFile repositoryOpenFeatureFile;
 
     private final Project project;
 
-    private final TaitiTool taiti;
-    private final PivotalTracker pivotalTracker;
-
-    private JButton saveButton;
-    private JButton runButton;
-
-    public MainPanel(Project project, TaitiTool taiti, PivotalTracker pivotalTracker) {
+    public MainPanel(Project project) {
         this.project = project;
-        this.taiti = taiti;
-        this.pivotalTracker = pivotalTracker;
+        scenarios = new ArrayList<>();
+        repositoryOpenFeatureFile = new RepositoryOpenFeatureFile();
 
         configurePanels();
-        configureList();
-        configureActions();
+        configureTree();
+        initTable();
+        initCenterPanel();
+        textTaskID.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                super.focusLost(e);
 
-        tablePanelDialog = new TablePanel();
-        taskConfigurePanel = new TaskConfigurePanel(project, tablePanelDialog, taiti, pivotalTracker);
-        riskAnalysisPanel = new RiskAnalysisPanel(pivotalTracker, btnP, runButton);
+            }
+        });
     }
 
     public JPanel getRootPanel() {
         return rootPanel;
     }
 
-    public void updateFirstPanelContent() {
-        tablePanelDialog = new TablePanel();
-        taskConfigurePanel = new TaskConfigurePanel(project, tablePanelDialog, taiti, pivotalTracker);
-
-        setContentPanel(taskConfigurePanel.getRootPanel());
+    public ArrayList<ScenarioTestInformation> getScenarios() {
+        return scenarios;
     }
 
-    private void setContentPanel(JPanel panel) {
-        contentPanel.removeAll();
-        contentPanel.add(panel, BorderLayout.CENTER);
-        contentPanel.validate();
+    public JTextField getTextTaskID() {
+        return textTaskID;
     }
 
-    /**
-     * Aqui é configurado as ações dos botões da interface.
-     */
-    private void configureActions() {
-        saveButton = new JButton("Save");
-        saveButton.addActionListener(e -> {
-            String taskID = taskConfigurePanel.getTextTaskID().getText().replace("#", "");
-            // Ao clicar em salvar é mostrado a tabela de scenarios selecionados.
-            TableDialog tableDialog = new TableDialog(taskConfigurePanel, tablePanelDialog, taiti, pivotalTracker, taskConfigurePanel.getScenarios(), taskID);
+    public JBTable getTable() {
+        return table;
+    }
 
-            if (tableDialog.showAndGet()) {
-                updateFirstPanelContent();
-            }
-        });
+    public void updateCenterPanel(File file) {
+        String filePath = file.getAbsolutePath();
+        String fileName = file.getName();
+        OpenFeatureFile openFeatureFile;
 
-        runButton = new JButton("Run");
-        runButton.addActionListener(e -> {
-            Integer intersectionSize = (Integer) riskAnalysisPanel.getRunPanel().getIntersectionSizeComboBox().getSelectedItem();
-            boolean filtering = riskAnalysisPanel.getRunPanel().getFilteringCheckbox().isSelected();
-
-            btnP.removeAll();
-            btnP.validate();
-
-            riskAnalysisPanel.changePanel();
-            riskAnalysisPanel.getRunPanel().isShowing = false;
+        if (repositoryOpenFeatureFile.exists(file)) {
+            openFeatureFile = repositoryOpenFeatureFile.getFeatureFile(file);
+        } else {
+            ArrayList<FileLine> fileLines = new ArrayList<>();
+            Scanner scanner;
             try {
-                ArrayList<File> files = pivotalTracker.downloadFiles();
-                // o método createTestI é responsável por roda TAITI, mas ainda está dando erro na execução do TAITI.
-                 taiti.createTestI(files);
-                // TODO: rodar análise de conflito
-
-            } catch (HttpException ex) {
-                ex.printStackTrace();
+                scanner = new Scanner(new FileReader(filePath));
+                int countLine = 1;
+                fileLines.add(new FileLine(false, fileName, -1));
+                fileLines.add(new FileLine(false, "", -1));
+                while (scanner.hasNextLine()) {
+                    String line = scanner.nextLine();
+                    fileLines.add(new FileLine(false, line, countLine));
+                    countLine++;
+                }
+            } catch (FileNotFoundException e) {
+                fileLines.add(new FileLine(false, "Error loading file.", -1));
             }
 
-            riskAnalysisPanel.updateResultPanel();
-        });
+            openFeatureFile = new OpenFeatureFile(file, fileLines);
+            if (openFeatureFile.getFileLines().size() >= 2) {
+                repositoryOpenFeatureFile.addFeatureFile(openFeatureFile);
+            }
+        }
+
+        featureFileViewModel = new FeatureFileViewModel(file, openFeatureFile.getFileLines(), scenarios, tableModel);
+        featureFileView.setModel(featureFileViewModel);
+        featureFileView.setTableWidth(centerPanel.getWidth());
+        featureFileView.setRowHeight(0, 30);
+
+        featureFileView.getColumnModel().getColumn(0).setCellRenderer(new CheckBoxCellRenderer(file));
+        featureFileView.getColumnModel().getColumn(0).setCellEditor(new CheckBoxEditor(new JCheckBox(), file));
+        featureFileView.getColumnModel().getColumn(1).setCellRenderer(new FileLineRenderer(file));
+        featureFileView.getTableHeader().setUI(null);
     }
 
-    private void configureList() {
-        String[] options = {"Configure task", "Run conflict risk analysis"};
+    private void initCenterPanel() {
+        featureFileView = new FeatureFileView();
+        featureFileView.setShowGrid(false);
+        featureFileView.getTableHeader().setResizingAllowed(false);
+        featureFileView.getTableHeader().setReorderingAllowed(false);
+        featureFileView.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        featureFileView.setDragEnabled(false);
+        featureFileView.setRowSelectionAllowed(false);
 
-        optionsList = new JBList<>(options);
+        centerPanel.add(new JScrollPane(featureFileView), BorderLayout.CENTER);
+    }
 
-        optionsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        optionsList.setCellRenderer((list, value, index, isSelected, cellHasFocus) -> {
-            JBLabel label = new JBLabel(value);
+    public void addScenario(File file, int row){
+        updateCenterPanel(file);
+        if(repositoryOpenFeatureFile.exists(file)){
 
-            label.setFont(JBFont.regular().biggerOn(1));
-            label.setHorizontalAlignment(JLabel.CENTER);
-            label.setVerticalAlignment(JLabel.CENTER);
+            featureFileViewModel.setValueAt(true, row+1, 0);
+            featureFileViewModel.fireTableDataChanged();
+        }
+    }
 
-            return label;
-        });
-        optionsList.addMouseListener(new MouseAdapter() {
+    private void initTable() {
+        table = new JBTable();
+        table.setShowGrid(false);
+        table.getTableHeader().setResizingAllowed(false);
+        table.getTableHeader().setReorderingAllowed(false);
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        table.setFillsViewportHeight(true);
+        table.setRowSelectionAllowed(false);
+
+        southPanel.add(new JScrollPane(table), BorderLayout.CENTER);
+
+        JButton removeScenarioBtn = new JButton("Remove");
+        removeScenarioBtn.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent mouseEvent) {
-                if (mouseEvent.getClickCount() == 1) {
-                    int index = optionsList.locationToIndex(mouseEvent.getPoint());
-                    if (index == 0) {
-                        btnP.removeAll();
-                        btnP.add(saveButton, BorderLayout.CENTER);
-                        btnP.validate();
-                        setContentPanel(taskConfigurePanel.getRootPanel());
-                    } else if (index == 1) {
-                        if (!riskAnalysisPanel.getRunPanel().isShowing) {
-                            btnP.removeAll();
-                            btnP.validate();
-                        } else {
-                            btnP.removeAll();
-                            btnP.add(runButton, BorderLayout.CENTER);
-                            btnP.validate();
-                        }
-                        setContentPanel(riskAnalysisPanel.getRootPanel());
+            public void mouseClicked(MouseEvent e) {
+                ArrayList<TestRow> testRowsChecked = new ArrayList<>();
+
+                // catch all rows checked
+                for (int r = 1; r < tableModel.getRowCount(); r++) {
+                    if ((boolean) tableModel.getValueAt(r, 0)) {
+                        String test = (String) tableModel.getValueAt(r, 1);
+                        TestRow testRow = tableModel.findTestRow(test);
+                        testRowsChecked.add(testRow);
+                    }
+                }
+                // remove all rows checked
+                tableModel.getRow(0).setCheckbox(false);
+                for (TestRow t : testRowsChecked) {
+                    tableModel.removeRow(t);
+                    OpenFeatureFile openFeatureFile = repositoryOpenFeatureFile.getFeatureFile(t.getFile());
+                    int deselectedLine = openFeatureFile.deselectLine(t.getTest());
+                    featureFileViewModel.fireTableDataChanged();
+
+                    scenarios.remove(new ScenarioTestInformation(t.getFile().getAbsolutePath(), deselectedLine));
+                }
+            }
+        });
+
+        JPanel btnPanel = new JPanel(new BorderLayout());
+        btnPanel.add(removeScenarioBtn, BorderLayout.EAST);
+        southPanel.add(btnPanel, BorderLayout.NORTH);
+
+        tableModel = new TestsTableModel();
+        table.setModel(tableModel);
+
+        tableModel.addRow(new TestRow(null, false, "Tests"));
+        table.setRowHeight(0, 30);
+        table.getColumnModel().getColumn(0).setPreferredWidth(30);
+        table.getColumnModel().getColumn(1).setPreferredWidth(270);
+        table.getColumnModel().getColumn(0).setCellRenderer(new TestsTableRenderer());
+        table.getColumnModel().getColumn(1).setCellRenderer(new TestsTableRenderer());
+        table.getTableHeader().setUI(null);
+    }
+
+    private void configureTree() {
+        String projectPath = "";
+        String projectName = "";
+
+        VirtualFile projectDir = ProjectUtil.guessProjectDir(project);
+        if (projectDir != null) {
+            projectPath = projectDir.getPath();
+            projectName = projectDir.getName();
+        }
+
+        DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(projectName);
+        DefaultTreeModel treeModel = new DefaultTreeModel(rootNode);
+
+        tree = new TaitiTree(treeModel);
+        tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+        tree.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+
+                    if (node == null) return;
+
+                    Object nodeInfo = node.getUserObject();
+                    if (node.isLeaf() && !node.getAllowsChildren()) {
+                        TaitiTreeFileNode taitiTreeFileNode = (TaitiTreeFileNode) nodeInfo;
+                        updateCenterPanel(taitiTreeFileNode.getFile());
                     }
                 }
             }
         });
 
-        listPanel.add(optionsList, BorderLayout.CENTER);
+        File featureDirectory = tree.findFeatureDirectory(projectPath);
+        if (featureDirectory != null) {
+
+            // get every parent directory of features directory
+            File parent = featureDirectory.getParentFile();
+            ArrayList<DefaultMutableTreeNode> parentsNodes = new ArrayList<>();
+            while (!parent.getName().equals(projectName)) {
+                parentsNodes.add(new DefaultMutableTreeNode(parent.getName()));
+                parent = parent.getParentFile();
+            }
+
+            // add every parent directory of feature directory to the tree
+            tree.addParentsNodeToTree(parentsNodes, rootNode, parentsNodes.size() - 1);
+
+            // add the feature directory to the tree
+            DefaultMutableTreeNode featureNode = new DefaultMutableTreeNode(featureDirectory.getName());
+            if (parentsNodes.size() > 0) {
+                parentsNodes.get(0).add(featureNode);
+            } else {
+                rootNode.add(featureNode);
+            }
+
+            // populating the tree with the files into feature directory
+            tree.addNodesToTree(featureDirectory.getAbsolutePath(), featureNode);
+            treePanel.add(new JScrollPane(tree), BorderLayout.CENTER);
+        } else {
+            JLabel label = new JLabel("Could not find feature directory");
+            label.setHorizontalAlignment(SwingConstants.CENTER);
+            label.setForeground(JBColor.gray);
+            treePanel.add(label, BorderLayout.CENTER);
+        }
     }
 
     private void configurePanels() {
-        mainSplit.setDividerLocation(180);
-        mainSplit.setDividerSize(2);
-        mainSplit.setContinuousLayout(true);
+        rootPanel.setBorder(null);
+        centerPanel.setLayout(null);
+        mainSplit.setBorder(null);
+        leftSplit.setBorder(null);
+        northPanel.setBorder(null);
+        southPanel.setBorder(null);
+        inputPanel.setBorder(null);
+        treePanel.setBorder(null);
 
-        contentPanel.setLayout(new BorderLayout());
-        listPanel.setLayout(new BorderLayout());
-        btnP.setLayout(new BorderLayout());
+        rootPanel.setBorder(BorderFactory.createLineBorder(JBColor.border()));
+        centerPanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, JBColor.border()));
+        inputPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        southPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, JBColor.border()));
+        leftSplit.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, JBColor.border()));
+
+        mainSplit.setDividerLocation(300);
+        mainSplit.setDividerSize(2);
+        leftSplit.setDividerLocation(400);
+        leftSplit.setDividerSize(2);
+
+        centerPanel.setLayout(new BorderLayout());
+        centerPanel.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                featureFileView.setTableWidth(e.getComponent().getWidth());
+            }
+        });
+        treePanel.setLayout(new BorderLayout());
+        southPanel.setLayout(new BorderLayout());
+        southPanel.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                table.getColumnModel().getColumn(1).setPreferredWidth(e.getComponent().getWidth() - 35);
+            }
+        });
     }
 }

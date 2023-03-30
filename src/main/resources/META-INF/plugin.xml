@@ -1,6 +1,6 @@
 <idea-plugin>
     <id>br.edu.ufape.taiti-plugin</id>
-    <name>TAITI</name>
+    <name>TAITIr</name>
 
     <vendor email="gabrielalmeidavn@gmail.com" url="www.ufape.edu.br">UFAPE</vendor>
 
@@ -16,17 +16,20 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
+
+        <toolWindow id="TaskList" anchor="left" secondary="false" factoryClass="br.edu.ufape.taiti.actions.TaskBarAction" />
+        <toolWindow id="Conflicts" anchor="bottom" secondary="false" factoryClass="br.edu.ufape.taiti.actions.ConflictsAction" />
+
         <projectConfigurable parentId="tools" instance="br.edu.ufape.taiti.settings.TaitiSettingsConfigurable"
-                                 id="br.edu.ufape.taiti.settings.TaitiSettingsConfigurable" displayName="TAITI"
+                                 id="br.edu.ufape.taiti.settings.TaitiSettingsConfigurable" displayName="TAITIr"
                                  nonDefaultProject="true"/>
         <projectService serviceImplementation="br.edu.ufape.taiti.settings.TaitiSettingsState"/>
     </extensions>
 
     <actions>
         <!-- Add your actions here -->
-        <action id="br.edu.ufape.taiti.actions.TaitiAction" class="br.edu.ufape.taiti.actions.TaitiAction"
-                text="TAITIr" description="An avoiding merge conflicts tool">
-            <add-to-group group-id="ToolsMenu" anchor="first"/>
-        </action>
+
+
+
     </actions>
 </idea-plugin>
