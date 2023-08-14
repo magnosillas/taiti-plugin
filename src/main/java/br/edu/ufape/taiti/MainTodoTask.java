@@ -12,7 +12,10 @@ import java.util.*;
 public class MainTodoTask {
     public static void main(String[] args) {
 
-        /****************** CONFIGURAÇÃO DE TAITI (NÃO PRECISA FAZER, SÓ SE NÃO USAR OS VALORES DEFAULT)***************/
+
+
+//
+        /****************** CONFIGURACAO DE TAITI (NAO PRECISA FAZER, SO SE NÃO USAR OS VALORES DEFAULT)***************/
         String scenariosFolder = "features";
         String stepDefinitionsFolder = "features/step_definitions";
         String unityTestsFolder = "spec";
@@ -20,8 +23,8 @@ public class MainTodoTask {
         /**************************************************************************************************************/
 
 
-        /*********************** CONFIGURAÇÃO DA TAREFA NO CÓDIGO. ELA PODERIA SER LIDA DE UM CSV. ********************/
-        String url = "https://github.com/diaspora/diaspora";
+        /*********************** CONFIGURACAO DA TAREFA NO CODIGO. ELA PODERIA SER LIDA DE UM CSV. ********************/
+        String url = "https://github.com/diaspora/diaspora.git";
         int id = 1; //identificador da tarefa, que seria o ID do PivotalTracker
 
         LinkedHashMap<String, Serializable> map = new LinkedHashMap<String, Serializable>(2);
@@ -34,7 +37,7 @@ public class MainTodoTask {
         /**************************************************************************************************************/
 
 
-        /************ CÁLCULO DE TESTI (O CONJUNTO DE ARQUIVOS QUE TAITI PREVÊ QUE SERÁ ALTERADO PELA TAREFA) *********/
+        /************ CALCULO DE TESTI (O CONJUNTO DE ARQUIVOS QUE TAITI PREVE QUE SERA ALTERADO PELA TAREFA) *********/
         TodoTask task; //o objeto que representa a tarefa
         ITest itest; //interface da tarefa. costumo chamar de TestI, o código ainda usa o vocabulário antigo
         try {

@@ -2,7 +2,7 @@
     <id>br.edu.ufape.taiti-plugin</id>
     <name>TAITIr</name>
 
-    <vendor email="gabrielalmeidavn@gmail.com" url="www.ufape.edu.br">UFAPE</vendor>
+    <vendor email="magno.sillas0@gmail.com" url="www.ufape.edu.br">UFAPE</vendor>
 
     <description>An avoiding merge conflicts tool for Ruby on Rails projects</description>
     <change-notes>First release</change-notes>
