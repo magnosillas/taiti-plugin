@@ -3,7 +3,6 @@ package br.edu.ufape.taiti.gui.taskbar;
 
 import br.edu.ufape.taiti.gui.TaitiDialog;
 import br.edu.ufape.taiti.gui.conflicts.ConflictsGUI;
-import br.edu.ufape.taiti.gui.conflicts.ConflictsTable;
 import br.edu.ufape.taiti.service.PivotalTracker;
 import br.edu.ufape.taiti.service.Stories;
 import br.edu.ufape.taiti.service.Task;
@@ -20,7 +19,10 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -94,13 +96,14 @@ public class TaskBarGUI {
 
 
         //Inicializa um objeto PivotalTracker para busca de dados
-        TaitiSettingsState settings = TaitiSettingsState.getInstance(project);
-        settings.retrieveStoredCredentials(project);
-        PivotalTracker pivotalTracker = new PivotalTracker(settings.getToken(), settings.getPivotalURL(), project);
 
-        configTaskList(pivotalTracker);
 
-        refreshButton.addActionListener(e -> configTaskList(pivotalTracker));
+
+        configTaskList();
+
+        refreshButton.addActionListener(e ->
+                configTaskList()
+        );
 
         txtSearch.addKeyListener(new KeyAdapter() {
             @Override
@@ -122,10 +125,10 @@ public class TaskBarGUI {
             public void focusGained(FocusEvent e) {
                 super.focusGained(e);
 
-                    txtSearch.setText(null);
-                    txtSearch.requestFocus();
-                    //remove placeholder style
-                    removePlaceHolderStyle(txtSearch);
+                txtSearch.setText(null);
+                txtSearch.requestFocus();
+                //remove placeholder style
+                removePlaceHolderStyle(txtSearch);
 
             }
         });
@@ -157,7 +160,7 @@ public class TaskBarGUI {
          */
 
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-        executor.scheduleAtFixedRate(() -> configTaskList(pivotalTracker), 0, 1, TimeUnit.MINUTES);
+        executor.scheduleAtFixedRate(() -> configTaskList(), 0, 5, TimeUnit.MINUTES);
 
 
         unstartedTable.addMouseMotionListener(new MouseMotionAdapter() {
@@ -172,7 +175,7 @@ public class TaskBarGUI {
                 } else {
                     unstartedTable.setToolTipText(null);
                 }
-            
+
             }
         });
 
@@ -209,11 +212,6 @@ public class TaskBarGUI {
                     ConflictsGUI.setLabel(texto);
                     ConflictsGUI.fillTable(task);
 
-
-
-
-
-
                     if (myToolWindow != null) {
                         myToolWindow.show(null);
                     }
@@ -241,24 +239,29 @@ public class TaskBarGUI {
         textField.setForeground(JBColor.LIGHT_GRAY); //PlaceHolder font color
     }
 
-    public void configTaskList(PivotalTracker pivotalTracker){
+    public void configTaskList(){
+        TaitiSettingsState settings = TaitiSettingsState.getInstance(project);
+        settings.retrieveStoredCredentials(project);
+        PivotalTracker pivotalTracker = new PivotalTracker(settings.getToken(), settings.getPivotalURL(), project);
 
-        /**
-         * Primeiramente esvazio o array que contem as tasks para preenche-lo novamente com as informações mais recentes
-         */
+        if( pivotalTracker.checkStatus() == 200) {
 
-        Stories plannedStories = new Stories(pivotalTracker, project);
+            /**
+             * Primeiramente esvazio o array que contem as tasks para preenche-lo novamente com as informações mais recentes
+             */
+
+            Stories plannedStories = new Stories(pivotalTracker, project, settings.getGithubURL());
             plannedStories.clearLists();
             plannedStories.startList();
             limparListas();
 
 
-        // Add the unstarted stories to the main list first
-        atualizarListas(plannedStories.getUnstartedStories(), storysList1, modelo1);
+            // Add the unstarted stories to the main list first
+            atualizarListas(plannedStories.getUnstartedStories(), storysList1, modelo1);
 
-        // Add the started stories to the main list
-        atualizarListas(plannedStories.getStartedStories(), storysList2, modelo2 );
-
+            // Add the started stories to the main list
+            atualizarListas(plannedStories.getStartedStories(), storysList2, modelo2);
+        }
     }
 
     private void limparListas() {
@@ -272,15 +275,18 @@ public class TaskBarGUI {
     }
 
     private void atualizarListas(List<Task> Stories, ArrayList<Task> storysList, DefaultTableModel model) {
+
         for(Task Story : Stories){
             storysList.add(Story);
             String storyName = truncateStoryName(Story.getStoryName());
 
-            List<Object[]> scenario = Story.getScenarios();
+            ArrayList<LinkedHashMap<String, Serializable>> scenario = Story.getScenarios();
             int sum = 0;
-            for (Object[] lines : scenario) { // percoso scenario por scenario
-                int[] numbers = (int[]) lines[1];
-                sum += numbers.length;
+
+            for (LinkedHashMap<String, Serializable> lines : scenario) { // percorro scenario por scenario
+
+                ArrayList<Integer> number = (ArrayList<Integer>) lines.get("lines");
+                sum += number.size();
             }
             model.addRow(new Object[]{storyName, sum});
 

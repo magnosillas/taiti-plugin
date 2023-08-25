@@ -1,9 +1,8 @@
 package br.edu.ufape.taiti.gui.conflicts;
 
-import br.edu.ufape.taiti.service.PivotalTracker;
-import br.edu.ufape.taiti.service.Stories;
 import br.edu.ufape.taiti.service.Task;
-import br.edu.ufape.taiti.settings.TaitiSettingsState;
+import br.ufpe.cin.tan.conflict.ConflictAnalyzer;
+import br.ufpe.cin.tan.conflict.PlannedTask;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.ui.components.JBScrollPane;
@@ -17,8 +16,9 @@ import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashMap;
 
 public class ConflictsGUI {
     private static DefaultTableModel modeloTabela;
@@ -39,6 +39,7 @@ public class ConflictsGUI {
         ShowTable = new JBTable();
         labelPanel = new JPanel();
         createTable();
+        setLabel("Double-click a task in the TaskList to view its conflicting tasks");
 
         ShowTable.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
@@ -120,37 +121,44 @@ public class ConflictsGUI {
         if(conflictTasks.size() > 0 ){
 
 
-            ArrayList<ArrayList<Object[]>> conflictScenarios = task.getConflictScenarios();
+            ArrayList<LinkedHashMap<String, Serializable>>  conflictScenarios = task.getConflictScenarios();
 
             for (int i = 0; i < conflictTasks.size(); i++) {
+
+//                PlannedTask conflictITest = conflictTasks.get(i).getiTesk();
+//                ConflictAnalyzer conflictAnalyzer = new ConflictAnalyzer();
+//                conflictAnalyzer.computeConflictRiskForPair(task.getiTesk(), conflictITest);
+//                int conflictFilesNum = conflictAnalyzer.getConflictResult().getConflictingFiles().size();
+//                double conflictRate = conflictAnalyzer.getConflictResult().getRelativeConflictRate();
+
+
                 int taskId = conflictTasks.get(i).getId();
                 String taskDescription = conflictTasks.get(i).getName();
                 String taskUrl = conflictTasks.get(i).getUrl();
-                ArrayList<Object[]> conflictTaskScenarios = conflictScenarios.get(i);
+                LinkedHashMap<String, Serializable> conflictTaskScenarios = conflictScenarios.get(i);
                 String stringConflicts = "";
                 int conflictRisk = 0;
-                for( Object[] scenarios : conflictTaskScenarios){
-                    String path = (String)scenarios[0];
 
-                    path = path.substring(project.getBasePath().length());
-                    String linesNum = "";
-                    for (int num : (ArrayList<Integer>)scenarios[1]) {
-                        linesNum += num + ",";
-                        conflictRisk ++;
-                    }
+                String path = (String)conflictTaskScenarios.get("path");
 
 
-                    linesNum = "[" + linesNum.substring(0, linesNum.length() - 1) + "]";
-                    stringConflicts += path + "; " + linesNum + "\n";
-
+                String linesNum = "";
+                for (int num : (ArrayList<Integer>)conflictTaskScenarios.get("lines")) {
+                    linesNum += num + ",";
+                    conflictRisk ++;
                 }
+
+
+                linesNum = "[" + linesNum.substring(0, linesNum.length() - 1) + "]";
+                stringConflicts += path + "; " + linesNum + "\n";
 
                 modeloTabela.addRow(new Object[]{taskId, taskDescription,taskUrl,conflictRisk,stringConflicts});
 
-
-
             }
-        }else{
+
+
+
+
 
         }
 

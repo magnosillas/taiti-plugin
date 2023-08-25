@@ -4,10 +4,14 @@ import br.edu.ufape.taiti.exceptions.HttpException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import kong.unirest.JsonNode;
-import kong.unirest.Unirest;
-import kong.unirest.json.JSONArray;
-import kong.unirest.json.JSONObject;
+
+
+
+import okhttp3.*;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +19,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,12 +47,7 @@ public class PivotalTracker {
         this.project = project;
     }
 
-    public PivotalTracker(String token, String pivotalProjectURL) {
-        this.token = token;
-        this.projectID = getProjectIDFromProjectURL(pivotalProjectURL);
 
-        project = null;
-    }
 
     public void saveScenarios(File scenarios, String taskID) throws HttpException, IOException, InterruptedException {
         JSONArray comments = null;
@@ -60,35 +60,30 @@ public class PivotalTracker {
         if (taitiComment != null) {
             deleteComment(getID(taitiComment), taskID);
         }
+
         postCommentWithFile(scenarios, taskID);
+
     }
+    public int checkStatus()  {
+        String request = PIVOTAL_URL + API_PATH + "/projects/" + projectID;
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpRequest httpRequest = HttpRequest.newBuilder()
+                .uri(URI.create(request))
+                .header(TOKEN_HEADER, token)
+                .GET()
+                .build();
 
-//    public File downloadFiles(String storyId) throws HttpException, IOException, InterruptedException {
-//        File tempTaitiDirectory = new File(getProjectPath() + File.separator + "temp_taiti");
-//
-//        if (!(tempTaitiDirectory.exists() && tempTaitiDirectory.isDirectory())) {
-//            tempTaitiDirectory.mkdir();
-//        }
-//
-//        JSONArray taitiFiles = getTaitiFiles();
-//
-//        for (Object obj : taitiFiles) {
-//            if (obj instanceof JSONObject) {
-//                JSONObject taitiFile = (JSONObject) obj;
-//                int fileStoryID = taitiFile.getInt("story_id");
-//
-//                if (fileStoryID == Integer.parseInt(storyId)) {
-//                    return Unirest.get(PIVOTAL_URL + taitiFile.getString("download_url"))
-//                            .header(TOKEN_HEADER, token)
-//                            .asFile(getProjectPath() + File.separator + "temp_taiti" + File.separator + "file-" + fileStoryID + ".csv")
-//                            .getBody();
-//                }
-//            }
-//        }
-//
-//        return null;
-//    }
+        HttpResponse<String> response = null;
+        try {
+            response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            return 400;
+        }
 
+        String resposta = response.body();
+
+        return response.statusCode();
+    }
     public File downloadFiles(String storyId) throws HttpException, IOException, InterruptedException {
         File tempTaitiDirectory = new File(getProjectPath() + File.separator + "temp_taiti");
 
@@ -98,16 +93,13 @@ public class PivotalTracker {
 
         JSONArray taitiFiles = getTaitiFiles();
 
-        for (Object obj : taitiFiles) {
+        for (Object obj :  taitiFiles) {
             if (obj instanceof JSONObject) {
                 JSONObject taitiFile = (JSONObject) obj;
                 int fileStoryID = taitiFile.getInt("story_id");
 
                 if (fileStoryID == Integer.parseInt(storyId)) {
                     String downloadUrl = PIVOTAL_URL + taitiFile.getString("download_url");
-
-
-//                    String downloadUrl = "https://www.pivotaltracker.com/file_attachments/120881886/download";
 
                     HttpClient httpClient = HttpClient.newHttpClient();
                     HttpRequest downloadRequest = HttpRequest.newBuilder()
@@ -190,8 +182,8 @@ public class PivotalTracker {
 
                             // esse getID do fileInfo pega o ID do comentário a qual o arquivo está associado
                             if (getID(fileInfo).equals(getID(taitiComment))) {
-                                JSONArray fileAttachments = (JSONArray) fileInfo.get("file_attachments");
-                                JSONObject taitiFile = fileAttachments.getJSONObject(0);
+                                JSONArray fileAttachments =  fileInfo.getJSONArray("file_attachments");
+                                JSONObject taitiFile =  fileAttachments.getJSONObject(0);
                                 taitiFile.put("story_id", plannedStory.get("id"));
 
                                 taitiFiles.put(taitiFile);
@@ -240,13 +232,13 @@ public class PivotalTracker {
     }
 
 
-    public JSONObject getTaitiComment(JSONArray comments) {
+    public JSONObject getTaitiComment(JSONArray comments)  {
         JSONObject taitiComment = null;
 
         for (Object obj : comments) {
             if (obj instanceof JSONObject) {
                 JSONObject comment = (JSONObject) obj;
-                if (!comment.isNull("text") && comment.get("text").equals(TAITI_MSG)) {
+                if (!comment.isNull("text") && comment.getString("text").equals(TAITI_MSG)) {
                     taitiComment = comment;
                 }
             }
@@ -314,48 +306,6 @@ public class PivotalTracker {
         }
     }
 
-//    public int getPersonId() throws HttpException{
-////        ClassLoader classLoader = PivotalTracker.class.getClassLoader();
-////        URL resource = classLoader.getResource("org/apache/http/message/BasicLineFormatter.class");
-////        System.out.println(resource);
-//
-//            String request = "/me?fields=%3Adefault";
-//            HttpResponse<JsonNode> response = Unirest.get(PIVOTAL_URL + API_PATH + request)
-//                    .header(TOKEN_HEADER, token)
-//                    .asJson();
-//
-//
-//
-//            JSONObject obj = response.getBody().getObject();
-//
-//            return obj.getInt("id");
-//    }
-
-//    public List<Person> getMembers() throws HttpException{
-//
-//        String request = "/projects/" + projectID + "/memberships";
-//
-//        HttpResponse<JsonNode> response = Unirest.get(PIVOTAL_URL + API_PATH + request)
-//                .header(TOKEN_HEADER, token)
-//                .asJson();
-//
-//        if (!response.isSuccess()) {
-//            throw new HttpException(response.getStatusText(), response.getStatus());
-//        }
-//
-//        JSONArray memberships = response.getBody().getArray();
-//        List<Person> people = new ArrayList<>();
-//        for (int i = 0; i < memberships.length(); i++) {
-//            JSONObject membership = memberships.getJSONObject(i);
-//            JSONObject person = membership.getJSONObject("person");
-//            int id = person.getInt("id");
-//            String name = person.getString("name");
-//            people.add(new Person(id, name));
-//        }
-//
-//        return people;
-//
-//    }
 
     public List<Person> getMembers() throws HttpException, IOException, InterruptedException {
         String request = "/projects/" + projectID + "/memberships";
@@ -387,52 +337,7 @@ public class PivotalTracker {
         return people;
     }
 
-    // curl -X GET -H "X-TrackerToken: ce2a6540e0be3574c871f403fb12ef0f" "https://www.pivotaltracker.com/services/v5/projects/2590203/stories/184312223/comments/?fields=file_attachments"
-//    public JSONArray getPlannedStories() throws HttpException {
-//        JSONArray stories = new JSONArray();
-//
-//        String request = "/projects/" + projectID + "/stories?with_state=started";
-//        HttpResponse<JsonNode> response = Unirest.get(PIVOTAL_URL + API_PATH + request)
-//                .header(TOKEN_HEADER, token)
-//                .asJson();
-//
-//        if (!response.isSuccess()) {
-//            throw new HttpException(response.getStatusText(), response.getStatus());
-//        }
-//        for (Object obj : response.getBody().getArray()) {
-//            if (obj instanceof JSONObject) {
-//                JSONObject story = (JSONObject) obj;
-//                if (!story.isNull("estimate") && !story.isNull("owner_ids")) {
-//                    JSONArray ownerID = (JSONArray) story.get("owner_ids");
-//                    if (ownerID.length() > 0) {
-//                        stories.put(obj);
-//                    }
-//                }
-//            }
-//        }
-//
-//        request = "/projects/" + projectID + "/stories?with_state=unstarted";
-//        response = Unirest.get(PIVOTAL_URL + API_PATH + request)
-//                .header(TOKEN_HEADER, token)
-//                .asJson();
-//
-//        if (!response.isSuccess()) {
-//            throw new HttpException(response.getStatusText(), response.getStatus());
-//        }
-//        for (Object obj : response.getBody().getArray()) {
-//            if (obj instanceof JSONObject) {
-//                JSONObject story = (JSONObject) obj;
-//                if (!story.isNull("estimate") && !story.isNull("owner_ids")) {
-//                    JSONArray ownerID = (JSONArray) story.get("owner_ids");
-//                    if (ownerID.length() > 0) {
-//                        stories.put(obj);
-//                    }
-//                }
-//            }
-//        }
-//
-//        return stories;
-//    }
+
 
     public JSONArray getPlannedStories() throws HttpException, IOException, InterruptedException {
         JSONArray stories = new JSONArray();
@@ -527,56 +432,70 @@ public class PivotalTracker {
 //        }
 //    }
 
-    public void postCommentWithFile(File file, String taskID) throws HttpException, IOException, InterruptedException {
-        // add file
-        String requestFile = "/projects/" + projectID + "/uploads";
-        HttpClient httpClient = HttpClient.newHttpClient();
-        HttpRequest uploadRequest = HttpRequest.newBuilder()
-                .uri(URI.create(PIVOTAL_URL + API_PATH + requestFile))
-                .header(TOKEN_HEADER, token)
-                .header("Content-Type", "multipart/form-data")
-                .POST(HttpRequest.BodyPublishers.ofFile(file.toPath()))
-                .build();
+//        export TOKEN='your Pivotal Tracker API token'
+//
+//        export FILE_PATH='/home/vader/art-projects/new-imperial-logo-6.jpg'
+//
+//        export PROJECT_ID=99
 
-        java.net.http.HttpResponse<String> responseFile = httpClient.send(uploadRequest, java.net.http.HttpResponse.BodyHandlers.ofString());
+//curl -X POST -H "X-TrackerToken: ce2a6540e0be3574c871f403fb12ef0f" -F file=@"/media/HDD/Faculdade/PROJETO TAITIR BIA/diaspora/scenarios.csv" "https://www.pivotaltracker.com/services/v5/projects/2590203/uploads"
+//curl -X POST -H "X-TrackerToken: ce2a6540e0be3574c871f403fb12ef0f" -H "Content-Type: application/json" -d '{"file_attachments":[{"kind":"file_attachment","id":120989160,"filename":"scenarios.csv","created_at":"2023-08-17T14:55:16Z","uploader_id":3457781,"thumbnailable":false,"size":54,"download_url":"/file_attachments/120989160/download","content_type":"text/csv","uploaded":false,"big_url":"#","thumbnail_url":"#"}] , "text":"[TAITI] Scenarios"}' "https://www.pivotaltracker.com/services/v5/projects/2590203/stories/185842559/comments?fields=%3Adefault%2Cfile_attachment_ids"
 
-        if (responseFile.statusCode() != 200) {
-            throw new HttpException(responseFile.body(), responseFile.statusCode());
-        }
 
-        // add comment
+    public void postCommentWithFile(File file, String taskID) throws IOException {
+        String requestFil = "/projects/" + projectID + "/uploads";
         String requestComment = "/projects/" + projectID + "/stories/" + taskID + "/comments?fields=%3Adefault%2Cfile_attachment_ids";
 
-        JSONObject json = new JSONObject();
-        json.put("file_attachments", List.of(new JSONObject(responseFile.body())));
-        json.put("text", TAITI_MSG);
+        OkHttpClient client = new OkHttpClient();
 
-        HttpRequest commentRequest = HttpRequest.newBuilder()
-                .uri(URI.create(PIVOTAL_URL + API_PATH + requestComment))
-                .header(TOKEN_HEADER, token)
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(json.toString()))
-                .build();
+        try {
+            // Upload file
+            MultipartBody.Builder requestBodyBuilder = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("file", file.getName(), RequestBody.create(MediaType.parse("application/octet-stream"), file));
 
-        java.net.http.HttpResponse<String> responseComment = httpClient.send(commentRequest, java.net.http.HttpResponse.BodyHandlers.ofString());
+            Request requestFile = new Request.Builder()
+                    .url(PIVOTAL_URL + API_PATH + requestFil)
+                    .addHeader(TOKEN_HEADER, token)
 
-        if (responseComment.statusCode() != 200) {
-            throw new HttpException(responseComment.body(), responseComment.statusCode());
+                    .post(requestBodyBuilder.build())
+                    .build();
+
+            Response responseFile = client.newCall(requestFile).execute();
+
+            if (!responseFile.isSuccessful()) {
+                throw new IOException("Error uploading file: " + responseFile.message());
+            }
+
+            JSONObject responseFileBody = new JSONObject(responseFile.body().string());
+
+            // Add comment
+            JSONObject json = new JSONObject();
+            json.put("file_attachments", new JSONObject[]{responseFileBody});
+            json.put("text", TAITI_MSG);
+
+            MediaType mediaType = MediaType.parse("application/json");
+            RequestBody commentRequestBody = RequestBody.create(mediaType, json.toString());
+
+            Request requestCommentPost = new Request.Builder()
+                    .url(PIVOTAL_URL + API_PATH + requestComment)
+                    .addHeader(TOKEN_HEADER, token)
+                    .addHeader("Content-Type", "application/json")
+                    .post(commentRequestBody)
+                    .build();
+
+            Response responseComment = client.newCall(requestCommentPost).execute();
+
+            if (!responseComment.isSuccessful()) {
+                throw new IOException("Error adding comment: " + responseComment.message());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
+
     }
 
-//    private void deleteComment(String commentID,  String taskID) throws HttpException {
-//        String request = "/projects/" + projectID + "/stories/" + taskID + "/comments/" + commentID;
-//
-//        HttpResponse<JsonNode> response = Unirest.delete(PIVOTAL_URL + API_PATH + request)
-//                .header(TOKEN_HEADER, token)
-//                .header("Content-Type", "application/json")
-//                .asJson();
-//
-//        if (!response.isSuccess()) {
-//            throw new HttpException(response.getStatusText(), response.getStatus());
-//        }
-//    }
+
 
     public void deleteComment(String commentID, String taskID) throws HttpException, IOException, InterruptedException {
         String request = "/projects/" + projectID + "/stories/" + taskID + "/comments/" + commentID;
@@ -595,7 +514,7 @@ public class PivotalTracker {
     }
 
 
-    private String getID(JSONObject json) {
+    private String getID(JSONObject json)  {
         return String.valueOf(json.get("id"));
     }
 

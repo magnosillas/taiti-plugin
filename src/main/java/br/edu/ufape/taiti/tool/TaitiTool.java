@@ -154,8 +154,8 @@ public class TaitiTool {
             String path = lines[0];
 
             String[] numbers = lines[1].replace("[", "")
-                         .replace("]", "")
-                         .split(",");
+                    .replace("]", "")
+                    .split(",");
             ArrayList<Integer> numberLines = new ArrayList<>();
             for (String number : numbers) {
                 numberLines.add(Integer.parseInt(number.strip()));

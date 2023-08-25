@@ -3,12 +3,21 @@ package br.edu.ufape.taiti.service;
 
 import br.edu.ufape.taiti.exceptions.HttpException;
 import br.edu.ufape.taiti.tool.TaitiTool;
+import br.ufpe.cin.tan.analysis.task.TodoTask;
+import br.ufpe.cin.tan.conflict.PlannedTask;
 import com.intellij.openapi.project.Project;
-import kong.unirest.json.JSONObject;
+
 
 import java.io.File;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class Task {
 
@@ -20,16 +29,20 @@ public class Task {
     private  final int ownerID;
     private final String url;
     private String personName;
-    private List<Object[]> scenarios = new ArrayList<>();
-    ArrayList<Task> conflictTasks = new ArrayList<>();
-    ArrayList<ArrayList<Object[]>> conflictScenarios = new ArrayList<>();
+    private ArrayList<LinkedHashMap<String, Serializable>> scenarios = new ArrayList<>();
+    private PlannedTask iTesk ;
+
+
+
+    private ArrayList<Task> conflictTasks = new ArrayList<>();
+    private ArrayList<LinkedHashMap<String, Serializable>> conflictScenarios = new ArrayList<>();
     private int conflictNum;
 
 
 
-   // curl -X GET -H "X-TrackerToken: ce2a6540e0be3574c871f403fb12ef0f" "https://www.pivotaltracker.com/services/v5/projects/2590203/memberships"
+    // curl -X GET -H "X-TrackerToken: ce2a6540e0be3574c871f403fb12ef0f" "https://www.pivotaltracker.com/services/v5/projects/2590203/memberships"
 
-    public Task(JSONObject task, PivotalTracker pivotalTracker, Project project) {
+    public Task(JSONObject task, PivotalTracker pivotalTracker, Project project) throws IOException, InterruptedException {
         this.name = task.getString("name");
         this.id = task.getInt("id");
         this.type = task.getString("story_type");
@@ -41,7 +54,7 @@ public class Task {
         List<Person> members;
         try {
             members = pivotalTracker.getMembers();
-        } catch (HttpException e) {
+        } catch (HttpException | InterruptedException | IOException e) {
             throw new RuntimeException(e);
         }
 
@@ -49,27 +62,31 @@ public class Task {
         setScenarios(pivotalTracker, project);
     }
 
-    public void setScenarios(PivotalTracker pivotalTracker, Project project) {
+    public void setScenarios(PivotalTracker pivotalTracker, Project project) throws IOException, InterruptedException {
         try {
             File files = pivotalTracker.downloadFiles(String.valueOf(id));
             if (files != null) {
                 TaitiTool taiti = new TaitiTool(project);
                 List<String[]> arquivo = taiti.readTaitiFile(files);
                 for (String[] linha : arquivo) {
-                    String absolutePath = project.getBasePath() + "/" + linha[0];
+                    String absolutePath =  linha[0];
                     String[] numbersString = linha[1].replaceAll("[\\[\\]]", "").split(", ");
 
-                    int[] numbersInt = new int[numbersString.length];
-                    for (int i = 0; i < numbersString.length; i++) {
-                        numbersInt[i] = Integer.parseInt(numbersString[i]);
+                    ArrayList<Integer> numbersInt = new ArrayList<>();
+                    for (String s : numbersString) {
+                        numbersInt.add(Integer.parseInt(s));
                     }
-                    Object[] arr = new Object[] {absolutePath, numbersInt};
-                    scenarios.add(arr);
+                    LinkedHashMap<String, Serializable> map = new LinkedHashMap<String, Serializable>(2);
+
+                    map.put("path", absolutePath);
+                    map.put("lines", numbersInt);
+                    scenarios.add(map);
+
                 }
                 files.delete();
 
 
-        }
+            }
 
         } catch (HttpException e) {
             throw new RuntimeException(e);
@@ -77,22 +94,20 @@ public class Task {
     }
 
     public void checkConflictRisk(List<Task> listTask) {
-
+        conflictTasks.clear();
         conflictNum = 0;
 
-
-
-
-        for (Object[] lines : scenarios) { // percorro scenario por scenario
-            String absolutePath = (String)lines[0];
-            int[] numbers = (int[]) lines[1];
+        for (LinkedHashMap<String, Serializable> lines : scenarios) { // percorro scenario por scenario
+            String absolutePath = (String)lines.get("path");
+            ArrayList<Integer> numbers = (ArrayList<Integer>) lines.get("lines");
 
             for (Task auxTask : listTask) {
-                ArrayList<Object[]> conflictScenariosAux = new ArrayList<>();
-                List<Object[]> auxScenarios = auxTask.getScenarios(); //pego os scenarios da task que vou verificar
-                for (Object[] auxLines : auxScenarios) { // percoso scenario por scenario
-                    String auxAbsolutePath = (String)auxLines[0];
-                    int[] auxNumbers = (int[]) auxLines[1];
+                LinkedHashMap<String, Serializable> conflictScenariosAux = new LinkedHashMap<String, Serializable>(2);
+                ArrayList<LinkedHashMap<String, Serializable>> auxScenarios = auxTask.getScenarios(); //pego os scenarios da task que vou verificar
+                for (LinkedHashMap<String, Serializable> auxLines : auxScenarios) { // percoso scenario por scenario
+                    String auxAbsolutePath = (String) auxLines.get("path");
+
+                    ArrayList<Integer> auxNumbers = (ArrayList<Integer>) auxLines.get("lines");
 
                     if(absolutePath.equals(auxAbsolutePath)){
                         ArrayList<Integer> conflictRows = new ArrayList<>();
@@ -109,7 +124,9 @@ public class Task {
 
                         }
                         if(!conflictRows.isEmpty()){
-                            conflictScenariosAux.add( new Object[] {absolutePath, conflictRows});
+                            conflictScenariosAux.put("path", absolutePath);
+                            conflictScenariosAux.put("lines", conflictRows);
+
                         }
                     }
                 }
@@ -126,7 +143,7 @@ public class Task {
         return conflictTasks;
     }
 
-    public ArrayList<ArrayList<Object[]>> getConflictScenarios() {
+    public ArrayList<LinkedHashMap<String, Serializable>>  getConflictScenarios() {
         return conflictScenarios;
     }
 
@@ -134,7 +151,7 @@ public class Task {
         return conflictNum;
     }
 
-    public List<Object[]> getScenarios() {
+    public ArrayList<LinkedHashMap<String, Serializable>> getScenarios() {
         return scenarios;
     }
 
@@ -179,6 +196,14 @@ public class Task {
 
     public String getUrl() {
         return url;
+    }
+
+    public PlannedTask getiTesk() {
+        return iTesk;
+    }
+
+    public void setiTesk(PlannedTask iTesk) {
+        this.iTesk = iTesk;
     }
 }
 

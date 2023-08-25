@@ -17,7 +17,9 @@ import org.jsoup.internal.StringUtil;
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 
@@ -103,12 +105,12 @@ public class TaitiDialog extends DialogWrapper {
 
             for (Task task : allTasks) { // percorro todas as tasks
                 if (String.valueOf(task.getId()).equals(storyID)) { //verifico se a task que estou adicionando ja tem scenarios
-                    List<Object[]> scenarios = task.getScenarios(); //pego os scenarios da task encontrada
-                    for (Object[] lines : scenarios) { // percoso scenario por scenario
-                        String absolutePath = (String)lines[0];
+                    ArrayList<LinkedHashMap<String, Serializable>> scenarios = task.getScenarios(); //pego os scenarios da task encontrada
+                    for (LinkedHashMap<String, Serializable> lines : scenarios) { // percoso scenario por scenario
+                        String absolutePath = (String)lines.get("path");
 
                         File file = new File(absolutePath);
-                        for (int num : (int[])lines[1]) {
+                        for (int num : (int[])lines.get("lines")) {
                             mainPanel.addScenario(file, num); // adiciono os scenarios
                         }
                     }
@@ -141,13 +143,15 @@ public class TaitiDialog extends DialogWrapper {
         try {
             File file = taiti.createScenariosFile(mainPanel.getScenarios());
             pivotalTracker.saveScenarios(file, taskID);
-            taskBarGUI.configTaskList(pivotalTracker);
+            taskBarGUI.configTaskList();
             taiti.deleteScenariosFile();
         } catch (IOException e) {
             System.out.println("Erro ao criar o arquivo!");
         } catch (HttpException e) {
             System.out.println(e.getStatusText() + " - " + e.getStatusNumber());
             taiti.deleteScenariosFile();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
 
     }
