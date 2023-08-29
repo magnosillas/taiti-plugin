@@ -56,7 +56,7 @@ public class Stories {
                 //Seleciono apenas as tasks que contem o arquivo [TAITI] Scenarios, ou seja, que já foram adicionados
                 if ( (taitiComment != null && taitiComment.getString("text").equals("[TAITI] Scenarios"))) {
                     Task plannedStory = new Task(obj, pivotalTracker, project);
-
+                    String classpath = System.getProperty("java.class.path");
                     String url = "https://github.com/diaspora/diaspora";
                     final Integer id1 = 1;
 
@@ -69,7 +69,7 @@ public class Stories {
                     TodoTask task1;
                     PlannedTask plannedTask1 = null;
 
-                    task1 = new TodoTask(url, id1, tests);
+//                    task1 = new TodoTask(url, id1, tests);
 
                     //
 //                    TodoTask todoTask = new TodoTask( githubURL, plannedStory.getId() , plannedStory.getScenarios());
@@ -91,9 +91,9 @@ public class Stories {
         } catch (HttpException | InterruptedException | IOException e) {
             throw new RuntimeException(e);
         }
-        catch (CloningRepositoryException e) {
-            throw new RuntimeException(e);
-        }
+//        catch (CloningRepositoryException e) {
+//            throw new RuntimeException(e);
+//        }
 
     }
 
