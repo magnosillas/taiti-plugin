@@ -1,17 +1,14 @@
-# taiti-plugin
+# Plugin TAITIr
 
-TAITI é uma ferramenta para predizer os arquivos que um desenvolvedor precisará alterar para realizar uma tarefa de programação, como o desenvolvimento de uma nova funcionalidade de sistema, e assim estimar o risco de conflito de merge entre tarefas a serem desenvolvidas em paralelo por uma equipe. 
+TAITIr é uma ferramenta para predizer os arquivos que um desenvolvedor precisará alterar para realizar uma tarefa de programação, como o desenvolvimento de uma nova funcionalidade de sistema, e assim estimar o risco de conflito de merge entre tarefas a serem desenvolvidas em paralelo por uma equipe. 
 Ela se aplica à projetos Rails que adotam a dinâmica de [BDD (Behavior Driven Development)](https://pt.wikipedia.org/wiki/Behavior_Driven_Development) com o [Cucumber](https://cucumber.io/) para a escrita de testes de aceitação automatizados e o [PivotalTracker](https://www.pivotaltracker.com/) para gerenciamento de tarefas do projeto.
-TAITI foi desenvolvida como um plugin para a IDE RubyMine da JetBrains, também compatível com o IntelliJ Ultimate (com o plugin para Ruby).
+TAITIr foi desenvolvida como um plugin para a IDE RubyMine da JetBrains, também compatível com o IntelliJ Ultimate (com o plugin para Ruby).
 
 ## Instalação
 
-TAITI está em desenvolvimento, segundo uma abordagem iterativa e incremental. Para fins de avaliação da interface gráfica, foi desenvolvida uma primeira versão que apenas lida com a organização da informação necessária para TAITI predizer os arquivos que o desenvolvedor precisará alterar para realizar uma tarefa de programação.
-Para instalar TAITI é preciso:
-
-* Instalar o [RubyMine](https://www.jetbrains.com/pt-br/ruby/) ou o [IntelliJ Ultimate](https://www.jetbrains.com/pt-br/idea/)
-* Instalar o arquivo .zip do plugin disponível nas [releases do GitHub](https://github.com/vngabriel/taiti-plugin/releases/download/v0.1/taiti-plugin-0.1.zip)
-* Abrir a IDE instalada e ir em File > Settings/Preferences > Plugins > Clicar na engrenagem superior ao lado da aba "Installed" (Figura 1) > Install Plugin from Disk > Selecionar o arquivo .zip do plugin instalado anteriormente > OK:
+* Instalar o [RubyMine](https://www.jetbrains.com/pt-br/ruby/) ou o [IntelliJ Ultimate](https://www.jetbrains.com/pt-br/idea/);
+* Instalar o arquivo <em>.zip</em> do plugin disponível nas [releases do GitHub](https://github.com/vngabriel/taiti-plugin/releases/download/v0.1/taiti-plugin-0.1.zip) !ATUALIZAR ZIP E LINK!;
+* Abrir a IDE instalada e ir em File > Settings/Preferences > Plugins, e clicar na engrenagem superior ao lado da aba "Installed" (Figura 1) > Install Plugin from Disk, selecionar o arquivo <em>.zip</em> do plugin instalado anteriormente e clicar em OK.
 
 <figure>
   <figcaption><em>Figura 1 - Tela de plugins da IDE.</em></figcaption>
@@ -22,69 +19,72 @@ Depois desses passos, o plugin deve estar instalado na sua IDE.
 
 ## Funcionamento
 
-TAITI prediz os arquivos que serão alterados durante a realização de uma tarefa de programação com base nos testes do Cucumber relacionados à tarefa a ser realizada.
-No Cucumber, os testes são cenários escritos em arquivos features. Logo, por intermédio de TAITI, o desenvolvedor seleciona cenários de testes para uma tarefa, o que pressupõe que estes já tenham sido projetados.
-Os testes selecionados são salvos em um arquivo CSV que é exportado para o PivotalTracker.
+TAITIr prediz os arquivos que serão alterados durante a realização de uma tarefa de programação com base nos testes do Cucumber que validam o comportamento esperado da funcionalidade de sistema subjacente à tarefa.
+No Cucumber, os testes são cenários escritos em arquivos <em>.feature</em>. Logo, por intermédio de TAITIr, o desenvolvedor seleciona cenários de testes para uma tarefa, o que pressupõe que estes já tenham sido projetados.
+Os testes que validam o comportamento da tarefa são salvos em um arquivo CSV que é exportado para o PivotalTracker, ficando acessível no post-it da tarefa.
+<INCLUIR IMAGEM DE EXEMPLO>
 
-## Como usar
-
-Primeiramente, é necessário ter uma conta no [PivotalTracker](https://www.pivotaltracker.com/) e que o repositório remoto do seu projeto esteja no [GitHub](https://github.com/).
-Para configurar o plugin é necessário acessar File > Settings/Preferences > Tools > TAITI, e basta preencher os três primeiros campos mostrado na tela a seguir (Figura 2) com suas as respectivas informações sobre o projeto a ser utilizado, já o Test Settings tem valores padrões, mude apenas se necessário (para conseguir o token do PivotalTracker basta acessar o seu [perfil](https://www.pivotaltracker.com/profile) e copiar o API Token).
+Com base no exposto, é necessário ter uma conta no [PivotalTracker](https://www.pivotaltracker.com/) e que o repositório remoto do seu projeto esteja no [GitHub](https://github.com/). Além disso, é necessário configurar o plugin para informar o projeto em desenvolvimento.
+Para tanto, basta acessar File > Settings/Preferences > Tools > TAITIr e preencher os três primeiros campos da seção <em>Project settings</em> na tela ilustrada pela Figura 2. Para saber o token do PivotalTracker, você deve acessar o seu [perfil](https://www.pivotaltracker.com/profile) e copiar o <em>API Token</em>. A seção <em>Test Settings</em> tem valores padrão referentes aos diretórios de armazenamento de arquivos de testes, que só devem ser alterados se realmente necessário.
 
 <figure>
-  <figcaption><em>Figura 2 - Tela de configuração do plugin TAITI.</em></figcaption>
+  <figcaption><em>Figura 2 - Tela de configuração do plugin TAITIr.</em></figcaption>
   <img width="600px" alt="Settings" src="/doc/settings.png"/> 
 </figure>
 
-Após configurar o plugin, você pode acessar suas telas abrindo as abas TaskList e Conflicts, que estão localizadas nas opções mais a esquerda e nas abas inferiores respectivamente, sendo mostrado a visão principal do plugin (Figura 3). Na seção 1 temos o botão de atribuir cenários para as tarefas do PivotalTracker e assim adicionar tarefas no plugin. A seção 2 é o botão para recarregar as informações e listas, sendo necesário utilizar uma vez após a configuração do plugin para carregar o plugin. A seção 3 temos a lista de tarefas que pertence ao usuário, tarefas essas que estão planejadas para começar e pode ser avaliado o risco de conflitos delas para determinar a ordem de execução delas. Já a seção 4 são as tarefas já cadastradas que pertence a outros usuários do seu projeto e podem conflitar com suas tarefas.
+Após configurar o plugin, você está apto a usá-lo. O plugin tem duas telas principais: <em>Task List</em> (item 1 na Figura 3, uma aba na lateral esquerda da IDE) e <em>Conflicts</em> (item 2 na Figura 3, um aba na região inferior da IDE).
+<em>Task List</em> lista as tarefas do PivotalTracker previstas para o desenvolvedor (item 3 na Figura 3) e as tarefas do PivotalTracker em execução no momento por outros desenvolvedores (item 4 na Figura 3), ou seja, o conjunto de tarefas a serem consideradas na análise de risco de conflito. As tarefas em execução são obtidas automaticamente, mas aquelas planejadas para o desenvolvedor devem ser adicionadas por ele. Isso pode ser feito ao clicar no item 5 na Figura 3. 
 
 <figure>
-  <figcaption><em>Figura 3 - Visão principal do plugin TAITI.</em></figcaption>
+  <figcaption><em>Figura 3 - Visão principal do plugin TAITIr.</em></figcaption>
   <img width="600px" alt="Abas do Plugin" src="/doc/plugin1.png"/> 
+  AJUSTAR IMAGEM PARA ROTULAR CORRETAMENTE OS ITENS IDENTIFICADOS NO TEXTO
 </figure>
 
-Após recarregar as informações do plugin teremos as tabelas de tarefas preenchidas, isso considerando se houver tarefas já cadastradas, (Figura 4). Na lista, observamos parte do título da tarefa e a média do nível de conflito da tarefa com outras em execução. Caso mais informações sejam necessárias, ao posicionar o mouse sobre cada tarefa, o título completo, ID e proprietário serão exibidos.
+Conforme ilustrado na Figura 4 (item 1), quando o desenvolvedor identifica as tarefas que planeja executar (listagem <em>My unstarted tasks</em>), o plugin informa para cada uma delas o grau de risco de conflito total com outras tarefas em execução no momento. Informações mais detalhadas sobre as tarefas podem ser obtidas ao posicionar o mouse sobre a tarefa.
+Já na listagem <em>Coworkers started tasks</em>, conforme ilustrado na Figura 4 (item 2), é possível saber o grau de risco de conflito entre a tarefa planejada e cada uma das tarefas em execução individualmente.
 
 <figure>
-  <figcaption><em>Figura 4 - Lista de Tarefas Carregadas.</em></figcaption>
+  <figcaption><em>Figura 4 - Visão resumida de risco de conflito entre tarefas de programação. </em></figcaption>
   <img width="600px" alt="Lista de tarefas do Plugin" src="/doc/plugin2.png"/> 
 </figure>
 
-Ao dar dois cliques sobre uma das tarefas, é viável visualizar todos os conflitos a ela relacionados. Isso inclui a tarefa que está em conflito, o risco relativo entre cada par de tarefas e informações cruciais como o link para a tarefa em conflito no PivotalTracker, ID da tarefa, descrição e os arquivos envolvidos nos conflitos.
+Ainda na listagem <em>My unstarted tasks</em> (Figura 4, item 1), ao dar dois cliques sobre alguma tarefa, é possível visualizar informação detalhada sobre o risco de conflito na tela Conflicts (Figura 5, item 1). Por exemplo, se há uma tarefa planejada e 3 tarefas em execução, é possível saber o risco de conflito entre a tarefa planejada e cada tarefa em execução individualmente e quais são os arquivos potencialmente conflitantes.
 
 <figure>
-  <figcaption><em>Figura 5 - Conflitos entre Tarefas.</em></figcaption>
+  <figcaption><em>Figura 5 - Visão detalhada de risco de conflito entre tarefas de programação. </em></figcaption>
   <img width="600px" alt="Conflicts" src="/doc/plugin3.png"/> 
 </figure>
 
-Para conectarmos as tarefas do PivotalTracker com os cenários de teste do projeto e assim adicionando na lista do plugin basta clicar no botão "Add" explicado anteriormente, assim abrirá a tela de configuração da tarefa (Figura 6).
-Na seção 1 é inserido o ID da tarefa que você está trabalhando atualmente no PivotalTracker (por exemplo, #123456789 ou 123456789), a seção 2 é uma listagem de arquivos em estrutura de árvore, onde você seleciona um ou mais arquivos feature onde estão os testes do Cucumber relacionados à sua tarefa,
-a seção 3 é exibido o arquivo feature selecionado e a seção 4 é uma tabela com todos os cenários selecionados.
+Para informar os testes do Cucumber que validam o comportamento esperado de uma tarefa de programação no PivotalTracker, conforme dito, é necessário clicar no item 5 na Figura 3 para acessar a tela de configuração da tarefa (Figura 6).
+Na Figura 6, o item 1 é o ID da tarefa no PivotalTracker (por exemplo, #123456789 ou 123456789). 
+O item 2 é uma listagem de arquivos em estrutura de árvore na qual você seleciona um ou mais arquivos <em>.feature</em> que contém cenários de teste relacionados à tarefa.
+O item 3 exibe o arquivo feature selecionado e o item 4 é uma tabela com todos os cenários selecionados.
 
 <figure>
-  <figcaption><em>Figura 6 - Tela adicionar tarefa do plugin TAITI.</em></figcaption>
+  <figcaption><em>Figura 6 - Tela de configuração de tarefa de programação do plugin TAITIr.</em></figcaption>
   <img width="600px" alt="Tela Add do plugin" src="/doc/plugin_add1.png"/> 
 </figure>
 
-Após inserir o ID na seção 1 e selecionar um arquivo feature na seção 2, sua tela fica parecida com a tela da Figura 7. Onde o arquivo selecionado é exibido ao centro e cada teste nele existente é identificado por um checkbox. Ao marcar o checkbox, você informa que o referido teste está relacionado à tarefa. 
+Após informar o ID no item 1 e selecionar um arquivo <em>.feature</em> no item 2, sua tela fica parecida com a tela da Figura 7, na qual o arquivo selecionado é exibido ao centro e cada teste nele existente é identificado por um checkbox. Ao marcar o checkbox, você informa que o referido teste está relacionado à tarefa. 
 Alternativamente, é possível selecionar todos os testes em um arquivo, apenas marcando o checkbox que identifica o nome do arquivo na parte central da tela.
 
 <figure>
-  <figcaption><em>Figura 7 - Tela do plugin com o arquivo selecionado.</em></figcaption>
+  <figcaption><em>Figura 7 - Visão detalhada de testes relacionados à uma tarefa de programação.</em></figcaption>
   <img width="600px" alt="Tela do plugin" src="/doc/plugin_add2.png"/> 
 </figure>
 
-Selecionado os cenários necessários para a tarefa, sua tela fica parecida com a tela da Figura 8. Onde na tabela (seção 4) há uma listagem de todos os testes selecionados, em um ou mais arquivos, e você pode atualizá-la, removendo algum teste caso julgue necessário.
+Selecionado os cenários de teste para a tarefa, sua tela fica parecida com a tela da Figura 8, na qual há uma listagem de todos os testes selecionados (item 4) em um ou mais arquivos, e você pode atualizá-la, removendo algum teste caso necessário.
 
 <figure>
-  <figcaption><em>Figura 8 - Tela do plugin com os cenários selecionados.</em></figcaption>
+  <figcaption><em>Figura 8 - Resumo dos testes relacionados à uma tarefa de programação.</em></figcaption>
   <img width="600px" alt="Tela do plugin" src="/doc/plugin_add3.png"/> 
 </figure>
 
-Uma vez finalizada a seleção dos testes relacionados à tarefa, basta clicar em OK e um arquivo CSV com os cenários selecionados é criado e exportado para o PivotalTracker, sendo anexado como comentário na seção Activity da tarefa.
+Uma vez finalizada a seleção dos testes relacionados à tarefa, basta clicar em OK e um arquivo CSV com os cenários selecionados é criado e exportado para o PivotalTracker, sendo anexado como comentário na seção <em>Activity</em> da tarefa, conforme ilustrado na Figura 9.
 
 <figure>
-  <figcaption><em>Figura 9 - Tela do comentário com o arquivo CSV anexado na aba Activity do PivotalTracker .</em></figcaption>
+  <figcaption><em>Figura 9 - Tarefa do PivotalTracker com anexo na aba Activity.</em></figcaption>
   <img alt="Tela do plugin" src="/doc/pivotal.png"/> 
 </figure>
 
