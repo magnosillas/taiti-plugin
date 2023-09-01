@@ -22,7 +22,6 @@ Depois desses passos, o plugin TAITIr deve estar instalado na sua IDE.
 TAITIr prediz os arquivos que serão alterados durante a realização de uma tarefa de programação com base nos testes do Cucumber que validam o comportamento esperado da funcionalidade de sistema subjacente à tarefa.
 No Cucumber, os testes são cenários escritos em arquivos <em>.feature</em>. Logo, por intermédio de TAITIr, o desenvolvedor seleciona cenários de testes para uma tarefa, o que pressupõe que estes já tenham sido projetados.
 Os testes que validam o comportamento da tarefa são salvos em um arquivo <em>.csv</em> que é exportado para o PivotalTracker, ficando acessível no post-it da tarefa.
-<INCLUIR IMAGEM DE EXEMPLO>
 
 Com base no exposto, é necessário ter uma conta no [PivotalTracker](https://www.pivotaltracker.com/) e que o repositório remoto do seu projeto esteja no [GitHub](https://github.com/). Além disso, é necessário configurar o plugin para informar o projeto em desenvolvimento.
 Para tanto, basta acessar File > Settings/Preferences > Tools > TAITIr e preencher os três primeiros campos da seção <em>Project settings</em> na tela ilustrada pela Figura 2. Para saber o token do PivotalTracker, você deve acessar o seu [perfil](https://www.pivotaltracker.com/profile) e copiar o <em>API Token</em>. A seção <em>Test Settings</em> tem valores padrão referentes aos diretórios de armazenamento de arquivos de testes, que só devem ser alterados se realmente necessário.
@@ -33,28 +32,33 @@ Para tanto, basta acessar File > Settings/Preferences > Tools > TAITIr e preench
 </figure>
 
 Após configurar o plugin, você está apto a usá-lo. O plugin tem duas telas principais: <em>Task List</em> (item 1 na Figura 3, uma aba na lateral esquerda da IDE) e <em>Conflicts</em> (item 2 na Figura 3, uma aba na região inferior da IDE).
-<em>Task List</em> lista as tarefas do PivotalTracker previstas para o desenvolvedor (item 3 na Figura 3) e as tarefas do PivotalTracker em execução no momento por outros desenvolvedores (item 4 na Figura 3), ou seja, o conjunto de tarefas a serem consideradas na análise de risco de conflito. As tarefas em execução são obtidas automaticamente, mas aquelas planejadas para o desenvolvedor devem ser adicionadas por ele. Isso pode ser feito ao clicar no item 5 na Figura 3. 
+<em>Task List</em> lista as tarefas do PivotalTracker previstas para o desenvolvedor (item 3 na Figura 3) e as tarefas do PivotalTracker em execução no momento por outros desenvolvedores (item 4 na Figura 3), ou seja, o conjunto de tarefas a serem consideradas na análise de risco de conflito. 
 
 <figure>
   <figcaption><em>Figura 3 - Visão principal do plugin TAITIr.</em></figcaption>
   <img width="600px" alt="Abas do Plugin" src="/doc/plugin1.png"/> 
 </figure>
 
-Conforme ilustrado na Figura 4 (item 1), quando o desenvolvedor identifica as tarefas que planeja executar (listagem <em>My unstarted tasks</em>), o plugin informa para cada uma delas o grau de risco de conflito total com outras tarefas em execução no momento. Informações mais detalhadas sobre as tarefas podem ser obtidas ao posicionar o mouse sobre a tarefa.
+Conforme ilustrado na Figura 3 (item 3, listagem <em>My unstarted tasks</em>), quando o desenvolvedor identifica as tarefas que planeja executar, o plugin informa para cada uma delas o grau de risco de conflito total com outras tarefas em execução no momento. 
+Informações mais detalhadas sobre as tarefas podem ser obtidas ao posicionar o mouse sobre a tarefa.
+
+As tarefas em execução são obtidas automaticamente, mas aquelas planejadas para o desenvolvedor devem ser adicionadas por ele. Isso pode ser feito ao clicar no item 1 na Figura 4. 
+Ainda na Figura 4, é possível atualizar as listagens de tarefas ao clicar no item 2, bem como pesquisar pelo título de alguma tarefa de interesse usando a caixa de texto do item 3, em caso das listagens serem extensas.
 
 <figure>
-  <figcaption><em>Figura 4 - Visão resumida de risco de conflito entre tarefas de programação.</em></figcaption>
-  <img width="600px" alt="Lista de tarefas do Plugin" src="/doc/plugin2.png"/> 
+  <figcaption><em>Figura 4 - Visão detalhada das ações possíveis na tela Task List.</em></figcaption>
+  <img width="400px" alt="Ações do Task List" src="/doc/plugin2.png"/> 
 </figure>
 
-Ainda na listagem <em>My unstarted tasks</em> (Figura 4, item 1), ao dar dois cliques sobre alguma tarefa, é possível visualizar informação detalhada sobre o risco de conflito na tela Conflicts (Figura 5, item 1). Por exemplo, se há uma tarefa planejada e 3 tarefas em execução, é possível saber o risco de conflito entre a tarefa planejada e cada tarefa em execução individualmente e quais são os arquivos potencialmente conflitantes.
+Ainda na listagem <em>My unstarted tasks</em> (Figura 3, item 3), ao dar dois cliques sobre alguma tarefa, é possível visualizar informação detalhada sobre o risco de conflito na tela Conflicts (Figura 5, item 1). 
+Por exemplo, se há uma tarefa planejada e 3 tarefas em execução, é possível saber o risco de conflito entre a tarefa planejada e cada tarefa em execução individualmente e quais são os arquivos potencialmente conflitantes.
 
 <figure>
   <figcaption><em>Figura 5 - Visão detalhada de risco de conflito entre tarefas de programação.</em></figcaption>
   <img width="600px" alt="Conflicts" src="/doc/plugin3.png"/> 
 </figure>
 
-Para informar os testes do Cucumber que validam o comportamento esperado de uma tarefa de programação no PivotalTracker, conforme dito, é necessário clicar no item 5 na Figura 3 para acessar a tela de configuração da tarefa (Figura 6).
+Para informar os testes do Cucumber que validam o comportamento esperado de uma tarefa de programação no PivotalTracker, conforme dito, é necessário clicar no item 1 na Figura 4 para acessar a tela de configuração da tarefa (Figura 6).
 Na Figura 6, o item 1 é o ID da tarefa no PivotalTracker (por exemplo, #123456789 ou 123456789). 
 O item 2 é uma listagem de arquivos em estrutura de árvore na qual você seleciona um ou mais arquivos <em>.feature</em> que contém cenários de teste relacionados à tarefa.
 O item 3 exibe o arquivo <em>.feature</em> selecionado e o item 4 é uma tabela com todos os cenários selecionados.

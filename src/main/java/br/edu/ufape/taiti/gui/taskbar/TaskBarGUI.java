@@ -17,6 +17,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableRowSorter;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
@@ -74,7 +75,7 @@ public class TaskBarGUI {
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         columns.getColumn(1).setCellRenderer(centerRenderer);
 
-        modelo2 = new DefaultTableModel(null,new String[]{"<html><b>Coworkes started tasks</b></html>", "<html><b>Conflict Risk</b></html>"}){
+        modelo2 = new DefaultTableModel(null,new String[]{"<html><b>Coworkes started tasks</b></html>"}){
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; // Tornar todas as células não editáveis
@@ -83,13 +84,10 @@ public class TaskBarGUI {
         startedTable.setModel(modelo2);
 
         // Definir a largura da segunda coluna como 20 pixels
-        startedTable.getColumnModel().getColumn(1).setMaxWidth(100);
+
 
         //centralizar os numeros de Scenarios
-        TableColumnModel columns2 = startedTable.getColumnModel();
-        DefaultTableCellRenderer centerRenderer2 = new DefaultTableCellRenderer();
-        centerRenderer2.setHorizontalAlignment(JLabel.CENTER);
-        columns2.getColumn(1).setCellRenderer(centerRenderer);
+
 
 
 
@@ -260,7 +258,7 @@ public class TaskBarGUI {
             atualizarListas(plannedStories.getUnstartedStories(), storysList1, modelo1);
 
             // Add the started stories to the main list
-            atualizarListas(plannedStories.getStartedStories(), storysList2, modelo2);
+            atualizarListas2(plannedStories.getStartedStories(), storysList2, modelo2);
         }
     }
 
@@ -289,6 +287,18 @@ public class TaskBarGUI {
                 sum += number.size();
             }
             model.addRow(new Object[]{storyName, sum});
+
+
+        }
+    }
+    private void atualizarListas2(List<Task> Stories, ArrayList<Task> storysList, DefaultTableModel model) {
+
+        for(Task Story : Stories){
+            storysList.add(Story);
+            String storyName = truncateStoryName(Story.getStoryName());
+
+
+            model.addRow(new Object[]{storyName});
 
 
         }
