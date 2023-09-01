@@ -36,7 +36,7 @@ Após configurar o plugin, você está apto a usá-lo. O plugin tem duas telas p
 
 <figure>
   <figcaption><em>Figura 3 - Visão principal do plugin TAITIr.</em></figcaption>
-  <img width="600px" alt="Abas do Plugin" src="/doc/plugin1.png"/> 
+  <img width="800px" alt="Abas do Plugin" src="/doc/plugin1.png"/> 
 </figure>
 
 Conforme ilustrado na Figura 3 (item 3, listagem <em>My unstarted tasks</em>), quando o desenvolvedor identifica as tarefas que planeja executar, o plugin informa para cada uma delas o grau de risco de conflito total com outras tarefas em execução no momento. 
@@ -65,23 +65,18 @@ O item 3 exibe o arquivo <em>.feature</em> selecionado e o item 4 é uma tabela 
 
 <figure>
   <figcaption><em>Figura 6 - Tela de configuração de tarefa de programação do plugin TAITIr.</em></figcaption>
-  <img width="600px" alt="Tela Add do plugin" src="/doc/plugin_add2.png"/> 
+  <img width="600px" alt="Tela Add do plugin" src="/doc/plugin_add3.png"/> 
 </figure>
 
 Após informar o ID no item 1 e selecionar um arquivo <em>.feature</em> no item 2, sua tela fica parecida com a tela da Figura 6, na qual o arquivo selecionado é exibido ao centro e cada teste nele existente é identificado por um checkbox. Ao marcar o checkbox, você informa que o referido teste está relacionado à tarefa. 
 Alternativamente, é possível selecionar todos os testes em um arquivo, apenas marcando o checkbox que identifica o nome do arquivo na parte central da tela.
 
-Selecionado os cenários de teste para a tarefa, sua tela fica parecida com a tela da Figura 7, na qual há uma listagem de todos os testes selecionados (item 4) em um ou mais arquivos, e você pode atualizá-la, removendo algum teste caso necessário.
+Selecionado os cenários de teste para a tarefa, sua tela fica parecida com a tela da Figura 6, na qual há uma listagem de todos os testes selecionados (item 4) em um ou mais arquivos, e você pode atualizá-la, removendo algum teste caso necessário.
+
+Uma vez finalizada a seleção dos testes relacionados à tarefa, basta clicar em OK e um arquivo <em>.csv</em> com os cenários selecionados é criado e exportado para o PivotalTracker, sendo anexado como comentário na seção <em>Activity</em> da tarefa, conforme ilustrado na Figura 7.
 
 <figure>
-  <figcaption><em>Figura 7 - Resumo dos testes relacionados à uma tarefa de programação.</em></figcaption>
-  <img width="600px" alt="Tela do plugin" src="/doc/plugin_add3.png"/> 
-</figure>
-
-Uma vez finalizada a seleção dos testes relacionados à tarefa, basta clicar em OK e um arquivo <em>.csv</em> com os cenários selecionados é criado e exportado para o PivotalTracker, sendo anexado como comentário na seção <em>Activity</em> da tarefa, conforme ilustrado na Figura 8.
-
-<figure>
-  <figcaption><em>Figura 8 - Tarefa do PivotalTracker com anexo na aba Activity.</em></figcaption>
+  <figcaption><em>Figura 7 - Tarefa do PivotalTracker com anexo na aba Activity.</em></figcaption>
   <img alt="Tela do plugin" src="/doc/pivotal.png"/> 
 </figure>
 

@@ -113,7 +113,7 @@ public class TaskBarGUI {
 
                 TableRowSorter<DefaultTableModel> sorter2 = new TableRowSorter<>(modelo2);
                 startedTable.setRowSorter(sorter2);
-                sorter.setRowFilter(RowFilter.regexFilter(txtSearch.getText()));
+                sorter2.setRowFilter(RowFilter.regexFilter(txtSearch.getText()));
 
             }
         });
