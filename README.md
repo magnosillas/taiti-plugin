@@ -21,8 +21,8 @@ Depois desses passos, o plugin deve estar instalado na sua IDE.
 
 TAITIr prediz os arquivos que serão alterados durante a realização de uma tarefa de programação com base nos testes do Cucumber que validam o comportamento esperado da funcionalidade de sistema subjacente à tarefa.
 No Cucumber, os testes são cenários escritos em arquivos <em>.feature</em>. Logo, por intermédio de TAITIr, o desenvolvedor seleciona cenários de testes para uma tarefa, o que pressupõe que estes já tenham sido projetados.
-Os testes que validam o comportamento da tarefa são salvos em um arquivo CSV que é exportado para o PivotalTracker, ficando acessível no post-it da tarefa.
-<INCLUIR IMAGEM DE EXEMPLO>
+Os testes que validam o comportamento da tarefa são salvos em um arquivo <em>.csv</em> que é exportado para o PivotalTracker, ficando acessível no post-it da tarefa.
+
 
 Com base no exposto, é necessário ter uma conta no [PivotalTracker](https://www.pivotaltracker.com/) e que o repositório remoto do seu projeto esteja no [GitHub](https://github.com/). Além disso, é necessário configurar o plugin para informar o projeto em desenvolvimento.
 Para tanto, basta acessar File > Settings/Preferences > Tools > TAITIr e preencher os três primeiros campos da seção <em>Project settings</em> na tela ilustrada pela Figura 2. Para saber o token do PivotalTracker, você deve acessar o seu [perfil](https://www.pivotaltracker.com/profile) e copiar o <em>API Token</em>. A seção <em>Test Settings</em> tem valores padrão referentes aos diretórios de armazenamento de arquivos de testes, que só devem ser alterados se realmente necessário.
@@ -32,62 +32,56 @@ Para tanto, basta acessar File > Settings/Preferences > Tools > TAITIr e preench
   <img width="600px" alt="Settings" src="/doc/settings.png"/> 
 </figure>
 
-Após configurar o plugin, você está apto a usá-lo. O plugin tem duas telas principais: <em>Task List</em> (item 1 na Figura 3, uma aba na lateral esquerda da IDE) e <em>Conflicts</em> (item 2 na Figura 3, um aba na região inferior da IDE).
-<em>Task List</em> lista as tarefas do PivotalTracker previstas para o desenvolvedor (item 3 na Figura 3) e as tarefas do PivotalTracker em execução no momento por outros desenvolvedores (item 4 na Figura 3), ou seja, o conjunto de tarefas a serem consideradas na análise de risco de conflito. As tarefas em execução são obtidas automaticamente, mas aquelas planejadas para o desenvolvedor devem ser adicionadas por ele. Isso pode ser feito ao clicar no item 5 na Figura 3. 
+Após configurar o plugin, você está apto a usá-lo. O plugin tem duas telas principais: <em>Task List</em> (item 1 na Figura 3, uma aba na lateral esquerda da IDE) e <em>Conflicts</em> (item 2 na Figura 3, uma aba na região inferior da IDE).
+<em>Task List</em> lista as tarefas do PivotalTracker previstas para o desenvolvedor (item 3 na Figura 3) e as tarefas do PivotalTracker em execução no momento por outros desenvolvedores (item 4 na Figura 3), ou seja, o conjunto de tarefas a serem consideradas na análise de risco de conflito. 
+Conforme ilustrado na Figura 3 (item 3), quando o desenvolvedor identifica as tarefas que planeja executar (listagem <em>My unstarted tasks</em>), o plugin informa para cada uma delas o grau de risco de conflito total com outras tarefas em execução no momento. Informações mais detalhadas sobre as tarefas podem ser obtidas ao posicionar o mouse sobre a tarefa.
 
 <figure>
   <figcaption><em>Figura 3 - Visão principal do plugin TAITIr.</em></figcaption>
   <img width="600px" alt="Abas do Plugin" src="/doc/plugin1.png"/> 
-  AJUSTAR IMAGEM PARA ROTULAR CORRETAMENTE OS ITENS IDENTIFICADOS NO TEXTO
-</figure>
+    </figure>
 
-Conforme ilustrado na Figura 4 (item 1), quando o desenvolvedor identifica as tarefas que planeja executar (listagem <em>My unstarted tasks</em>), o plugin informa para cada uma delas o grau de risco de conflito total com outras tarefas em execução no momento. Informações mais detalhadas sobre as tarefas podem ser obtidas ao posicionar o mouse sobre a tarefa.
-Já na listagem <em>Coworkers started tasks</em>, conforme ilustrado na Figura 4 (item 2), é possível saber o grau de risco de conflito entre a tarefa planejada e cada uma das tarefas em execução individualmente.
+As tarefas em andamento são automaticamente adquiridas, mas as tarefas planejadas pelo desenvolvedor devem ser inseridas manualmente. Isso pode ser realizado clicando no ícone 1 na Figura 4, o que abrirá a tela ilustrada na Figura 6, que será explicada em detalhes posteriormente. No ícone 2 da Figura 4, é possível atualizar a lista de tarefas e as suas informações. Caso a lista de tarefas seja extensa, é viável buscar tarefas pelo título usando o ícone 3 da Figura 4.
 
 <figure>
-  <figcaption><em>Figura 4 - Visão resumida de risco de conflito entre tarefas de programação. </em></figcaption>
-  <img width="600px" alt="Lista de tarefas do Plugin" src="/doc/plugin2.png"/> 
+  <figcaption><em>Figura 4 - Visão detalhada das ações do Task List.</em></figcaption>
+  <img width="400px" alt="Ações do Task List" src="/doc/plugin2.png"/> 
 </figure>
 
-Ainda na listagem <em>My unstarted tasks</em> (Figura 4, item 1), ao dar dois cliques sobre alguma tarefa, é possível visualizar informação detalhada sobre o risco de conflito na tela Conflicts (Figura 5, item 1). Por exemplo, se há uma tarefa planejada e 3 tarefas em execução, é possível saber o risco de conflito entre a tarefa planejada e cada tarefa em execução individualmente e quais são os arquivos potencialmente conflitantes.
+Ainda na listagem <em>My unstarted tasks</em> (Figura 3, item 3), ao dar dois cliques sobre alguma tarefa, é possível visualizar informação detalhada sobre o risco de conflito na tela Conflicts (Figura 5, item 1). Por exemplo, se há uma tarefa planejada e 3 tarefas em execução, é possível saber o risco de conflito entre a tarefa planejada e cada tarefa em execução individualmente e quais são os arquivos potencialmente conflitantes.
 
 <figure>
-  <figcaption><em>Figura 5 - Visão detalhada de risco de conflito entre tarefas de programação. </em></figcaption>
+  <figcaption><em>Figura 5 - Visão detalhada de risco de conflito entre tarefas de programação.</em></figcaption>ad
   <img width="600px" alt="Conflicts" src="/doc/plugin3.png"/> 
 </figure>
 
-Para informar os testes do Cucumber que validam o comportamento esperado de uma tarefa de programação no PivotalTracker, conforme dito, é necessário clicar no item 5 na Figura 3 para acessar a tela de configuração da tarefa (Figura 6).
+Para informar os testes do Cucumber que validam o comportamento esperado de uma tarefa de programação no PivotalTracker, conforme dito, é necessário clicar no item 1 na Figura 4 para acessar a tela de configuração da tarefa (Figura 6).
 Na Figura 6, o item 1 é o ID da tarefa no PivotalTracker (por exemplo, #123456789 ou 123456789). 
 O item 2 é uma listagem de arquivos em estrutura de árvore na qual você seleciona um ou mais arquivos <em>.feature</em> que contém cenários de teste relacionados à tarefa.
-O item 3 exibe o arquivo feature selecionado e o item 4 é uma tabela com todos os cenários selecionados.
+O item 3 exibe o arquivo <em>.feature</em> selecionado e o item 4 é uma tabela com todos os cenários selecionados.
 
 <figure>
   <figcaption><em>Figura 6 - Tela de configuração de tarefa de programação do plugin TAITIr.</em></figcaption>
-  <img width="600px" alt="Tela Add do plugin" src="/doc/plugin_add1.png"/> 
+  <img width="600px" alt="Tela Add do plugin" src="/doc/plugin_add2.png"/> 
 </figure>
 
-Após informar o ID no item 1 e selecionar um arquivo <em>.feature</em> no item 2, sua tela fica parecida com a tela da Figura 7, na qual o arquivo selecionado é exibido ao centro e cada teste nele existente é identificado por um checkbox. Ao marcar o checkbox, você informa que o referido teste está relacionado à tarefa. 
+Após informar o ID no item 1 e selecionar um arquivo <em>.feature</em> no item 2, sua tela fica parecida com a tela da Figura 6, na qual o arquivo selecionado é exibido ao centro e cada teste nele existente é identificado por um checkbox. Ao marcar o checkbox, você informa que o referido teste está relacionado à tarefa. 
 Alternativamente, é possível selecionar todos os testes em um arquivo, apenas marcando o checkbox que identifica o nome do arquivo na parte central da tela.
-
-<figure>
-  <figcaption><em>Figura 7 - Visão detalhada de testes relacionados à uma tarefa de programação.</em></figcaption>
-  <img width="600px" alt="Tela do plugin" src="/doc/plugin_add2.png"/> 
-</figure>
 
 Selecionado os cenários de teste para a tarefa, sua tela fica parecida com a tela da Figura 8, na qual há uma listagem de todos os testes selecionados (item 4) em um ou mais arquivos, e você pode atualizá-la, removendo algum teste caso necessário.
 
 <figure>
-  <figcaption><em>Figura 8 - Resumo dos testes relacionados à uma tarefa de programação.</em></figcaption>
+  <figcaption><em>Figura 7 - Resumo dos testes relacionados à uma tarefa de programação.</em></figcaption>
   <img width="600px" alt="Tela do plugin" src="/doc/plugin_add3.png"/> 
 </figure>
 
-Uma vez finalizada a seleção dos testes relacionados à tarefa, basta clicar em OK e um arquivo CSV com os cenários selecionados é criado e exportado para o PivotalTracker, sendo anexado como comentário na seção <em>Activity</em> da tarefa, conforme ilustrado na Figura 9.
+Uma vez finalizada a seleção dos testes relacionados à tarefa, basta clicar em OK e um arquivo <em>.csv</em> com os cenários selecionados é criado e exportado para o PivotalTracker, sendo anexado como comentário na seção <em>Activity</em> da tarefa, conforme ilustrado na Figura 9.
 
 <figure>
-  <figcaption><em>Figura 9 - Tarefa do PivotalTracker com anexo na aba Activity.</em></figcaption>
+  <figcaption><em>Figura 8 - Tarefa do PivotalTracker com anexo na aba Activity.</em></figcaption>
   <img alt="Tela do plugin" src="/doc/pivotal.png"/> 
 </figure>
 
 ## Autores
 
-Esse projeto está sendo desenvolvido por Mágno Gomes, sob orientação de Thaís Burity e participação de Gabriel Viana, na Universidade Federal do Agreste de Pernambuco.
+Esse projeto foi desenvolvido pelo discente Mágno Gomes, sob orientação da docente Thaís Burity e participação do discente Gabriel Viana e do docente Rodrigo Cardoso, na Universidade Federal do Agreste de Pernambuco.

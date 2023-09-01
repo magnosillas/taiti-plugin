@@ -48,7 +48,7 @@ public class TaitiDialog extends DialogWrapper {
 
         prepareServices();
 
-        setTitle("TAITI");
+        setTitle("TAITIr");
         setSize(1000,810);
         init();
     }
@@ -110,7 +110,7 @@ public class TaitiDialog extends DialogWrapper {
                         String absolutePath = (String)lines.get("path");
 
                         File file = new File(absolutePath);
-                        for (int num : (int[])lines.get("lines")) {
+                        for (int num :(ArrayList<Integer>) lines.get("lines")) {
                             mainPanel.addScenario(file, num); // adiciono os scenarios
                         }
                     }

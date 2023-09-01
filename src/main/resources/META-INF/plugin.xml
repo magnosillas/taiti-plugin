@@ -17,7 +17,7 @@
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
 
-        <toolWindow id="TaskList" anchor="left" secondary="false" factoryClass="br.edu.ufape.taiti.actions.TaskBarAction" />
+        <toolWindow id="Task List" anchor="left" secondary="false" factoryClass="br.edu.ufape.taiti.actions.TaskBarAction" />
         <toolWindow id="Conflicts" anchor="bottom" secondary="false" factoryClass="br.edu.ufape.taiti.actions.ConflictsAction" />
 
         <projectConfigurable parentId="tools" instance="br.edu.ufape.taiti.settings.TaitiSettingsConfigurable"

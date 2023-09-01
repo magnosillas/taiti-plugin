@@ -65,6 +65,9 @@ public class PivotalTracker {
 
     }
     public int checkStatus()  {
+        if(projectID.isBlank()){
+            return 400;
+        }
         String request = PIVOTAL_URL + API_PATH + "/projects/" + projectID;
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest httpRequest = HttpRequest.newBuilder()
@@ -457,42 +460,59 @@ public class PivotalTracker {
             Request requestFile = new Request.Builder()
                     .url(PIVOTAL_URL + API_PATH + requestFil)
                     .addHeader(TOKEN_HEADER, token)
-
                     .post(requestBodyBuilder.build())
                     .build();
 
             Response responseFile = client.newCall(requestFile).execute();
 
-            if (!responseFile.isSuccessful()) {
-                throw new IOException("Error uploading file: " + responseFile.message());
+            try {
+                if (!responseFile.isSuccessful()) {
+                    throw new IOException("Error uploading file: " + responseFile.message());
+                }
+
+                JSONObject responseFileBody = new JSONObject(responseFile.body().string());
+
+                // Add comment
+                JSONObject json = new JSONObject();
+                json.put("file_attachments", new JSONObject[]{responseFileBody});
+                json.put("text", TAITI_MSG);
+
+                MediaType mediaType = MediaType.parse("application/json");
+                RequestBody commentRequestBody = RequestBody.create(mediaType, json.toString());
+
+                Request requestCommentPost = new Request.Builder()
+                        .url(PIVOTAL_URL + API_PATH + requestComment)
+                        .addHeader(TOKEN_HEADER, token)
+                        .addHeader("Content-Type", "application/json")
+                        .post(commentRequestBody)
+                        .build();
+
+                Response responseComment = client.newCall(requestCommentPost).execute();
+
+                try {
+                    if (!responseComment.isSuccessful()) {
+                        throw new IOException("Error adding comment: " + responseComment.message());
+                    }
+
+                    // Process responseComment if needed
+
+                } finally {
+                    // Certifique-se de fechar a resposta após usá-la
+                    if (responseComment.body() != null) {
+                        responseComment.body().close();
+                    }
+                }
+
+            } finally {
+                // Certifique-se de fechar a resposta após usá-la
+                if (responseFile.body() != null) {
+                    responseFile.body().close();
+                }
             }
 
-            JSONObject responseFileBody = new JSONObject(responseFile.body().string());
-
-            // Add comment
-            JSONObject json = new JSONObject();
-            json.put("file_attachments", new JSONObject[]{responseFileBody});
-            json.put("text", TAITI_MSG);
-
-            MediaType mediaType = MediaType.parse("application/json");
-            RequestBody commentRequestBody = RequestBody.create(mediaType, json.toString());
-
-            Request requestCommentPost = new Request.Builder()
-                    .url(PIVOTAL_URL + API_PATH + requestComment)
-                    .addHeader(TOKEN_HEADER, token)
-                    .addHeader("Content-Type", "application/json")
-                    .post(commentRequestBody)
-                    .build();
-
-            Response responseComment = client.newCall(requestCommentPost).execute();
-
-            if (!responseComment.isSuccessful()) {
-                throw new IOException("Error adding comment: " + responseComment.message());
-            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
     }
 
 

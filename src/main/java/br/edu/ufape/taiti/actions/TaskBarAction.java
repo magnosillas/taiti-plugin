@@ -19,6 +19,7 @@ public class TaskBarAction implements ToolWindowFactory {
 
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
+        String classpath = System.getProperty("java.class.path");
         TaskBarGUI taskBarGUI = new TaskBarGUI(toolWindow, project);
 
         ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
