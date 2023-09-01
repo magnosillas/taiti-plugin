@@ -65,7 +65,7 @@ O item 3 exibe o arquivo <em>.feature</em> selecionado e o item 4 é uma tabela 
 
 <figure>
   <figcaption><em>Figura 6 - Tela de configuração de tarefa de programação do plugin TAITIr.</em></figcaption>
-  <img width="600px" alt="Tela Add do plugin" src="/doc/plugin_add3.png"/> 
+  <img width="600px" alt="Tela Add do plugin" src="/doc/plugin_add1.png"/> 
 </figure>
 
 Após informar o ID no item 1 e selecionar um arquivo <em>.feature</em> no item 2, sua tela fica parecida com a tela da Figura 6, na qual o arquivo selecionado é exibido ao centro e cada teste nele existente é identificado por um checkbox. Ao marcar o checkbox, você informa que o referido teste está relacionado à tarefa. 
@@ -77,7 +77,7 @@ Uma vez finalizada a seleção dos testes relacionados à tarefa, basta clicar e
 
 <figure>
   <figcaption><em>Figura 7 - Tarefa do PivotalTracker com anexo na aba Activity.</em></figcaption>
-  <img alt="Tela do plugin" src="/doc/pivotal.png"/> 
+  <img alt="Tela do plugin" src="/doc/pivotalimg.png"/> 
 </figure>
 
 ## Autores
