@@ -32,15 +32,15 @@ Para tanto, basta acessar File > Settings/Preferences > Tools > TAITIr e preench
 </figure>
 
 Após configurar o plugin, você está apto a usá-lo. O plugin tem duas telas principais: <em>Task List</em> (item 1 na Figura 3, uma aba na lateral esquerda da IDE) e <em>Conflicts</em> (item 2 na Figura 3, uma aba na região inferior da IDE).
-<em>Task List</em> lista as tarefas do PivotalTracker previstas para o desenvolvedor (item 3 na Figura 3) e as tarefas do PivotalTracker em execução no momento por outros desenvolvedores (item 4 na Figura 3), ou seja, o conjunto de tarefas a serem consideradas na análise de risco de conflito. 
+<em>Task List</em> lista as tarefas do PivotalTracker previstas para o desenvolvedor (item 3 na Figura 3) e as tarefas do PivotalTracker em execução no momento por outros desenvolvedores (item 4 na Figura 3), ou seja, o conjunto de tarefas a serem consideradas na análise de risco de conflito.
+
+Conforme ilustrado na Figura 3 (item 3, listagem <em>My unstarted tasks</em>), quando o desenvolvedor identifica as tarefas que planeja executar, o plugin informa para cada uma delas o grau de risco de conflito total com outras tarefas em execução no momento. 
+Informações mais detalhadas sobre as tarefas podem ser obtidas ao posicionar o mouse sobre a tarefa.
 
 <figure>
   <figcaption><em>Figura 3 - Visão principal do plugin TAITIr.</em></figcaption>
   <img width="600px" alt="Abas do Plugin" src="/doc/plugin1.png"/> 
 </figure>
-
-Conforme ilustrado na Figura 3 (item 3, listagem <em>My unstarted tasks</em>), quando o desenvolvedor identifica as tarefas que planeja executar, o plugin informa para cada uma delas o grau de risco de conflito total com outras tarefas em execução no momento. 
-Informações mais detalhadas sobre as tarefas podem ser obtidas ao posicionar o mouse sobre a tarefa.
 
 As tarefas em execução são obtidas automaticamente, mas aquelas planejadas para o desenvolvedor devem ser adicionadas por ele. Isso pode ser feito ao clicar no item 1 na Figura 4. 
 Ainda na Figura 4, é possível atualizar as listagens de tarefas ao clicar no item 2, bem como pesquisar pelo título de alguma tarefa de interesse usando a caixa de texto do item 3, em caso das listagens serem extensas.
@@ -68,9 +68,8 @@ O item 3 exibe o arquivo <em>.feature</em> selecionado e o item 4 é uma tabela 
   <img width="600px" alt="Tela Add do plugin" src="/doc/plugin_add2.png"/> 
 </figure>
 
-Após informar o ID no item 1 e selecionar um arquivo <em>.feature</em> no item 2, sua tela fica parecida com a tela da Figura 6, na qual o arquivo selecionado é exibido ao centro e cada teste nele existente é identificado por um checkbox. Ao marcar o checkbox, você informa que o referido teste está relacionado à tarefa. 
+Conforme ilustrado na Figura 6, os cenários de teste existentes no arquivo <em>.feature</em> exibido no item 3 são identificados por um checkbox. Ao marcar o checkbox, você informa que o referido teste está relacionado à tarefa em configuração. 
 Alternativamente, é possível selecionar todos os testes em um arquivo, apenas marcando o checkbox que identifica o nome do arquivo na parte central da tela.
-
 Selecionado os cenários de teste para a tarefa, sua tela fica parecida com a tela da Figura 7, na qual há uma listagem de todos os testes selecionados (item 4) em um ou mais arquivos, e você pode atualizá-la, removendo algum teste caso necessário.
 
 <figure>
