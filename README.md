@@ -73,7 +73,7 @@ Já o item 3 exibe o arquivo <em>.feature</em> selecionado e o item 4 é uma tab
 
 Após informar o ID no item 1 e selecionar um arquivo <em>.feature</em> no item 2, a tela fica parecida com a Figura 6, na qual o arquivo selecionado é exibido ao centro e cada cenário de teste nele existente é identificado por um checkbox. 
 Marcar um checkbox significa que o referido teste está relacionado à tarefa em configuração. 
-Alternativamente, é possível selecionar todos os cenários de testes em um arquivo de uma vez apenas marcando o checkbox que identifica o nome do arquivo na parte central da tela.
+Alternativamente, é possível selecionar todos os cenários de testes em um arquivo de uma vez apenas marcando o checkbox que identifica o nome do arquivo na parte central da tela (Área destacada no item 3).
 Por fim, é possível verificar todos os testes selecionados em um ou mais arquivos (item 4 da Figura 6), bem como atualizar essa seleção, removendo testes conforme a necessidade.
 
 Uma vez finalizada a seleção dos testes relacionados à tarefa, basta clicar em OK e um arquivo <em>.csv</em> com os cenários de testes selecionados é criado e exportado para o PivotalTracker, sendo anexado como comentário na seção <em>Activity</em> da tarefa, conforme ilustrado pela Figura 7.
