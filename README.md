@@ -58,7 +58,7 @@ Por exemplo, se há uma tarefa planejada e 3 tarefas em execução, é possível
 
 <figure>
   <figcaption><em>Figura 5 - Visão detalhada de risco de conflito entre tarefas de programação.</em></figcaption>
-  <img width="600px" alt="Conflicts" src="/doc/plugin3.png"/> 
+  <img height="200px" alt="Conflicts" src="/doc/plugin3.png"/> 
 </figure>
 
 Para informar os testes do Cucumber que validam o comportamento esperado de uma tarefa de programação no PivotalTracker, é necessário clicar no item 1 na Figura 4 (tela <em>Task List</em>) para acessar a tela de configuração da tarefa, ilustrada pela Figura 6.
