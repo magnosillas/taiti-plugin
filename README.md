@@ -80,7 +80,7 @@ Uma vez finalizada a seleção dos testes relacionados à tarefa, basta clicar e
 
 <figure>
   <figcaption><em>Figura 7 - Arquivo .csv anexado à uma tarefa no PivotalTracker.</em></figcaption>
-  <img alt="Tela do plugin" src="/doc/pivotalimg.png"/> 
+  <img width="600px" alt="Tela do plugin" src="/doc/pivotalimg.png"/> 
 </figure>
 
 ## Autores
