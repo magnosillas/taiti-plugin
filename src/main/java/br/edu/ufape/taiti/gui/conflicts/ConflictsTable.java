@@ -37,7 +37,7 @@ public class ConflictsTable {
         });
 
         modeloTabela = new DefaultTableModel(null,
-                new String[]{"Task ID", "Description", "URL", "Conflict Risk Rate", "Conflict Files"}) {
+                new String[]{"Task ID", "Description", "URL", "Absolute Conflict Risk", "Conflict Files"}) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; // Tornar todas as células não editáveis

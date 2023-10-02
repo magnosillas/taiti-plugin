@@ -3,7 +3,6 @@ package br.edu.ufape.taiti.service;
 
 import br.edu.ufape.taiti.exceptions.HttpException;
 import br.edu.ufape.taiti.tool.TaitiTool;
-import br.ufpe.cin.tan.analysis.task.TodoTask;
 import br.ufpe.cin.tan.conflict.PlannedTask;
 import com.intellij.openapi.project.Project;
 
@@ -12,11 +11,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Task {
@@ -30,13 +27,14 @@ public class Task {
     private final String url;
     private String personName;
     private ArrayList<LinkedHashMap<String, Serializable>> scenarios = new ArrayList<>();
+
     private PlannedTask iTesk ;
 
 
 
     private ArrayList<Task> conflictTasks = new ArrayList<>();
     private ArrayList<LinkedHashMap<String, Serializable>> conflictScenarios = new ArrayList<>();
-    private int conflictNum;
+    private double conflictRate;
 
 
 
@@ -95,7 +93,7 @@ public class Task {
 
     public void checkConflictRisk(List<Task> listTask) {
         conflictTasks.clear();
-        conflictNum = 0;
+        conflictRate = 0;
 
         for (LinkedHashMap<String, Serializable> lines : scenarios) { // percorro scenario por scenario
             String absolutePath = (String)lines.get("path");
@@ -117,7 +115,7 @@ public class Task {
                             for (int auxNum:auxNumbers) {
                                 if(num == auxNum){
                                     conflictRows.add(num);
-                                    conflictNum++;
+                                    conflictRate++;
 
                                 }
                             }
@@ -147,8 +145,8 @@ public class Task {
         return conflictScenarios;
     }
 
-    public int getConflictNum() {
-        return conflictNum;
+    public double getConflictRate() {
+        return conflictRate;
     }
 
     public ArrayList<LinkedHashMap<String, Serializable>> getScenarios() {
@@ -157,6 +155,10 @@ public class Task {
 
     public String getPersonName() {
         return personName;
+    }
+
+    public void setConflictRate(double conflictRate) {
+        this.conflictRate = conflictRate;
     }
 
     public String getName() {

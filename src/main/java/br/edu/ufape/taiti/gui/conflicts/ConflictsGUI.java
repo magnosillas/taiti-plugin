@@ -61,7 +61,7 @@ public class ConflictsGUI {
 
 
         modeloTabela = new DefaultTableModel(null,
-                new String[]{"Task ID", "Description", "URL", "Conflict Risk Rate", "Conflict Files"}) {
+                new String[]{"Task ID", "Description", "URL", "Absolute Conflict Rate", "Conflict Files"}) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; // Tornar todas as células não editáveis
@@ -71,9 +71,9 @@ public class ConflictsGUI {
 
 
         TableColumnModel columns = ShowTable.getColumnModel();
-        columns.getColumn(0).setMinWidth(100);
-        columns.getColumn(1).setMinWidth(250);
-        columns.getColumn(2).setMinWidth(260);
+        columns.getColumn(0).setMinWidth(80);
+        columns.getColumn(1).setMinWidth(200);
+        columns.getColumn(2).setMinWidth(230);
         columns.getColumn(3).setMinWidth(100);
         columns.getColumn(4).setMinWidth(400);
 

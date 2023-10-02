@@ -56,24 +56,30 @@ public class Stories {
                 //Seleciono apenas as tasks que contem o arquivo [TAITI] Scenarios, ou seja, que já foram adicionados
                 if ( (taitiComment != null && taitiComment.getString("text").equals("[TAITI] Scenarios"))) {
                     Task plannedStory = new Task(obj, pivotalTracker, project);
+
+                    String versaoJava = System.getProperty("java.version");
+                    System.out.println("Versão do Java: " + versaoJava);
 //
 //                    String url = "https://github.com/diaspora/diaspora";
 //                    final Integer id1 = 1;
-//
+////
 //                    LinkedHashMap<String, Serializable> map = new LinkedHashMap<String, Serializable>(2);
 //                    map.put("path", "features/desktop/help.feature");
 //                    map.put("lines", new ArrayList<Integer>(Arrays.asList(4)));
 //                    ArrayList<LinkedHashMap<String, Serializable>> tests = new ArrayList<LinkedHashMap<String, Serializable>>(Arrays.asList(map));
-//
+////
 //
 //                    TodoTask task1;
 //                    PlannedTask plannedTask1 = null;
+////
+//                    task1 = new TodoTask(url, id1, tests);
 //
-//                     task1 = new TodoTask(url, id1, tests);
-
-                    //
-//                    ArrayList<LinkedHashMap<String, Serializable>> tests = plannedStory.getScenarios();
-//                    TodoTask todoTask = new TodoTask( githubURL, plannedStory.getId() , plannedStory.getScenarios());
+//
+                    ArrayList<LinkedHashMap<String, Serializable>> testss = plannedStory.getScenarios();
+                    int idTeste = plannedStory.getId();
+                    TodoTask todoTask = new TodoTask( githubURL, idTeste , testss);
+////
+////
 //                    PlannedTask plannedTask = todoTask.generateTaskForConflictAnalysis();
 //                    plannedStory.setiTesk(plannedTask);
 
@@ -92,9 +98,9 @@ public class Stories {
         } catch (HttpException | InterruptedException | IOException e) {
             throw new RuntimeException(e);
         }
-//        catch (CloningRepositoryException e) {
-//            throw new RuntimeException(e);
-//        }
+        catch (CloningRepositoryException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 

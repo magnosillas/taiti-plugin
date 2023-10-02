@@ -7,6 +7,8 @@ import br.edu.ufape.taiti.service.PivotalTracker;
 import br.edu.ufape.taiti.service.Stories;
 import br.edu.ufape.taiti.service.Task;
 import br.edu.ufape.taiti.settings.TaitiSettingsState;
+import br.ufpe.cin.tan.conflict.ConflictAnalyzer;
+import br.ufpe.cin.tan.conflict.PlannedTask;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
@@ -20,7 +22,6 @@ import javax.swing.table.TableRowSorter;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -58,7 +59,7 @@ public class TaskBarGUI {
         storysList1 = new ArrayList<>();
         storysList2 = new ArrayList<>();
 
-        modelo1 = new DefaultTableModel(null,new String[]{"<html><b>My unstarted tasks</b></html>", "<html><b>Conflict Risk</b></html>"}){
+        modelo1 = new DefaultTableModel(null,new String[]{"<html><b>My unstarted tasks</b></html>", "<html><b>Scenarios</b></html>"}){
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; // Tornar todas as células não editáveis
@@ -75,7 +76,7 @@ public class TaskBarGUI {
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         columns.getColumn(1).setCellRenderer(centerRenderer);
 
-        modelo2 = new DefaultTableModel(null,new String[]{"<html><b>Coworkes started tasks</b></html>"}){
+        modelo2 = new DefaultTableModel(null,new String[]{"<html><b>Potential conflict-inducing tasks</b></html>"}){
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; // Tornar todas as células não editáveis
@@ -83,25 +84,30 @@ public class TaskBarGUI {
         };
         startedTable.setModel(modelo2);
 
-        // Definir a largura da segunda coluna como 20 pixels
-
-
-        //centralizar os numeros de Scenarios
-
-
-
-
-
-
-        //Inicializa um objeto PivotalTracker para busca de dados
-
-
 
         configTaskList();
 
-        refreshButton.addActionListener(e ->
-                configTaskList()
-        );
+        refreshButton.addActionListener(e -> {
+            // Crie a tela de loading
+            LoadingScreen loadingScreen = new LoadingScreen(getContent());
+            loadingScreen.setVisible(true);
+
+            // Inicie a operação de atualização (simulada aqui com um atraso de 3 segundos)
+            SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+                @Override
+                protected Void doInBackground() throws Exception {
+                    // Coloque sua lógica de atualização aqui
+                    configTaskList();
+                    // Simula uma operação demorada
+                    loadingScreen.dispose();
+                    return null;
+                }
+
+
+            };
+
+            worker.execute();
+        });
 
         txtSearch.addKeyListener(new KeyAdapter() {
             @Override
@@ -199,15 +205,19 @@ public class TaskBarGUI {
                 if (e.getClickCount() == 2) { // Verifica se foi um clique duplo
                     int index = unstartedTable.getSelectedRow(); // Obtém o índice da linha selecionada
                     Task task = storysList1.get(index);
+
+
                     task.checkConflictRisk(storysList2);
+
 
                     ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
                     ToolWindow myToolWindow = toolWindowManager.getToolWindow("Conflicts");
 
-                    String texto = "Tabela de conflitos da task " + task.getName() + " que contem "
-                            + task.getConflictNum() + " conflitos.";
+                    String text = "Conflict table for task " + task.getName() + " which contains "
+                            + (int) task.getConflictRate() + " absolute conflicts.";
 
-                    ConflictsGUI.setLabel(texto);
+
+                    ConflictsGUI.setLabel(text);
                     ConflictsGUI.fillTable(task);
 
                     if (myToolWindow != null) {
@@ -253,6 +263,14 @@ public class TaskBarGUI {
             plannedStories.startList();
             limparListas();
 
+//            ConflictAnalyzer conflictAnalyzer = new ConflictAnalyzer();
+//            ArrayList<PlannedTask> plannedTaskArrayList = new ArrayList<>();
+//            for(Task unstartedTask : plannedStories.getUnstartedStories()){
+//                plannedTaskArrayList.add(unstartedTask.getiTesk());
+//            }
+//            for(Task startedTask : plannedStories.getStartedStories()){
+//                startedTask.setConflictRate(conflictAnalyzer.meanRelativeConflictRiskForTasks(startedTask.getiTesk(),plannedTaskArrayList));
+//            }
 
             // Add the unstarted stories to the main list first
             atualizarListas(plannedStories.getUnstartedStories(), storysList1, modelo1);
