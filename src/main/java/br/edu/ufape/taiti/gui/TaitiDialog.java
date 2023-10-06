@@ -1,6 +1,7 @@
 package br.edu.ufape.taiti.gui;
 
 import br.edu.ufape.taiti.exceptions.HttpException;
+import br.edu.ufape.taiti.gui.taskbar.LoadingScreen;
 import br.edu.ufape.taiti.gui.taskbar.TaskBarGUI;
 import br.edu.ufape.taiti.service.PivotalTracker;
 import br.edu.ufape.taiti.service.Task;
@@ -18,6 +19,7 @@ import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -143,7 +145,9 @@ public class TaitiDialog extends DialogWrapper {
         try {
             File file = taiti.createScenariosFile(mainPanel.getScenarios());
             pivotalTracker.saveScenarios(file, taskID);
-            taskBarGUI.configTaskList();
+            LoadingScreen loading = new LoadingScreen();
+            taskBarGUI.changeJpanel(loading);
+            taskBarGUI.refresh();
             taiti.deleteScenariosFile();
         } catch (IOException e) {
             System.out.println("Erro ao criar o arquivo!");

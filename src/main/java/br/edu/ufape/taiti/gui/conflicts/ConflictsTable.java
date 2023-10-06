@@ -37,7 +37,7 @@ public class ConflictsTable {
         });
 
         modeloTabela = new DefaultTableModel(null,
-                new String[]{"Task ID", "Description", "URL", "Absolute Conflict Risk", "Conflict Files"}) {
+                new String[]{"Task ID", "Description", "URL", "Relative Conflict Risk", "Conflict Files"}) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; // Tornar todas as células não editáveis
@@ -70,41 +70,6 @@ public class ConflictsTable {
         });
     }
 
-    public void fillTable(Task task, Project project) {
-        modeloTabela.setRowCount(0);
-
-        ArrayList<Task> conflictTasks = task.getConflictTasks();
-
-        ArrayList<LinkedHashMap<String, Serializable>> conflictScenarios = task.getConflictScenarios();
-
-        for (int i = 0; i < conflictTasks.size(); i++) {
-            int taskId = conflictTasks.get(i).getId();
-            String taskDescription = conflictTasks.get(i).getName();
-            String taskUrl = conflictTasks.get(i).getUrl();
-            LinkedHashMap<String, Serializable> conflictTaskScenarios = conflictScenarios.get(i);
-            String stringConflicts = "";
-            int conflictRisk = 0;
-
-            String path = (String) conflictTaskScenarios.get("path");
-
-            path = path.substring(Objects.requireNonNull(project.getBasePath()).length());
-            String linesNum = "";
-            for (int num : (ArrayList<Integer>) conflictTaskScenarios.get("lines")) {
-                linesNum += num + ",";
-                conflictRisk++;
-            }
-
-
-            linesNum = "[" + linesNum.substring(0, linesNum.length() - 1) + "]";
-            stringConflicts += path + "; " + linesNum + "\n";
-
-            modeloTabela.addRow(new Object[]{taskId, taskDescription, taskUrl, conflictRisk, stringConflicts});
-
-
-
-
-        }
-    }
 
     public JTable getTable() {
         return table;

@@ -74,14 +74,14 @@ public class Stories {
 ////
 //                    task1 = new TodoTask(url, id1, tests);
 //
-//
+////
                     ArrayList<LinkedHashMap<String, Serializable>> testss = plannedStory.getScenarios();
                     int idTeste = plannedStory.getId();
                     TodoTask todoTask = new TodoTask( githubURL, idTeste , testss);
-////
-////
-//                    PlannedTask plannedTask = todoTask.generateTaskForConflictAnalysis();
-//                    plannedStory.setiTesk(plannedTask);
+//
+//
+                    PlannedTask plannedTask = todoTask.generateTaskForConflictAnalysis();
+                    plannedStory.setiTesk(plannedTask);
 
 
                     //Adiciono a uma lista as minhas tasks que ainda não começaram

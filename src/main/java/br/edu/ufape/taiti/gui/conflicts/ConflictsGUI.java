@@ -1,5 +1,6 @@
 package br.edu.ufape.taiti.gui.conflicts;
 
+import br.edu.ufape.taiti.gui.taskbar.LoadingScreen;
 import br.edu.ufape.taiti.service.Task;
 import br.ufpe.cin.tan.conflict.ConflictAnalyzer;
 import br.ufpe.cin.tan.conflict.PlannedTask;
@@ -14,16 +15,18 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 
 public class ConflictsGUI {
     private static DefaultTableModel modeloTabela;
-
-    private JPanel ConflictsPanel;
+    private static JPanel content;
+    private static JPanel ConflictsPanel;
     private static JPanel labelPanel;
     private JBTable ShowTable;
 
@@ -35,10 +38,12 @@ public class ConflictsGUI {
 
 
         this.project = project;
+        content = new JPanel();
         ConflictsPanel = new JPanel();
         ShowTable = new JBTable();
         labelPanel = new JPanel();
         createTable();
+
         setLabel("Double-click a task in the TaskList to view its conflicting tasks");
 
         ShowTable.addMouseMotionListener(new MouseMotionAdapter() {
@@ -46,15 +51,34 @@ public class ConflictsGUI {
             public void mouseMoved(MouseEvent e) {
                 int row = ShowTable.rowAtPoint(e.getPoint());
                 int column = ShowTable.columnAtPoint(e.getPoint());
-                if (row > -1 && column > -1) {
-                    ShowTable.setToolTipText("<html>" + modeloTabela.getValueAt(row,1) +
-                            "<br>URL: #" + modeloTabela.getValueAt(row,2)+
-                            "<br>Scenarios: "+ modeloTabela.getValueAt(row,4) +"</html>");
+
+// Verificar se row e column são valores válidos antes de acessar a célula
+                if (row >= 0 && column >= 0) {
+                    // Acessar a célula da tabela
+                    String paths = (String) modeloTabela.getValueAt(row, 4);
+                    String truncatePaths = paths.substring(0, Math.min(paths.length(), 100));
+                    ShowTable.setToolTipText("<html>" + modeloTabela.getValueAt(row, 1) +
+                            "<br>URL: #" + modeloTabela.getValueAt(row, 2) +
+                            "<br>Scenarios: " + truncatePaths + "...</html>");
                 } else {
                     ShowTable.setToolTipText(null);
                 }
             }
         });
+
+        ShowTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int row = ShowTable.rowAtPoint(e.getPoint());
+                int column = ShowTable.columnAtPoint(e.getPoint());
+                if (column == 4 && row >= 0) { // Verifica se a coluna clicada é a quarta e se há uma linha selecionada
+                    String cellValue = (String) ShowTable.getValueAt(row, column);
+                    showCellContentDialog(cellValue);
+                }
+            }
+        });
+
+
     }
 
     private void createTable() {
@@ -77,6 +101,7 @@ public class ConflictsGUI {
         columns.getColumn(3).setMinWidth(100);
         columns.getColumn(4).setMinWidth(400);
 
+
         ShowTable.setRowHeight(30);
 
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
@@ -85,16 +110,7 @@ public class ConflictsGUI {
         columns.getColumn(3).setCellRenderer(centerRenderer);
 
 
-        ShowTable.getColumnModel().getColumn(4).setCellRenderer(new TableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                JTextArea textArea = new JTextArea();
-                textArea.setText((String) value);
-                textArea.setLineWrap(true);
-                textArea.setWrapStyleWord(true);
-                return textArea;
-            }
-        });
+
 
 
         ConflictsPanel.setLayout(new BorderLayout());
@@ -105,58 +121,50 @@ public class ConflictsGUI {
             ConflictsPanel.add(labelPanel, BorderLayout.NORTH);
             ConflictsPanel.add(scrollPane, BorderLayout.CENTER);
         }
+        content.setLayout(new BorderLayout());
 
-
+        content.add(ConflictsPanel,BorderLayout.CENTER);
 
 
 
 
     }
 
-    static public void fillTable(Task task){
+    static public void fillTable(Task task, ConflictAnalyzer conflictAnalyzer, ArrayList<Task> storysList){
         modeloTabela.setRowCount(0);
 
 
-        ArrayList<Task> conflictTasks = task.getConflictTasks();
-        if(conflictTasks.size() > 0 ){
+
+        if(!storysList.isEmpty()){
 
 
-            ArrayList<LinkedHashMap<String, Serializable>>  conflictScenarios = task.getConflictScenarios();
+//            ArrayList<LinkedHashMap<String, Serializable>>  conflictScenarios = task.getConflictScenarios();
 
-            for (int i = 0; i < conflictTasks.size(); i++) {
+            LoadingScreen loadingScreen = new LoadingScreen();
+            changePanel(loadingScreen);
 
-//                PlannedTask conflictITest = conflictTasks.get(i).getiTesk();
+            for (int i = 0; i < storysList.size(); i++) {
+
+                PlannedTask conflictITest = storysList.get(i).getiTesk();
 //                ConflictAnalyzer conflictAnalyzer = new ConflictAnalyzer();
-//                conflictAnalyzer.computeConflictRiskForPair(task.getiTesk(), conflictITest);
-//                int conflictFilesNum = conflictAnalyzer.getConflictResult().getConflictingFiles().size();
-//                double conflictRate = conflictAnalyzer.getConflictResult().getRelativeConflictRate();
+                conflictAnalyzer.computeConflictRiskForPair(task.getiTesk(), conflictITest);
+
+                double conflictRate = conflictAnalyzer.getConflictResult().getRelativeConflictRate();
+                double formattedConflictRate = Math.round(conflictRate * 100.0) / 100.0;
+                if(formattedConflictRate == 0.0) continue;
+                Collection<String> conflictsPath = conflictAnalyzer.getConflictResult().getConflictingFiles();
+                String stringConflicts = String.join("\n", conflictsPath);
+
+                int taskId = storysList.get(i).getId();
+                String taskDescription = storysList.get(i).getName();
+                String taskUrl = storysList.get(i).getUrl();
 
 
-                int taskId = conflictTasks.get(i).getId();
-                String taskDescription = conflictTasks.get(i).getName();
-                String taskUrl = conflictTasks.get(i).getUrl();
-                LinkedHashMap<String, Serializable> conflictTaskScenarios = conflictScenarios.get(i);
-                String stringConflicts = "";
-                int conflictRisk = 0;
-
-                String path = (String)conflictTaskScenarios.get("path");
-
-
-                String linesNum = "";
-                for (int num : (ArrayList<Integer>)conflictTaskScenarios.get("lines")) {
-                    linesNum += num + ",";
-                    conflictRisk ++;
-                }
-
-
-                linesNum = "[" + linesNum.substring(0, linesNum.length() - 1) + "]";
-                stringConflicts += path + "; " + linesNum + "\n";
-
-                modeloTabela.addRow(new Object[]{taskId, taskDescription,taskUrl,conflictRisk,stringConflicts});
+                modeloTabela.addRow(new Object[]{taskId, taskDescription,taskUrl,formattedConflictRate ,stringConflicts});
 
             }
 
-
+            changePanel(loadingScreen);
 
 
 
@@ -164,6 +172,30 @@ public class ConflictsGUI {
 
 
     }
+
+    private void showCellContentDialog(String content) {
+        JTextArea textArea = new JTextArea(content);
+        textArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        scrollPane.setPreferredSize(new Dimension(500, 500));
+
+        JOptionPane.showMessageDialog(null, scrollPane, "Conflict files paths", JOptionPane.PLAIN_MESSAGE);
+    }
+
+    private static void changePanel(JPanel panel){
+        if (content.getComponent(0) != ConflictsPanel) {
+            content.remove(panel);
+            content.add(ConflictsPanel, BorderLayout.CENTER);
+        } else {
+            content.remove(ConflictsPanel);
+            content.add(panel, BorderLayout.CENTER);
+        }
+
+        // Revalida e redesenha o conteúdo
+        content.revalidate();
+        content.repaint();
+    }
+
 
     public static void setLabel(String texto){
         labelPanel.removeAll();
@@ -173,6 +205,6 @@ public class ConflictsGUI {
 
 
     public JPanel getContent() {
-        return ConflictsPanel;
+        return content;
     }
 }
