@@ -57,6 +57,7 @@ public class TaskBarGUI {
 
         this.project=project;
         conflictAnalyzer = new ConflictAnalyzer();
+
         loading = new LoadingScreen();
         content = new JPanel();
         content.setLayout(new BorderLayout());
@@ -99,6 +100,7 @@ public class TaskBarGUI {
         refreshButton.addActionListener(e -> {
             changeJpanel(loading);
             refresh();
+
         });
 
         txtSearch.addKeyListener(new KeyAdapter() {
@@ -388,6 +390,7 @@ public class TaskBarGUI {
         return content;
     }
 
-
-
+    public LoadingScreen getLoading() {
+        return loading;
+    }
 }

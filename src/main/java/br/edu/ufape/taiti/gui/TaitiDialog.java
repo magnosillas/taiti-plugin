@@ -145,7 +145,7 @@ public class TaitiDialog extends DialogWrapper {
         try {
             File file = taiti.createScenariosFile(mainPanel.getScenarios());
             pivotalTracker.saveScenarios(file, taskID);
-            LoadingScreen loading = new LoadingScreen();
+            LoadingScreen loading = taskBarGUI.getLoading();
             taskBarGUI.changeJpanel(loading);
             taskBarGUI.refresh();
             taiti.deleteScenariosFile();

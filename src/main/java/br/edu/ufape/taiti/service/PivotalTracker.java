@@ -528,7 +528,7 @@ public class PivotalTracker {
 
         java.net.http.HttpResponse<String> response = httpClient.send(deleteRequest, HttpResponse.BodyHandlers.ofString());
 
-        if (response.statusCode() != 200) {
+        if (response.statusCode() >  210) {
             throw new HttpException(response.body(), response.statusCode());
         }
     }

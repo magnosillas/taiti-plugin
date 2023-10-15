@@ -21,6 +21,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 public class ConflictsGUI {
@@ -152,7 +153,18 @@ public class ConflictsGUI {
                 double conflictRate = conflictAnalyzer.getConflictResult().getRelativeConflictRate();
                 double formattedConflictRate = Math.round(conflictRate * 100.0) / 100.0;
                 if(formattedConflictRate == 0.0) continue;
-                Collection<String> conflictsPath = conflictAnalyzer.getConflictResult().getConflictingFiles();
+                Collection<String> paths = conflictAnalyzer.getConflictResult().getConflictingFiles();
+                Collection<String> conflictsPath = new ArrayList<>();
+                // Palavra a ser removida
+                String palavraRemover = project.getName()+"_"+project.getName()+ "\\";
+
+                for (String str : paths){
+                    str = str.replace(palavraRemover,"");
+                    conflictsPath.add(str);
+                }
+
+
+
                 String stringConflicts = String.join("\n", conflictsPath);
 
                 int taskId = storysList.get(i).getId();
